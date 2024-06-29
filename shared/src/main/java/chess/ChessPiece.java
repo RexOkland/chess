@@ -1,6 +1,7 @@
 package chess;
 
 import java.util.Collection;
+import chess.ruleset.*;
 
 /**
  * Represents a single chess piece
@@ -16,6 +17,8 @@ public class ChessPiece {
         this.teamColor = pieceColor;
         this.pieceType = type;
     }
+
+
 
     /**
      * The various different chess piece options
@@ -56,10 +59,18 @@ public class ChessPiece {
      * @return Collection of valid moves
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
-        throw new RuntimeException("Not implemented");
+        //throw new RuntimeException("Not implemented");
         //attempting to implement 06/29/2024 @ 11:40am//
+        //attempting to implement 06/29/2024 @ 3:21pm//
 
-        //TODO: //use logic based on piece type to determine available moves//
-
+        PieceMove moves = switch(this.pieceType){
+            case PAWN -> new PawnMove();
+            case ROOK -> new RookMove();
+            case KNIGHT -> new KnightMove();
+            case BISHOP -> new BishopMove();
+            case QUEEN -> new QueenMove();
+            case KING -> new KingMove();
+        };
+        return moves.calculateMoves(board, this, myPosition);
     }
 }

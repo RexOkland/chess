@@ -1,6 +1,11 @@
 package chess;
 
 import chess.*;
+
+import java.util.Arrays;
+
+import static java.lang.Character.toLowerCase;
+
 /**
  * A chessboard that can hold and rearrange chess pieces.
  * <p>
@@ -8,10 +13,11 @@ import chess.*;
  * signature of the existing methods.
  */
 public class ChessBoard {
-    public ChessPiece[][] boardArray;
-    public ChessBoard() {
+    public ChessPiece[][] boardArray = new ChessPiece[8][8];
+
+    /*public ChessBoard() {
         boardArray = new ChessPiece[8][8];
-    }
+    }*/
 
     /**
      * Adds a chess piece to the chessboard
@@ -60,39 +66,42 @@ public class ChessBoard {
 
     public void printBoard() {
         for (int i = 0; i < boardArray.length; i++) {
-            for (int j = 0; j < boardArray[i].length; j++) {
+            for (int j = 0; j < boardArray.length; j++) {
                 ChessPiece piece = boardArray[i][j];
                 if (piece == null) {
-                    System.out.print(". ");
+                    System.out.print("| ");
                 } else {
                     char pieceChar = getPieceChar(piece); //turning the enum into single letter pieces//
-                    System.out.print( String.format("%c ",pieceChar) );
-                    //System.out.print(pieceChar + " ");
+                    System.out.print( String.format("|%c",pieceChar) );
                 }
             }
+            System.out.print("|");
             System.out.println();
         }
     }
 
     private char getPieceChar(ChessPiece piece) {
-        char pieceChar;
+        //we're just making the types into single letter values//
+        //attempting to implement 06/29/2024 @ 1:15pm//
+        char c;
         switch (piece.getPieceType()) {
             case PAWN:
-                pieceChar = 'P'; break;
+                c = 'P'; break;
             case ROOK:
-                pieceChar = 'R'; break;
+                c = 'R'; break;
             case KNIGHT:
-                pieceChar = 'H'; break;
+                c = 'H'; break;
             case BISHOP:
-                pieceChar = 'B'; break;
+                c = 'B'; break;
             case QUEEN:
-                pieceChar = 'Q'; break;
+                c = 'Q'; break;
             case KING:
-                pieceChar = 'K'; break;
+                c = 'K'; break;
             default:
-                pieceChar = '?'; break; //unrecognized piece... not good//
+                c = '?'; break; //unrecognized piece... not good//
         }
-        return pieceChar;
+        if(piece.teamColor == ChessGame.TeamColor.WHITE){c = toLowerCase(c);}
+        return c;
     }
 
     public static void main(String[] args) {
@@ -100,7 +109,6 @@ public class ChessBoard {
         board.resetBoard();
         board.printBoard();
     }
-
 
     public void initializeWhite(){
         //pawns//
@@ -117,8 +125,8 @@ public class ChessBoard {
         boardArray[0][2] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.BISHOP);
         boardArray[0][5] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.BISHOP);
         //king y queen//
-        boardArray[0][3] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.KING);
-        boardArray[0][4] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.QUEEN);
+        boardArray[0][4] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.KING);
+        boardArray[0][3] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.QUEEN);
     };
     public void initializeBlack(){
         //pawns//
@@ -135,7 +143,20 @@ public class ChessBoard {
         boardArray[7][2] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.BISHOP);
         boardArray[7][5] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.BISHOP);
         //king y queen//
-        boardArray[7][3] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.KING);
-        boardArray[7][4] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.QUEEN);
+        boardArray[7][4] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.KING);
+        boardArray[7][3] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.QUEEN);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ChessBoard that = (ChessBoard) o;
+        return Arrays.deepEquals(boardArray, that.boardArray);
+    }
+
+    @Override
+    public int hashCode() {
+        return Arrays.deepHashCode(boardArray);
     }
 }
