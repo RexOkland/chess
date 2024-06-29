@@ -9,6 +9,17 @@ package chess;
 public class ChessPosition {
     private int row;
     private int col;
+    private ChessPiece residingPiece;
+//so the location will keep track of the piece that's sitting on it//
+    public ChessPiece getResidingPiece() {
+        return residingPiece;
+    }
+
+    public void setResidingPiece(ChessPiece residingPiece) {
+        this.residingPiece = residingPiece;
+    }
+
+
 
     public ChessPosition(int row, int col) {
         //attempting to implement 06/29/2024 @ 11:44am//
