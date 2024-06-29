@@ -9,23 +9,15 @@ package chess;
 public class ChessPosition {
     private int row;
     private int col;
-    private ChessPiece residingPiece;
-//so the location will keep track of the piece that's sitting on it//
-    public ChessPiece getResidingPiece() {
-        return residingPiece;
-    }
 
-    public void setResidingPiece(ChessPiece residingPiece) {
-        this.residingPiece = residingPiece;
-    }
-
-
-
+    //CONSTRUCTORS//
     public ChessPosition(int row, int col) {
         //attempting to implement 06/29/2024 @ 11:44am//
         this.row = row;
         this.col = col;
     }
+
+    //GETTERS/SETTERS - BASIC FUNCTIONS//
 
     /**
      * @return which row this position is in
@@ -52,4 +44,17 @@ public class ChessPosition {
         //attempting to implement 06/29/2024 @ 11:48am//
         return String.format("col = %d \nrow = %d \n", row, col);
     }
+
+    //REX'S FUNCTIONS//
+    public boolean onBoard(){ //returns a T/F value if a point is on the board//
+        if(getColumn() > 7){return false;}
+        else if(getColumn() < 0){return false;}
+        else if(getRow() > 7){return false;}
+        else return (getRow() < 0);
+    }
+
+    public ChessPosition relativePositiion(int r, int c){
+        return new ChessPosition((row + r), (col + c));
+    }
+
 }
