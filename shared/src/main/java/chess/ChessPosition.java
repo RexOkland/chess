@@ -49,10 +49,10 @@ public class ChessPosition {
 
     //REX'S FUNCTIONS//
     public boolean onBoard(){ //returns a T/F value if a point is on the board//
-        if(getColumn() > 7){return false;}
-        else if(getColumn() < 0){return false;}
-        else if(getRow() > 7){return false;}
-        else return (getRow() >= 0);
+        if(getColumn() > 8){return false;}
+        else if(getColumn() <= 0){return false;}
+        else if(getRow() > 8){return false;}
+        else return (getRow() > 0);
     }
 
     public ChessPosition relativePositiion(int r, int c){
