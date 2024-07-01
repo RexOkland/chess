@@ -61,6 +61,7 @@ public class ChessBoardTests {
                 ChessPosition position = new ChessPosition(i, j);
                 ChessPiece piece = board.getPiece(position);
                 if(piece != null) {
+                    System.out.println(position.toString() + piece.toString());
                     Assertions.assertDoesNotThrow(() -> piece.pieceMoves(board, position));
                 }
             }

@@ -13,8 +13,7 @@ public class PawnMove implements PieceMove {
         //assuming that white starts on the bottom (row 2) and black starts on the top (row 7)
         if(piece.teamColor == ChessGame.TeamColor.WHITE){
             //looking to see if the first two spaces in front of pawn are AVAILABLE//
-            if (board.boardArray[location.getRow() - 1 + 1][location.getColumn() - 1] == null &&
-            location.onBoard() ) {
+            if (location.onBoard() && board.boardArray[location.getRow() - 1 + 1][location.getColumn() - 1] == null) {
                 if(location.getRow() + 1 == 8){
                     for(ChessPiece.PieceType p : ChessPiece.PieceType.values()){
                         if((p == ChessPiece.PieceType.QUEEN)
@@ -58,9 +57,9 @@ public class PawnMove implements PieceMove {
             }
             //now we've got to look at the diagonal squares to see if there's potential moves there//
                 //check right//
-            if (    (board.boardArray[location.getRow() - 1 + 1][location.getColumn() - 1 + 1] != null)
-                    && board.boardArray[location.getRow() - 1 + 1][location.getColumn() - 1 + 1].teamColor == ChessGame.TeamColor.BLACK
-                    && location.relativePositiion(1,1).onBoard() ) {//check to see if the diagonal is on the board//
+            if (    location.relativePositiion(1,1).onBoard()
+                    && (board.boardArray[location.getRow() - 1 + 1][location.getColumn() - 1 + 1] != null)
+                    && board.boardArray[location.getRow() - 1 + 1][location.getColumn() - 1 + 1].teamColor == ChessGame.TeamColor.BLACK) {//check to see if the diagonal is on the board//
                 if(location.getRow() + 1 == 8){
                     for(ChessPiece.PieceType p : ChessPiece.PieceType.values()){
                         if((p == ChessPiece.PieceType.QUEEN)
@@ -90,9 +89,9 @@ public class PawnMove implements PieceMove {
                 }
             };
                 //check left//
-            if (    (board.boardArray[location.getRow() - 1 + 1][location.getColumn() - 1 - 1] != null)
-                    && board.boardArray[location.getRow() - 1 + 1][location.getColumn() - 1 - 1].teamColor == ChessGame.TeamColor.BLACK
-                    && location.relativePositiion(1,-1).onBoard() ) {
+            if (    location.relativePositiion(1,-1).onBoard() &&
+                    (board.boardArray[location.getRow() - 1 + 1][location.getColumn() - 1 - 1] != null)
+                    && board.boardArray[location.getRow() - 1 + 1][location.getColumn() - 1 - 1].teamColor == ChessGame.TeamColor.BLACK) {
                 if(location.getRow() + 1 == 8){
                     for(ChessPiece.PieceType p : ChessPiece.PieceType.values()){
                         if((p == ChessPiece.PieceType.QUEEN)
@@ -126,8 +125,7 @@ public class PawnMove implements PieceMove {
 
         }else if (piece.teamColor == ChessGame.TeamColor.BLACK) {
             //looking to see if the first two spaces in front of pawn are AVAILABLE//
-            if (board.boardArray[location.getRow() - 1 - 1][location.getColumn() - 1] == null &&
-                    location.onBoard() ) {
+            if (location.onBoard()  && board.boardArray[location.getRow() - 1 - 1][location.getColumn() - 1] == null) {
                 if(location.getRow() - 1 == 1){
                     for(ChessPiece.PieceType p : ChessPiece.PieceType.values()){
                         if((p == ChessPiece.PieceType.QUEEN)
@@ -171,9 +169,9 @@ public class PawnMove implements PieceMove {
             }
             //now we've got to look at the diagonal squares to see if there's potential moves there//
             //check right//
-            if (    (board.boardArray[location.getRow() - 1 - 1][location.getColumn() - 1 + 1] != null)
-                    && board.boardArray[location.getRow() - 1 - 1][location.getColumn() - 1 + 1].teamColor == ChessGame.TeamColor.WHITE
-                    && location.relativePositiion(-1,1).onBoard() ) {//check to see if the diagonal is on the board//
+            if (    location.relativePositiion(-1,1).onBoard() &&
+                    (board.boardArray[location.getRow() - 1 - 1][location.getColumn() - 1 + 1] != null)
+                    && board.boardArray[location.getRow() - 1 - 1][location.getColumn() - 1 + 1].teamColor == ChessGame.TeamColor.WHITE) {//check to see if the diagonal is on the board//
                 if(location.getRow() - 1 == 1){
                     for(ChessPiece.PieceType p : ChessPiece.PieceType.values()){
                         if((p == ChessPiece.PieceType.QUEEN)
@@ -203,9 +201,9 @@ public class PawnMove implements PieceMove {
                 }
             };
             //check left//
-            if (    (board.boardArray[location.getRow() - 1 - 1][location.getColumn() - 1 - 1] != null)
-                    && board.boardArray[location.getRow() - 1 - 1][location.getColumn() - 1 - 1].teamColor == ChessGame.TeamColor.WHITE
-                    && location.relativePositiion(-1,-1).onBoard() ) {
+            if (    location.relativePositiion(-1,-1).onBoard() &&
+            (board.boardArray[location.getRow() - 1 - 1][location.getColumn() - 1 - 1] != null)
+                    && board.boardArray[location.getRow() - 1 - 1][location.getColumn() - 1 - 1].teamColor == ChessGame.TeamColor.WHITE) {
                 if(location.getRow() - 1 == 1){
                     for(ChessPiece.PieceType p : ChessPiece.PieceType.values()){
                         if((p == ChessPiece.PieceType.QUEEN)

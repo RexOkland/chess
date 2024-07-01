@@ -46,14 +46,10 @@ public class ChessBoard {
     }
 
     /**
-     * Sets the boa rd to the default starting board
+     * Sets the board to the default starting board
      * (How the game of chess normally starts)
      */
     public void resetBoard() { //initializes board too//
-
-        //throw new RuntimeException("Not implemented");
-        //attempting to implement 06/29/2024 @ 12:22pm//
-
         boardArray = new ChessPiece[8][8]; //fresh array//
 
         //WHITE TEAM://
@@ -61,7 +57,6 @@ public class ChessBoard {
         //BLACK TEAM://
         initializeBlack();
 
-        System.out.println("PIECES ARE SET");
     }
 
     public void printBoard() {
@@ -90,7 +85,7 @@ public class ChessBoard {
             case ROOK:
                 c = 'R'; break;
             case KNIGHT:
-                c = 'H'; break;
+                c = 'N'; break;
             case BISHOP:
                 c = 'B'; break;
             case QUEEN:
