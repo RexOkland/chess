@@ -70,11 +70,18 @@ public class ChessGame {
         ChessPiece piece = gameBoard.boardArray[from.getRow()-1][from.getColumn()-1];
 
         gameBoard.boardArray[from.getRow()-1][from.getColumn()-1] = null;
-        if(move.getPromotionPiece() != null){
-            piece.
-            gameBoard.addPiece(to, piece);
+        //TODO: should I be setting this point in the array equal to null? or just it's piece type//
+        //clearing where piece was on the array// point A //
 
+
+        if(move.getPromotionPiece() != null){
+            piece.promote(move.getPromotionPiece());
+            gameBoard.addPiece(to, piece);
         }
+        else{
+            gameBoard.addPiece(to, piece);
+        }
+        //adding in the piece in its new spot// point B //
     }
 
     /**
@@ -84,7 +91,30 @@ public class ChessGame {
      * @return True if the specified team is in check
      */
     public boolean isInCheck(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+        //so we've got to see if any of the opposing team's pieces have the King's position in their moves//
+        for(int i = 0; i < 8; ++i){ //CHECKING ALL 64 SPOTS//
+            for(int j = 0; j < 8; ++j){
+                if(gameBoard.boardArray[i][j] == null){
+                    //EMPTY SPOT ON BOARD - no moves to be found//
+                    continue;//do nothing//
+                }
+                else if(gameBoard.boardArray[i][j].getTeamColor() == teamColor){
+                    //IT'S OUR OWN TEAM - moves effecting the king don't matter//
+                    continue;//do nothing//
+                }
+                else {
+                    //OPPOSING PIECE//
+                    Collection<ChessMove> movesFromPoint = gameBoard.boardArray[i][j].pieceMoves(gameBoard, new ChessPosition(i+1, j+1));
+                    for(ChessMove m : movesFromPoint){
+                        if( (gameBoard.getPiece(m.getEndPosition()).pieceType == ChessPiece.PieceType.KING)
+                            && (gameBoard.getPiece(m.getEndPosition()).teamColor == teamColor) ){
+                            return true; //if these are both true, the piece has the potential to attack the king... osea check//
+                        }
+                    }
+                }
+            }
+        }
+        return false; //if we check the whole board and nobody can touch the king... it's not check.
     }
 
     /**
