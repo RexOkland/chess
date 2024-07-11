@@ -2,6 +2,10 @@ package chess;
 
 import java.util.Collection;
 import chess.*;
+
+import static chess.ChessGame.TeamColor.BLACK;
+import static chess.ChessGame.TeamColor.WHITE;
+
 /**
  * For a class that can manage a chess game, making moves on a board
  * <p>
@@ -15,7 +19,7 @@ public class ChessGame {
 
 
     public ChessGame() {
-        this.currentTurn = TeamColor.WHITE;
+        this.currentTurn = WHITE;
         gameBoard = new ChessBoard();
         gameBoard.resetBoard(); //when we create a chess game, we create a new board right?//
     }
@@ -63,25 +67,63 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
-        //okay we're going to move a piece from point A to point B//
-
-        ChessPosition from = move.getStartPosition();
-        ChessPosition to = move.getEndPosition();
+        if(gameBoard.getPiece(move.getStartPosition()) == null){
+            //there's no piece @ the start point//
+            throw new InvalidMoveException("there's no piece here lol");
+        };
+        if(gameBoard.getPiece(move.getStartPosition()).teamColor != getTeamTurn()){
+            throw new InvalidMoveException("not your turn");
+        }
+        ChessPosition from = move.getStartPosition(); //A//
+        ChessPosition to = move.getEndPosition(); //B//
+        //check to see if move is even allowed//
+        Collection<ChessMove> allowedMoves =
+                gameBoard.getPiece(new ChessPosition(from.getRow(), from.getColumn())).pieceMoves(gameBoard, move.getStartPosition());
+        boolean everythingOK = false;
+        for(ChessMove m : allowedMoves){
+            if(m.equals(move)){
+                everythingOK = true;
+                break;
+            }
+        }
+        if (!everythingOK) {
+            throw new InvalidMoveException("illegal move attempted");
+        }
+        //okay, it's allowed, we're going to move a piece from point A to point B//
         ChessPiece piece = gameBoard.boardArray[from.getRow()-1][from.getColumn()-1];
 
         gameBoard.boardArray[from.getRow()-1][from.getColumn()-1] = null;
         //TODO: should I be setting this point in the array equal to null? or just it's piece type//
         //clearing where piece was on the array// point A //
 
+        ChessPiece opp = gameBoard.boardArray[to.getRow()-1][to.getColumn()-1];//is there an opposing piece in the spot we're moving to?//
+        if(opp != null){
+            gameBoard.boardArray[to.getRow()-1][to.getColumn()-1] = null;
+            //TODO: should I be setting this point in the array equal to null? or just it's piece type//
+            //TODO: basically, what should I do to remove a piece?//
+        }
 
         if(move.getPromotionPiece() != null){
-            piece.promote(move.getPromotionPiece());
-            gameBoard.addPiece(to, piece);
+            piece.promote(move.getPromotionPiece());//change piece type / promote//
+            gameBoard.addPiece(to, piece);//put piece on spot//
         }
         else{
-            gameBoard.addPiece(to, piece);
+            gameBoard.addPiece(to, piece);//put piece on spot//
         }
         //adding in the piece in its new spot// point B //
+
+        //double-check that we're not in check still//
+        /*if(isInCheck(getTeamTurn())){
+            throw new InvalidMoveException("still in check");
+        }*/
+
+        //change turns//
+        if (this.currentTurn == WHITE) {
+            setTeamTurn(BLACK);
+        }
+        else{
+            setTeamTurn(WHITE);
+        }
     }
 
     /**
