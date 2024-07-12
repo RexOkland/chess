@@ -24,9 +24,9 @@ public class KingMove implements PieceMove{
         };
         if(row_index < 7){ //top three//
             for(int i = -1; i < 2; ++i){
-                if( (   location.relativePositiion(1,i).onBoard()
-                        && (board.boardArray[row_index + 1][col_index + i] == null)
-                        || (board.boardArray[row_index + 1][col_index + i].teamColor != piece.teamColor)) ){
+                if( location.relativePositiion(1,i).onBoard()
+                        && ( (board.boardArray[row_index + 1][col_index + i] == null)
+                        || (board.boardArray[row_index + 1][col_index + i].teamColor != piece.teamColor) ) ){
                     moves.add(new ChessMove(location, location.relativePositiion(1, i), null));
                 }
             }

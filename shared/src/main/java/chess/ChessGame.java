@@ -113,17 +113,11 @@ public class ChessGame {
         //adding in the piece in its new spot// point B //
 
         //double-check that we're not in check still//
-        /*if(isInCheck(getTeamTurn())){
-            throw new InvalidMoveException("still in check");
-        }*/
+        if(isInCheck(getTeamTurn())){throw new InvalidMoveException("still in check");}
 
         //change turns//
-        if (this.currentTurn == WHITE) {
-            setTeamTurn(BLACK);
-        }
-        else{
-            setTeamTurn(WHITE);
-        }
+        if (this.currentTurn == WHITE) {setTeamTurn(BLACK);}
+        else{setTeamTurn(WHITE);}
     }
 
     /**
@@ -132,25 +126,31 @@ public class ChessGame {
      * @param teamColor which team to check for check
      * @return True if the specified team is in check
      */
-    public boolean isInCheck(TeamColor teamColor) {
+    public boolean isInCheck(TeamColor teamColor)  {
         //so we've got to see if any of the opposing team's pieces have the King's position in their moves//
-        for(int i = 0; i < 8; ++i){ //CHECKING ALL 64 SPOTS//
-            for(int j = 0; j < 8; ++j){
-                if(gameBoard.boardArray[i][j] == null){
+        for(int i = 0; i < 8; i++){ //CHECKING ALL 64 SPOTS//
+            for(int j = 0; j < 8; j++){
+                if(gameBoard.getPiece(new ChessPosition(i+1, j+1)) == null){
                     //EMPTY SPOT ON BOARD - no moves to be found//
                     continue;//do nothing//
                 }
-                else if(gameBoard.boardArray[i][j].getTeamColor() == teamColor){
+                else if(gameBoard.getPiece(new ChessPosition(i+1, j+1)).getTeamColor() == teamColor){
                     //IT'S OUR OWN TEAM - moves effecting the king don't matter//
                     continue;//do nothing//
                 }
                 else {
                     //OPPOSING PIECE//
-                    Collection<ChessMove> movesFromPoint = gameBoard.boardArray[i][j].pieceMoves(gameBoard, new ChessPosition(i+1, j+1));
+                    Collection<ChessMove> movesFromPoint = gameBoard.getPiece(new ChessPosition(i+1, j+1)).pieceMoves(gameBoard, new ChessPosition(i+1, j+1));
                     for(ChessMove m : movesFromPoint){
-                        if( (gameBoard.getPiece(m.getEndPosition()).pieceType == ChessPiece.PieceType.KING)
-                            && (gameBoard.getPiece(m.getEndPosition()).teamColor == teamColor) ){
-                            return true; //if these are both true, the piece has the potential to attack the king... osea check//
+                        ChessPiece opposingPiece = gameBoard.getPiece(m.getEndPosition());
+                        /*if(!m.getEndPosition().onBoard()){
+                            throw new InvalidMoveException("going off the board?");
+                        }*/
+                        if(opposingPiece != null){
+                            if( (opposingPiece.getPieceType() == ChessPiece.PieceType.KING)
+                                    && (gameBoard.getPiece(m.getEndPosition()).teamColor == teamColor) ){
+                                return true; //if these are both true, the piece has the potential to attack the king... osea check//
+                            }
                         }
                     }
                 }

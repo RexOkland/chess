@@ -55,8 +55,10 @@ public class ChessPosition {
         else return (getRow() > 0);
     }
 
-    public ChessPosition relativePositiion(int r, int c){
-        return new ChessPosition((row + r), (col + c));
+    public ChessPosition relativePositiion(int r, int c) {
+        int newRow = row + r;
+        int newCol = col + c;
+        return new ChessPosition((newRow), (newCol));
     }
 
     @Override
