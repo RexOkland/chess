@@ -15,9 +15,9 @@ import static java.lang.Character.toLowerCase;
 public class ChessBoard {
     public ChessPiece[][] boardArray = new ChessPiece[8][8];
 
-    /*public ChessBoard() {
+    public ChessBoard() {
         boardArray = new ChessPiece[8][8];
-    }*/
+    }
 
     /**
      * Adds a chess piece to the chessboard

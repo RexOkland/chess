@@ -6,8 +6,7 @@ import java.util.HashSet;
 
 import chess.*;
 
-import static chess.ChessGame.TeamColor.BLACK;
-import static chess.ChessGame.TeamColor.WHITE;
+import static chess.ChessGame.TeamColor.*;
 
 /**
  * For a class that can manage a chess game, making moves on a board
@@ -25,6 +24,19 @@ public class ChessGame {
         this.currentTurn = WHITE;
         gameBoard = new ChessBoard();
         gameBoard.resetBoard(); //when we create a chess game, we create a new board right?//
+    }
+
+    public ChessGame(TeamColor color, ChessBoard board){
+        this.setTeamTurn(color);
+        //copies board onto this guy's gameBoard//
+        this.gameBoard = new ChessBoard();
+        for(int i = 0; i < 8; ++i){
+            for(int j = 0; j < 8; ++j){
+                ChessPosition spot = new ChessPosition(i+1, j+1);
+                this.gameBoard.addPiece(spot, board.getPiece(spot));
+            }
+        }
+
     }
 
     /**
@@ -60,55 +72,29 @@ public class ChessGame {
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
         ChessPiece piece = gameBoard.getPiece(startPosition);
-        return piece.pieceMoves(gameBoard, startPosition);
+        Collection<ChessMove> validMoves = new HashSet<>();
+        validMoves = movesNotInCheck(piece.teamColor, piece.pieceMoves(gameBoard, startPosition));
+        return validMoves;
     }
 
-//    public Collection<ChessMove> movesNotInCheck(Collection<ChessMove> givenMoves){
-//        //taking in a collection of moves that pass basic tests//
-//        Collection<ChessMove> allowedMoves = new HashSet<ChessMove>();
-//        for(ChessMove m : givenMoves){
-//            ChessBoard duplicateBoard = this.gameBoard;
+    public Collection<ChessMove> movesNotInCheck(TeamColor color,  Collection<ChessMove> givenMoves) {
+        //taking in a collection of moves that pass basic tests//
+        Collection<ChessMove> allowedMoves = new HashSet<ChessMove>();
+        //making a new collection of moves that will get us OUT of check//
+        for(ChessMove m : givenMoves){
+            ChessGame duplicateGame = new ChessGame(color, this.getBoard());
+            //ChessBoard duplicateBoard = this.gameBoard;
 //            ChessPosition from = m.getStartPosition();
 //            ChessPosition to = m.getEndPosition();
-//            //recreate the actual board to simulate each move//
-//
-//            //make the move//
-//            ChessPiece piece = duplicateBoard.boardArray[from.getRow()-1][from.getColumn()-1]; //piece at A//
-//            duplicateBoard.boardArray[from.getRow()-1][from.getColumn()-1] = null; //lift up piece A//
-//            boolean wasAPiece = false;
-//            ChessPiece opp = null;
-//            if(duplicateBoard.boardArray[to.getRow()-1][to.getColumn()-1] != null){
-//                wasAPiece = true;
-//                opp = duplicateBoard.boardArray[to.getRow()-1][to.getColumn()-1];//piece potentially at B//
-//                duplicateBoard.boardArray[to.getRow()-1][to.getColumn()-1] = null; //remove piece at B if it exists//
-//            }
-//
-//            if(m.getPromotionPiece() != null){
-//                piece.promote(m.getPromotionPiece());//change piece type / promote//
-//                duplicateBoard.addPiece(to, piece);//put piece on spot//
-//            }
-//            else{
-//                duplicateBoard.addPiece(to, piece);//put piece on spot//
-//            }
-//            //make the move//
-//
-//            if(isInCheck(piece.teamColor)){ //if this move leaves you OUT of check, add it to the allowed list//
-//                allowedMoves.add(m);
-//            }
-//
-//            //un-make the move//
-//            duplicateBoard.addPiece(from, piece);
-//            if(wasAPiece){
-//                duplicateBoard.boardArray[to.getRow()-1][to.getColumn()-1] = null;
-//                duplicateBoard.addPiece(to, opp);
-//            }
-//            //un-make the move//
-//
-//
-//
-//        }
-//        return allowedMoves;
-//    }
+
+            duplicateGame.uncheckedMakeMove(m, duplicateGame.getBoard());
+            boolean check = isInCheck_custom(color, duplicateGame.getBoard());
+            if(!check){
+                allowedMoves.add(m);
+            }
+        }
+        return allowedMoves;
+    }
 
     /**
      * Makes a move in a chess game
@@ -139,6 +125,8 @@ public class ChessGame {
         if (!everythingOK) {
             throw new InvalidMoveException("illegal move attempted");
         }
+
+
         //okay, it's allowed, we're going to move a piece from point A to point B//
         ChessPiece piece = gameBoard.boardArray[from.getRow()-1][from.getColumn()-1];
 
@@ -170,6 +158,44 @@ public class ChessGame {
         else{setTeamTurn(WHITE);}
     }
 
+    public void uncheckedMakeMove(ChessMove move, ChessBoard customBoard) {
+        ChessPosition from = move.getStartPosition(); //A//
+        ChessPosition to = move.getEndPosition(); //B//
+        //check to see if move is even allowed//
+        Collection<ChessMove> allowedMoves =
+                customBoard.getPiece(new ChessPosition(from.getRow(), from.getColumn())).pieceMoves(customBoard, move.getStartPosition());
+        boolean everythingOK = false;
+        for(ChessMove m : allowedMoves){
+            if(m.equals(move)){
+                everythingOK = true;
+                break;
+            }
+        }
+        //okay, it's allowed, we're going to move a piece from point A to point B//
+        ChessPiece piece = customBoard.boardArray[from.getRow()-1][from.getColumn()-1];
+
+        customBoard.boardArray[from.getRow()-1][from.getColumn()-1] = null;
+        //TODO: should I be setting this point in the array equal to null? or just it's piece type//
+        //clearing where piece was on the array// point A //
+
+        ChessPiece opp = customBoard.boardArray[to.getRow()-1][to.getColumn()-1];//is there an opposing piece in the spot we're moving to?//
+        if(opp != null){
+            customBoard.boardArray[to.getRow()-1][to.getColumn()-1] = null;
+            //TODO: should I be setting this point in the array equal to null? or just it's piece type//
+            //TODO: basically, what should I do to remove a piece?//
+        }
+
+        if(move.getPromotionPiece() != null){
+            piece.promote(move.getPromotionPiece());//change piece type / promote//
+            customBoard.addPiece(to, piece);//put piece on spot//
+        }
+        else{
+            customBoard.addPiece(to, piece);//put piece on spot//
+        }
+        //adding in the piece in its new spot// point B //
+
+    }
+
     /**
      * Determines if the given team is in check
      *
@@ -199,6 +225,39 @@ public class ChessGame {
                         if(opposingPiece != null){
                             if( (opposingPiece.getPieceType() == ChessPiece.PieceType.KING)
                                     && (gameBoard.getPiece(m.getEndPosition()).teamColor == teamColor) ){
+                                return true; //if these are both true, the piece has the potential to attack the king... osea check//
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return false; //if we check the whole board and nobody can touch the king... it's not check.
+    }
+
+    public boolean isInCheck_custom(TeamColor teamColor, ChessBoard customBoard)  {
+        //so we've got to see if any of the opposing team's pieces have the King's position in their moves//
+        for(int i = 0; i < 8; i++){ //CHECKING ALL 64 SPOTS//
+            for(int j = 0; j < 8; j++){
+                if(customBoard.getPiece(new ChessPosition(i+1, j+1)) == null){
+                    //EMPTY SPOT ON BOARD - no moves to be found//
+                    continue;//do nothing//
+                }
+                else if(customBoard.getPiece(new ChessPosition(i+1, j+1)).getTeamColor() == teamColor){
+                    //IT'S OUR OWN TEAM - moves effecting the king don't matter//
+                    continue;//do nothing//
+                }
+                else {
+                    //OPPOSING PIECE//
+                    Collection<ChessMove> movesFromPoint = customBoard.getPiece(new ChessPosition(i+1, j+1)).pieceMoves(customBoard, new ChessPosition(i+1, j+1));
+                    for(ChessMove m : movesFromPoint){
+                        ChessPiece opposingPiece = customBoard.getPiece(m.getEndPosition());
+                        /*if(!m.getEndPosition().onBoard()){
+                            throw new InvalidMoveException("going off the board?");
+                        }*/
+                        if(opposingPiece != null){
+                            if( (opposingPiece.getPieceType() == ChessPiece.PieceType.KING)
+                                    && (customBoard.getPiece(m.getEndPosition()).teamColor == teamColor) ){
                                 return true; //if these are both true, the piece has the potential to attack the king... osea check//
                             }
                         }
