@@ -4,8 +4,6 @@ import java.nio.file.AtomicMoveNotSupportedException;
 import java.util.Collection;
 import java.util.HashSet;
 
-import chess.*;
-
 import static chess.ChessGame.TeamColor.*;
 
 /**
