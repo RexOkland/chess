@@ -312,7 +312,30 @@ public class ChessGame {
      * @return True if the specified team is in stalemate, otherwise false
      */
     public boolean isInStalemate(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+        if(isInCheck(teamColor)){
+            return false; //can't be in check while having a stalemate//
+        }
+        else{
+            Collection<ChessMove> avoidCheckmateMoves = new HashSet<ChessMove>();
+            for (int i = 0; i < 8; ++i) {
+                for (int j = 0; j < 8; ++j) {
+                    if (gameBoard.getPiece(new ChessPosition(i + 1, j + 1)) == null) {
+                        //EMPTY SPOT ON BOARD - no moves to be found//
+                        continue;//do nothing//
+                    } else if (gameBoard.getPiece(new ChessPosition(i + 1, j + 1)).getTeamColor() != teamColor) {
+                        //IT'S NOT OUR TEAM - we can't move these guys//
+                        continue;//do nothing//
+                    } else {
+                        //OPPOSING PIECE//
+                        Collection<ChessMove> pieceMoves = validMoves(new ChessPosition(i + 1, j + 1));
+                        //valid moves for THAT piece//
+                        avoidCheckmateMoves.addAll(pieceMoves);
+                    }
+                }
+            }
+            //if it's empty, there aren't any moves to be made//
+            return avoidCheckmateMoves.isEmpty();
+        }
     }
 
     /**
