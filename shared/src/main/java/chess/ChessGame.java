@@ -1,6 +1,9 @@
 package chess;
 
+import java.nio.file.AtomicMoveNotSupportedException;
 import java.util.Collection;
+import java.util.HashSet;
+
 import chess.*;
 
 import static chess.ChessGame.TeamColor.BLACK;
@@ -57,8 +60,55 @@ public class ChessGame {
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
         ChessPiece piece = gameBoard.getPiece(startPosition);
-        return piece.pieceMoves(gameBoard,startPosition); //return moves for the piece found @ startPosition//
+        return piece.pieceMoves(gameBoard, startPosition);
     }
+
+//    public Collection<ChessMove> movesNotInCheck(Collection<ChessMove> givenMoves){
+//        //taking in a collection of moves that pass basic tests//
+//        Collection<ChessMove> allowedMoves = new HashSet<ChessMove>();
+//        for(ChessMove m : givenMoves){
+//            ChessBoard duplicateBoard = this.gameBoard;
+//            ChessPosition from = m.getStartPosition();
+//            ChessPosition to = m.getEndPosition();
+//            //recreate the actual board to simulate each move//
+//
+//            //make the move//
+//            ChessPiece piece = duplicateBoard.boardArray[from.getRow()-1][from.getColumn()-1]; //piece at A//
+//            duplicateBoard.boardArray[from.getRow()-1][from.getColumn()-1] = null; //lift up piece A//
+//            boolean wasAPiece = false;
+//            ChessPiece opp = null;
+//            if(duplicateBoard.boardArray[to.getRow()-1][to.getColumn()-1] != null){
+//                wasAPiece = true;
+//                opp = duplicateBoard.boardArray[to.getRow()-1][to.getColumn()-1];//piece potentially at B//
+//                duplicateBoard.boardArray[to.getRow()-1][to.getColumn()-1] = null; //remove piece at B if it exists//
+//            }
+//
+//            if(m.getPromotionPiece() != null){
+//                piece.promote(m.getPromotionPiece());//change piece type / promote//
+//                duplicateBoard.addPiece(to, piece);//put piece on spot//
+//            }
+//            else{
+//                duplicateBoard.addPiece(to, piece);//put piece on spot//
+//            }
+//            //make the move//
+//
+//            if(isInCheck(piece.teamColor)){ //if this move leaves you OUT of check, add it to the allowed list//
+//                allowedMoves.add(m);
+//            }
+//
+//            //un-make the move//
+//            duplicateBoard.addPiece(from, piece);
+//            if(wasAPiece){
+//                duplicateBoard.boardArray[to.getRow()-1][to.getColumn()-1] = null;
+//                duplicateBoard.addPiece(to, opp);
+//            }
+//            //un-make the move//
+//
+//
+//
+//        }
+//        return allowedMoves;
+//    }
 
     /**
      * Makes a move in a chess game
