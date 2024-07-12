@@ -83,9 +83,6 @@ public class ChessGame {
         //making a new collection of moves that will get us OUT of check//
         for(ChessMove m : givenMoves){
             ChessGame duplicateGame = new ChessGame(color, this.getBoard());
-            //ChessBoard duplicateBoard = this.gameBoard;
-//            ChessPosition from = m.getStartPosition();
-//            ChessPosition to = m.getEndPosition();
 
             duplicateGame.uncheckedMakeMove(m, duplicateGame.getBoard());
             boolean check = isInCheck_custom(color, duplicateGame.getBoard());
@@ -131,14 +128,11 @@ public class ChessGame {
         ChessPiece piece = gameBoard.boardArray[from.getRow()-1][from.getColumn()-1];
 
         gameBoard.boardArray[from.getRow()-1][from.getColumn()-1] = null;
-        //TODO: should I be setting this point in the array equal to null? or just it's piece type//
         //clearing where piece was on the array// point A //
 
         ChessPiece opp = gameBoard.boardArray[to.getRow()-1][to.getColumn()-1];//is there an opposing piece in the spot we're moving to?//
         if(opp != null){
             gameBoard.boardArray[to.getRow()-1][to.getColumn()-1] = null;
-            //TODO: should I be setting this point in the array equal to null? or just it's piece type//
-            //TODO: basically, what should I do to remove a piece?//
         }
 
         if(move.getPromotionPiece() != null){
@@ -175,14 +169,11 @@ public class ChessGame {
         ChessPiece piece = customBoard.boardArray[from.getRow()-1][from.getColumn()-1];
 
         customBoard.boardArray[from.getRow()-1][from.getColumn()-1] = null;
-        //TODO: should I be setting this point in the array equal to null? or just it's piece type//
         //clearing where piece was on the array// point A //
 
         ChessPiece opp = customBoard.boardArray[to.getRow()-1][to.getColumn()-1];//is there an opposing piece in the spot we're moving to?//
         if(opp != null){
             customBoard.boardArray[to.getRow()-1][to.getColumn()-1] = null;
-            //TODO: should I be setting this point in the array equal to null? or just it's piece type//
-            //TODO: basically, what should I do to remove a piece?//
         }
 
         if(move.getPromotionPiece() != null){
@@ -219,9 +210,6 @@ public class ChessGame {
                     Collection<ChessMove> movesFromPoint = gameBoard.getPiece(new ChessPosition(i+1, j+1)).pieceMoves(gameBoard, new ChessPosition(i+1, j+1));
                     for(ChessMove m : movesFromPoint){
                         ChessPiece opposingPiece = gameBoard.getPiece(m.getEndPosition());
-                        /*if(!m.getEndPosition().onBoard()){
-                            throw new InvalidMoveException("going off the board?");
-                        }*/
                         if(opposingPiece != null){
                             if( (opposingPiece.getPieceType() == ChessPiece.PieceType.KING)
                                     && (gameBoard.getPiece(m.getEndPosition()).teamColor == teamColor) ){
@@ -252,9 +240,6 @@ public class ChessGame {
                     Collection<ChessMove> movesFromPoint = customBoard.getPiece(new ChessPosition(i+1, j+1)).pieceMoves(customBoard, new ChessPosition(i+1, j+1));
                     for(ChessMove m : movesFromPoint){
                         ChessPiece opposingPiece = customBoard.getPiece(m.getEndPosition());
-                        /*if(!m.getEndPosition().onBoard()){
-                            throw new InvalidMoveException("going off the board?");
-                        }*/
                         if(opposingPiece != null){
                             if( (opposingPiece.getPieceType() == ChessPiece.PieceType.KING)
                                     && (customBoard.getPiece(m.getEndPosition()).teamColor == teamColor) ){
