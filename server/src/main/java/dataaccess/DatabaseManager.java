@@ -1,25 +1,26 @@
 package dataaccess;
 
-import javax.xml.crypto.Data;
+import dataaccess.authdao.*;
+import dataaccess.gamesdao.*;
+import dataaccess.userdao.*;
 
 public class DatabaseManager {
     //we've got an object here to access each of the db tables//
-    DataAccess AuthDAO;
-    DataAccess GamesDAO;
-    DataAccess UserDAO;
+    AuthDao AuthDAO;
+    GamesDao GamesDAO;
+    UserDao UserDAO;
 
-    //pet shop//
-//    private static String databaseName;
-//    private static String user;
-//    private static String password;
-//    private static String connectionUrl;
-//
-//    public DatabaseManager(String dbName, String user, String password, String url) {
-//        this.databaseName = dbName;
-//        this.user = user;
-//        this.password = password;
-//        this.connectionUrl = url;
-//    }
+    public AuthDao AuthDAO(){
+        return this.AuthDAO;
+    }
+
+    public GamesDao GamesDAO(){
+        return this.GamesDAO;
+    }
+
+    public UserDao UserDAO(){
+        return this.UserDAO;
+    }
 
 
 }
