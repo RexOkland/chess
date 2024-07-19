@@ -1,33 +1,21 @@
 package server.services;
 
+import dataaccess.DatabaseHolder;
 import dataaccess.authdao.*;
 import dataaccess.userdao.*;
 import models.AuthData;
 import models.UserData;
+import responses.RegisterResponse;
 
 import java.util.Collection;
 
 public class RegisterService {
     //business logic function I think//
 
-    private void createUser(UserData userData, UserDao dao){
-        dao.addItem(userData);
-    };
+    public RegisterResponse register(UserData userData, DatabaseHolder db){
 
-    private void createAuth(AuthData authData, AuthDao dao){
-        dao.addItem(authData);
+        RegisterResponse returnResponse = null;
+        return returnResponse;
     }
-
-    private UserData getUser(String userName, UserDao dao){ //for looking to see if User exists
-        for(UserData u : dao.returnItems()){
-            if(u.getUserName() == userName){
-                //user with this username exists//
-                return u;
-            }
-        }
-        //none of the users in the dao have this name//
-        return null;
-    };
-
 
 }

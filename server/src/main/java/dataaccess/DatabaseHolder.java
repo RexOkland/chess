@@ -4,7 +4,7 @@ import dataaccess.authdao.*;
 import dataaccess.gamesdao.*;
 import dataaccess.userdao.*;
 
-public class DatabaseManager {
+public class DatabaseHolder {
     //we've got an object here to access each of the db tables//
     AuthDao AuthDAO;
     GamesDao GamesDAO;
