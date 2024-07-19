@@ -22,4 +22,8 @@ public class GamesDao implements GamesDaoInterface{
         this.dataItems.add(new GameData(0,"w","b","RexsGame",new ChessGame()));
     }
 
+    public Collection<GameData> getAllGames(){
+        return this.dataItems;
+    }
+
 }

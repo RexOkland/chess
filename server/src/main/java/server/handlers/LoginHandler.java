@@ -39,7 +39,6 @@ public class LoginHandler implements Route {
                 response.status(500);
             }
 
-
             return gson.toJson(loginResponse);
         }
     }
