@@ -32,7 +32,7 @@ public class LogoutHandler implements Route {
         }
         else{
             Gson gson = new Gson();
-            AuthData givenData = gson.fromJson(request.headers("authorization"),AuthData.class);
+            String givenData = request.headers("authorization");
             LogoutResponse loginResponse = service.logout(givenData, holder);
             if(loginResponse.message() == null){
                 response.status(200); //sets status to 200//

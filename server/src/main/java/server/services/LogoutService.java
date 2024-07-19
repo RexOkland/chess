@@ -13,22 +13,21 @@ import java.util.UUID;
 
 public class LogoutService {
 
-    public LogoutResponse logout(AuthData authData, DatabaseHolder db){
+    public LogoutResponse logout(String authString, DatabaseHolder db){
 
         //response data//
         String responseMessage = null;
 
         AuthDao authDao = db.AuthDAO();
-        for(AuthData a : authDao.returnItems()){
-            //enters this 'if' statement if we find a matching authentication token//
-            if(Objects.equals(authData.authToken(), a.authToken())){
-                authDao.removeItem(a);
-                return new LogoutResponse(responseMessage);
-            }
+        AuthData foundData = authDao.findAuth(authString);
+        if(foundData == null){
+            responseMessage = "error: unauthorized";
+            return new LogoutResponse(responseMessage);
         }
-        //given token was not found... attempting to log out someone who's not logged in//
-        responseMessage = "error: unauthorized";
-        return new LogoutResponse(responseMessage);
+        else{
+            authDao.removeItem(foundData);
+            return new LogoutResponse(responseMessage);
+        }
     }
 
 }

@@ -6,6 +6,7 @@ import models.UserData;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.UUID;
+import java.util.function.Predicate;
 
 public class AuthDao implements AuthDaoInterface {
 
@@ -34,6 +35,16 @@ public class AuthDao implements AuthDaoInterface {
 
     public void removeItem(AuthData item){
         dataItems.remove(item);
+    }
+
+    public AuthData findAuth(String token){
+        //return this.dataItems.stream().filter(authData -> authData.authToken().equals(token)).findAny().orElse(null);
+        for(AuthData a : this.dataItems){
+            if(a.authToken().equals(token)){
+                return a;
+            }
+        }
+        return null;
     }
 
 

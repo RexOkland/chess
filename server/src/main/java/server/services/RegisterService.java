@@ -26,33 +26,35 @@ public class RegisterService {
         if( (Objects.equals(userData.username(), "")) || (Objects.equals(userData.password(), ""))){
             //neither can be left empty... that's a bad request to me//
             responseMessage = "error: bad request";
-            return new RegisterResponse(responseUser, responseAuth, responseMessage);
         }
+        if( (userData.username() == null) || (userData.password() == null) ){
+            //neither can be left empty... that's a bad request to me//
+            responseMessage = "error: bad request";
+        }
+
+        //userData is NOT blank or null//
         else{
-            if(!userDao.returnItems().isEmpty()){
-                //we're not checking this if there aren't any users yet//
-                for(UserData u : userDao.returnItems()){
-                    if(Objects.equals(u.username(), userData.username())){ //RESPONSE DATA//
 
-                        responseMessage = "error: username taken";
-                        return new RegisterResponse(responseUser, responseAuth, responseMessage);
-                    }
-                }
+            UserData foundData = userDao.searchUser(userData.username());
+            if(foundData == null){
+                //username not found in system//
+                //all logic tests passed @ this point//
+                responseUser = userData.username(); //RESPONSE DATA//
+                responseAuth = UUID.randomUUID().toString(); //RESPONSE DATA//
+
+                AuthDao authDao = db.AuthDAO();
+                authDao.addItem( new AuthData(responseAuth, responseUser) );
+                //auth data added//
+                userDao.addItem(userData);
+                //user data added/
             }
+            else{
+                responseMessage = "error: username taken";
+            }
+
         }
-
-        //all logic tests passed @ this point//
-        responseUser = userData.username(); //RESPONSE DATA//
-        responseAuth = UUID.randomUUID().toString(); //RESPONSE DATA//
-
-
-        AuthDao authDao = db.AuthDAO();
-        authDao.addItem( new AuthData(responseAuth, responseUser) );
-        //auth data added//
-        userDao.addItem(userData);
-        //user data added/
-
         return new RegisterResponse(responseUser, responseAuth, responseMessage);
+
     }
 
 }

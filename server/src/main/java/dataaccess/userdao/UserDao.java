@@ -28,7 +28,11 @@ public class UserDao implements UserDaoInterface{
     }
 
     public UserData searchUser(String user){
-        //TODO: ...
+        for(UserData u : dataItems){
+            if(u.username().equals(user)){
+                return u;
+            }
+        }
         return null;
     }
 

@@ -22,30 +22,27 @@ public class LoginService {
 
         UserDao userDao = db.UserDAO();
         if( (Objects.equals(userData.username(), "")) || (Objects.equals(userData.password(), ""))){
-            //neither can be left empty... that's a bad request to me//
             responseMessage = "error: unauthorized";
             return new LoginResponse(responseUser, responseAuth, responseMessage);
         }
-        else{
-            for(UserData u : userDao.returnItems()){
-                //enters this 'if' statement if we find the user//
-                if(Objects.equals(u.username(), userData.username())){ //RESPONSE DATA//
-                    //found the user//
-                    if(u.password().equals(userData.password())){
-                        //password matches too... they're in//
-                        responseAuth = UUID.randomUUID().toString();
-                        responseUser = u.username();
-                        db.AuthDAO().addItem( new AuthData(responseAuth, responseUser) );
-                    }
-                    else{
-                        //password does NOT match//
-                        responseMessage = "error: unauthorized";
-                    }
-                    return new LoginResponse(responseUser, responseAuth, responseMessage);
-                }
-            }
-            //given username was not found... bad request right?//
+        if( (userData.username() == null) || (userData.password() == null)){
             responseMessage = "error: unauthorized";
+            return new LoginResponse(responseUser, responseAuth, responseMessage);
+        }
+
+        //userData is NOT blank/null//
+        else{
+
+            UserData foundData = userDao.searchUser(userData.username());
+            if((foundData == null) || (!Objects.equals(foundData.password(), userData.password()))){
+                responseMessage = "error: unauthorized";
+                return new LoginResponse(responseUser, responseAuth, responseMessage);
+            }
+            else{ //they DO match up//
+                responseAuth = UUID.randomUUID().toString();
+                responseUser = foundData.username();
+                db.AuthDAO().addItem( new AuthData(responseAuth, responseUser) );
+            }
             return new LoginResponse(responseUser, responseAuth, responseMessage);
         }
     }
