@@ -28,8 +28,19 @@ public class RegisterHandler implements Route {
             Gson gson = new Gson();
             UserData givenData = gson.fromJson(request.body(), UserData.class);
             RegisterResponse registerResponse = service.register(givenData, holder);
-            //if(){}
-            response.status(200); //sets status to 200//
+            if(registerResponse.message() == null){
+                response.status(200); //sets status to 200//
+            }
+            else if(registerResponse.message() == "error: bad request"){
+                response.status(400);
+            }
+            else if(registerResponse.message() == "error: username taken"){
+                response.status(403);
+            }
+            else{
+                response.status(500); //who knows tf is going on here//
+            }
+
 
             return gson.toJson(registerResponse);
         }

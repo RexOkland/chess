@@ -10,6 +10,12 @@ public class DatabaseHolder {
     GamesDao GamesDAO;
     UserDao UserDAO;
 
+    public DatabaseHolder(){ //initialize the database//
+        this.AuthDAO = new AuthDao();
+        this.GamesDAO = new GamesDao();
+        this.UserDAO = new UserDao();
+    }
+
     public AuthDao AuthDAO(){
         return this.AuthDAO;
     }

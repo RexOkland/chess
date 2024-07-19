@@ -1,4 +1,3 @@
 package responses;
 
-public class RegisterResponse {
-}
+public record RegisterResponse (String username, String authToken, String message){};
