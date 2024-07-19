@@ -2,21 +2,26 @@ package server.handlers;
 
 import com.google.gson.Gson;
 import dataaccess.DatabaseHolder;
-import models.*;
+import models.AuthData;
+import models.UserData;
 import responses.LoginResponse;
-import server.services.*;
+import responses.LogoutResponse;
+import server.services.LoginService;
+import server.services.LogoutService;
 import spark.Request;
 import spark.Response;
 import spark.Route;
 
-public class LoginHandler implements Route {
-    LoginService service;
+import java.io.Reader;
+
+public class LogoutHandler implements Route {
+    LogoutService service;
     DatabaseHolder holder;
 
 
 
-    public LoginHandler(DatabaseHolder databaseHolder){
-        this.service = new LoginService();
+    public LogoutHandler(DatabaseHolder databaseHolder){
+        this.service = new LogoutService();
         this.holder = databaseHolder;
     }
 
@@ -27,8 +32,8 @@ public class LoginHandler implements Route {
         }
         else{
             Gson gson = new Gson();
-            UserData givenData = gson.fromJson(request.body(), UserData.class);
-            LoginResponse loginResponse = service.login(givenData, holder);
+            AuthData givenData = gson.fromJson(request.headers("authorization"),AuthData.class);
+            LogoutResponse loginResponse = service.logout(givenData, holder);
             if(loginResponse.message() == null){
                 response.status(200); //sets status to 200//
             }

@@ -31,21 +31,18 @@ public class RegisterHandler implements Route {
             if(registerResponse.message() == null){
                 response.status(200); //sets status to 200//
             }
-            else if(registerResponse.message() == "error: bad request"){
+            else if(registerResponse.message().equals("error: bad request")){
                 response.status(400);
             }
-            else if(registerResponse.message() == "error: username taken"){
+            else if(registerResponse.message().equals("error: username taken")){
                 response.status(403);
             }
             else{
-                response.status(500); //who knows tf is going on here//
+                response.status(500);
             }
-
 
             return gson.toJson(registerResponse);
         }
-        //TODO: code//
-        //return null;
     }
 
 
