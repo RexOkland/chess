@@ -146,7 +146,7 @@ public class CustomTests {
     }
     @Test
     @Order(8)
-    @DisplayName("Bad Logout Request")
+    @DisplayName("Bad List Games Request")
     public void ListGamesWithoutAuthentication(){
         TestResult listGamesResult = serverFacade.listGames("someRandomString");
         Assertions.assertNotNull(listGamesResult.getMessage()); //should be some sort of error message//
@@ -168,7 +168,7 @@ public class CustomTests {
     }
     @Test
     @Order(10)
-    @DisplayName("Bad Logout Request")
+    @DisplayName("Bad Create Game Request")
     public void BadCreateGame(){
         TestUser existingUserA = new TestUser("existingUser", "pw", "qwertyuiop@gmail.com");
         TestAuthResult registerResultA = serverFacade.register(existingUserA);
@@ -200,7 +200,7 @@ public class CustomTests {
     }
     @Test
     @Order(12)
-    @DisplayName("Bad Logout Request - Color Already Taken")
+    @DisplayName("Bad Join Game Request - Color Already Taken")
     public void ColorAlreadyTaken(){
         TestUser existingUserA = new TestUser("existingUser", "pw", "qwertyuiop@gmail.com");
         TestAuthResult registerResultA = serverFacade.register(existingUserA);
