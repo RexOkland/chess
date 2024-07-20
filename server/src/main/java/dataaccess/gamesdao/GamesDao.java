@@ -53,4 +53,8 @@ public class GamesDao implements GamesDaoInterface{
         addGame(game);
     }
 
+    public void clearDAO(){
+        this.dataItems.clear();
+    }
+
 }

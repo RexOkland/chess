@@ -36,4 +36,8 @@ public class UserDao implements UserDaoInterface{
         return null;
     }
 
+    public void clearDAO(){
+        this.dataItems.clear();
+    }
+
 }

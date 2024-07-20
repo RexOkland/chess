@@ -47,5 +47,9 @@ public class AuthDao implements AuthDaoInterface {
         return null;
     }
 
+    public void clearDAO(){
+        this.dataItems.clear();
+    }
+
 
 }
