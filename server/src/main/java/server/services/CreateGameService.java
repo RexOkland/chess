@@ -14,7 +14,7 @@ public class CreateGameService {
 
     public CreateGameResponse createGame(String authString, String gameName, DatabaseHolder db){
         //response data//
-        int responseGameID = -1; //not good//
+        Integer responseGameID = null; //not good//
         String responseMessage = null;
 
         AuthDao authDao = db.AuthDAO();
@@ -28,7 +28,7 @@ public class CreateGameService {
             GameData foundGame = gamesDao.findGame(gameName);
             if(foundGame == null){
                 //no existing game with that name - all good!
-                responseGameID = UUID.randomUUID().hashCode(); //hope this gives us what we want>//
+                responseGameID = Math.abs(UUID.randomUUID().hashCode()); //hope this gives us what we want>//
                 gamesDao.addGame(new GameData(responseGameID, null, null, gameName, new ChessGame()));
 
             }

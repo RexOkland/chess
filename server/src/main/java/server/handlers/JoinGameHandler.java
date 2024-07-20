@@ -29,9 +29,9 @@ public class JoinGameHandler implements Route {
             Gson gson = new Gson();
             JoinGameRequest givenGameData = gson.fromJson(request.body(), JoinGameRequest.class);
             String chosenColor = givenGameData.playerColor();
-            int gameID = givenGameData.gameID();
+            Integer gameID = givenGameData.gameID();
             String givenAuthData = request.headers("authorization");
-            JoinGameResponse joinResponse = service.joinGame(givenAuthData, chosenColor, givenGameData.gameID(), holder);
+            JoinGameResponse joinResponse = service.joinGame(givenAuthData, chosenColor, gameID, holder);
             if (joinResponse.message() == null) {
                 response.status(200); //sets status to 200//
             } else if (joinResponse.message().equals("error: bad request")) {
@@ -43,7 +43,8 @@ public class JoinGameHandler implements Route {
             } else {
                 response.status(500);
             }
-            return gson.toJson(joinResponse);
+            String returnJson = gson.toJson(joinResponse);
+            return returnJson;
         }
     }
 }

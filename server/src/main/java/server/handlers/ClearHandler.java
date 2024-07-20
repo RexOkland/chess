@@ -26,6 +26,6 @@ public class ClearHandler implements Route {
             response.status(500);
         }
 
-        return null;
+        return "{}";
     }
 }
