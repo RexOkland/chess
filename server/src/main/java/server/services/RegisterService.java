@@ -26,6 +26,7 @@ public class RegisterService {
         if( (Objects.equals(userData.username(), "")) || (Objects.equals(userData.password(), ""))){
             //neither can be left empty... that's a bad request to me//
             responseMessage = "error: bad request";
+            return new RegisterResponse(responseUser, responseAuth, responseMessage);
         }
         if( (userData.username() == null) || (userData.password() == null) ){
             //neither can be left empty... that's a bad request to me//
