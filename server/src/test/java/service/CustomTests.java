@@ -69,7 +69,7 @@ public class CustomTests {
 
     @Test
     @Order(2)
-    @DisplayName("Bad Login Request")
+    @DisplayName("Good Login Request")
     public void usernameTaken(){
         TestUser existingUserA = new TestUser("TakenUser", "pw", "qwertyuiop@gmail.com");
         TestAuthResult loginResultA = serverFacade.login(existingUserA);
