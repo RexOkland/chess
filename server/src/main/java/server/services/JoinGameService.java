@@ -34,7 +34,7 @@ public class JoinGameService {
             else{
                 if(Objects.equals(team, "WHITE")){
                     //user wants to join as white//
-                    if(foundGame.white() != null){
+                    if(foundGame.whiteUsername() != null){
                         responseMessage = "error: already taken";
                     }
                     else{
@@ -43,7 +43,7 @@ public class JoinGameService {
 
                 }else if(Objects.equals(team, "BLACK")) {
                     //user wants to join as black//
-                    if(foundGame.black() != null){
+                    if(foundGame.blackUsername() != null){
                         responseMessage = "error: already taken";
                     }
                     else{

@@ -3,5 +3,6 @@ package responses;
 import models.GameData;
 
 import java.util.Collection;
+import java.util.HashSet;
 
-public record ListGamesResponse (Collection<GameData> games, String message){}
+public record ListGamesResponse (HashSet<GameData> games, String message){}

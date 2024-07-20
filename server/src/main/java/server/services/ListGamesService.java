@@ -8,11 +8,12 @@ import models.GameData;
 import responses.ListGamesResponse;
 
 import java.util.Collection;
+import java.util.HashSet;
 
 public class ListGamesService {
 
     public ListGamesResponse getGames(String authString, DatabaseHolder db){
-        Collection<GameData> responseCollection= null;
+        HashSet<GameData> responseCollection= null;
         String responseString = null;
 
         AuthDao authDao = db.AuthDAO();

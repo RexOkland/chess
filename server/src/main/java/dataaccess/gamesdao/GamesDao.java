@@ -10,24 +10,24 @@ import java.util.Collection;
 import java.util.HashSet;
 
 public class GamesDao implements GamesDaoInterface{
-    private Collection<GameData> dataItems;
+    private HashSet<GameData> dataItems;
 
     //CONSTRUCTORS//
     public GamesDao(){
         this.dataItems = new HashSet<GameData>();
         //adding myself into every database//
-        this.dataItems.add(new GameData(0,"w","b","RexsGame",new ChessGame()));
+        //this.dataItems.add(new GameData(0,"w","b","RexsGame",new ChessGame()));
     }
-    public GamesDao(Collection<GameData> collection){
+    public GamesDao(HashSet<GameData> collection){
         this.dataItems = collection;
         //adding myself into every database//
-        this.dataItems.add(new GameData(0,"w","b","RexsGame",new ChessGame()));
+        //this.dataItems.add(new GameData(0,"w","b","RexsGame",new ChessGame()));
     }
 
     public void addGame(GameData game){
         this.dataItems.add(game);
     }
-    public Collection<GameData> getAllGames(){
+    public HashSet<GameData> getAllGames(){
         return this.dataItems;
     }
 
@@ -41,7 +41,7 @@ public class GamesDao implements GamesDaoInterface{
     }
     public GameData findGame(int gameID){
         for(GameData g : this.dataItems){
-            if(g.id() == gameID){
+            if(g.gameID() == gameID){
                 return g;
             }
         }
@@ -49,7 +49,7 @@ public class GamesDao implements GamesDaoInterface{
     }
 
     public void updateGame(GameData game){
-        this.dataItems.remove( findGame(game.id()) );//remove the old//
+        this.dataItems.remove( findGame(game.gameID()) );//remove the old//
         addGame(game);
     }
 

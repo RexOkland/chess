@@ -36,7 +36,9 @@ public class ListGamesHandler implements Route {
             } else {
                 response.status(500);
             }
+
             String returnJson = gson.toJson(gamesResponse);
+            response.body(returnJson);
             return returnJson;
         }
     }
