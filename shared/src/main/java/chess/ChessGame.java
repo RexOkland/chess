@@ -216,31 +216,34 @@ public class ChessGame {
 
     private boolean isInCheckInternal(TeamColor teamColor, ChessBoard board) {
         //so we've got to see if any of the opposing team's pieces have the King's position in their moves//
-        for (int i = 0; i < 8; i++) { //CHECKING ALL 64 SPOTS//
-            for (int j = 0; j < 8; j++) {
+        for (int i = 0; i < 8; i++) { // Loop over rows
+            for (int j = 0; j < 8; j++) { // Loop over columns
                 ChessPosition currentPosition = new ChessPosition(i + 1, j + 1);
                 ChessPiece currentPiece = board.getPiece(currentPosition);
 
-                if (currentPiece == null) {
-                    //EMPTY SPOT ON BOARD - no moves to be found//
-                    continue; //do nothing//
-                } else if (currentPiece.getTeamColor() == teamColor) {
-                    //IT'S OUR OWN TEAM - moves affecting the king don't matter//
-                    continue; //do nothing//
-                } else {
-                    //OPPOSING PIECE//
-                    Collection<ChessMove> movesFromPoint = currentPiece.pieceMoves(board, currentPosition);
-                    for (ChessMove m : movesFromPoint) {
-                        ChessPiece opposingPiece = board.getPiece(m.getEndPosition());
-                        if (opposingPiece != null && opposingPiece.getPieceType() == ChessPiece.PieceType.KING &&
-                                opposingPiece.getTeamColor() == teamColor) {
-                            return true; //if these are both true, the piece has the potential to attack the king... osea check//
-                        }
+                // Check to see if this piece is an enemy piece//
+                if (currentPiece != null && currentPiece.getTeamColor() != teamColor) {
+                    //using separate function to see if opposing piece can attack the king//
+                    if (canPieceAttackKing(board, currentPiece, currentPosition, teamColor)) {
+                        return true; // Piece can attack the king
                     }
                 }
             }
         }
         return false; //if we check the whole board and nobody can touch the king... it's not check.
+    }
+
+
+    private boolean canPieceAttackKing(ChessBoard board, ChessPiece currentPiece, ChessPosition currentPosition, TeamColor teamColor) {
+        Collection<ChessMove> movesFromPoint = currentPiece.pieceMoves(board, currentPosition);
+        for (ChessMove m : movesFromPoint) {
+            ChessPiece opposingPiece = board.getPiece(m.getEndPosition());
+            if (opposingPiece != null && opposingPiece.getPieceType() == ChessPiece.PieceType.KING &&
+                    opposingPiece.getTeamColor() == teamColor) {
+                return true; // Piece can attack the king
+            }
+        }
+        return false;
     }
 
     /**
