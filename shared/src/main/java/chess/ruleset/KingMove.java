@@ -10,7 +10,7 @@ import java.util.Collection;
 import java.util.HashSet;
 
 public class KingMove implements PieceMove {
-    public Collection<ChessMove> calculateMoves(ChessBoard board, ChessPiece piece, ChessPosition position) {
+    public Collection<ChessMove> calculateMoves(ChessBoard board, ChessPiece piece, ChessPosition pos){
         Collection<ChessMove> foundMoves = new HashSet<ChessMove>();
 
         //we're going to check all eight spots that a King could potentially go//
@@ -26,87 +26,87 @@ public class KingMove implements PieceMove {
         boolean bottomRight = true;
 
         //finding potential landing spots, removing unneccesary ones//
-        if(position.getRow() ==1){//bottom row//
+        if(pos.getRow() ==1){//bottom row//
             bottomLeft = false; bottomCenter = false; bottomRight = false;
         }
-        else if(position.getRow() ==8){//top row//
+        else if(pos.getRow() ==8){//top row//
             topLeft = false; topCenter = false; topRight = false;
         }
 
-        if(position.getColumn() ==1){//far-left column//
+        if(pos.getColumn() ==1){//far-left column//
             topLeft = false; midLeft = false; bottomLeft = false;
         }
-        else if(position.getColumn() ==8){//far-right column//
+        else if(pos.getColumn() ==8){//far-right column//
             topRight = false; midRight = false; bottomRight = false;
         }
 
         //checking each potential spot now//
         //tops//
         if(topLeft){
-            ChessPosition newSpot = new ChessPosition(position.getRow()+1, position.getColumn()-1);
+            ChessPosition newSpot = new ChessPosition(pos.getRow()+1, pos.getColumn()-1);
             boolean available = board.available(newSpot, piece.getTeamColor());
             if(available){
-                ChessMove moveToAdd = new ChessMove(position, newSpot, null);
+                ChessMove moveToAdd = new ChessMove(pos, newSpot, null);
                 foundMoves.add(moveToAdd);
             }
         }
         if(topCenter){
-            ChessPosition newSpot = new ChessPosition(position.getRow()+1, position.getColumn());
+            ChessPosition newSpot = new ChessPosition(pos.getRow()+1, pos.getColumn());
             boolean available = board.available(newSpot, piece.getTeamColor());
             if(available){
-                ChessMove moveToAdd = new ChessMove(position, newSpot, null);
+                ChessMove moveToAdd = new ChessMove(pos, newSpot, null);
                 foundMoves.add(moveToAdd);
             }
         }
         if(topRight){
-            ChessPosition newSpot = new ChessPosition(position.getRow()+1, position.getColumn()+1);
+            ChessPosition newSpot = new ChessPosition(pos.getRow()+1, pos.getColumn()+1);
             boolean available = board.available(newSpot, piece.getTeamColor());
             if(available){
-                ChessMove moveToAdd = new ChessMove(position, newSpot, null);
+                ChessMove moveToAdd = new ChessMove(pos, newSpot, null);
                 foundMoves.add(moveToAdd);
             }
         }
 
         //mids//
         if(topLeft){
-            ChessPosition newSpot = new ChessPosition(position.getRow(), position.getColumn()-1);
+            ChessPosition newSpot = new ChessPosition(pos.getRow(), pos.getColumn()-1);
             boolean available = board.available(newSpot, piece.getTeamColor());
             if(available){
-                ChessMove moveToAdd = new ChessMove(position, newSpot, null);
+                ChessMove moveToAdd = new ChessMove(pos, newSpot, null);
                 foundMoves.add(moveToAdd);
             }
         }
         if(topLeft){
-            ChessPosition newSpot = new ChessPosition(position.getRow(), position.getColumn()+1);
+            ChessPosition newSpot = new ChessPosition(pos.getRow(), pos.getColumn()+1);
             boolean available = board.available(newSpot, piece.getTeamColor());
             if(available){
-                ChessMove moveToAdd = new ChessMove(position, newSpot, null);
+                ChessMove moveToAdd = new ChessMove(pos, newSpot, null);
                 foundMoves.add(moveToAdd);
             }
         }
 
         //bottoms//
         if(bottomLeft){
-            ChessPosition newSpot = new ChessPosition(position.getRow()-1, position.getColumn()-1);
+            ChessPosition newSpot = new ChessPosition(pos.getRow()-1, pos.getColumn()-1);
             boolean available = board.available(newSpot, piece.getTeamColor());
             if(available){
-                ChessMove moveToAdd = new ChessMove(position, newSpot, null);
+                ChessMove moveToAdd = new ChessMove(pos, newSpot, null);
                 foundMoves.add(moveToAdd);
             }
         }
         if(bottomCenter){
-            ChessPosition newSpot = new ChessPosition(position.getRow()-1, position.getColumn());
+            ChessPosition newSpot = new ChessPosition(pos.getRow()-1, pos.getColumn());
             boolean available = board.available(newSpot, piece.getTeamColor());
             if(available){
-                ChessMove moveToAdd = new ChessMove(position, newSpot, null);
+                ChessMove moveToAdd = new ChessMove(pos, newSpot, null);
                 foundMoves.add(moveToAdd);
             }
         }
         if(bottomRight){
-            ChessPosition newSpot = new ChessPosition(position.getRow()-1, position.getColumn()+1);
+            ChessPosition newSpot = new ChessPosition(pos.getRow()-1, pos.getColumn()+1);
             boolean available = board.available(newSpot, piece.getTeamColor());
             if(available){
-                ChessMove moveToAdd = new ChessMove(position, newSpot, null);
+                ChessMove moveToAdd = new ChessMove(pos, newSpot, null);
                 foundMoves.add(moveToAdd);
             }
         }

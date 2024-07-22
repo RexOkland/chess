@@ -28,9 +28,9 @@ public class PawnMove implements PieceMove{
                 middleSpot = new ChessPosition(position.getRow()-1, position.getColumn());
                 newSpot = new ChessPosition(position.getRow()-2, position.getColumn());
             }
-            boolean empty_a = board.empty(newSpot);
-            boolean empty_b = board.empty(middleSpot);
-            if(empty_a && empty_b){
+            boolean emptyA = board.empty(newSpot);
+            boolean emptyB = board.empty(middleSpot);
+            if(emptyA && emptyB){
                 ChessMove moveToAdd = new ChessMove(position, newSpot, null);
                 foundMoves.add(moveToAdd);
             }
@@ -46,20 +46,7 @@ public class PawnMove implements PieceMove{
             }
             boolean empty = board.empty(newSpot);
             if(empty){
-                if((newSpot.getRow() == 1) || (newSpot.getRow() ==8)){ //touchdowns//
-                    ChessMove moveToAdd = new ChessMove(position, newSpot, ChessPiece.PieceType.QUEEN);
-                    foundMoves.add(moveToAdd);
-                    moveToAdd = new ChessMove(position, newSpot, ChessPiece.PieceType.BISHOP);
-                    foundMoves.add(moveToAdd);
-                    moveToAdd = new ChessMove(position, newSpot, ChessPiece.PieceType.KNIGHT);
-                    foundMoves.add(moveToAdd);
-                    moveToAdd = new ChessMove(position, newSpot, ChessPiece.PieceType.ROOK);
-                    foundMoves.add(moveToAdd);
-                }
-                else{
-                    ChessMove moveToAdd = new ChessMove(position, newSpot, null);
-                    foundMoves.add(moveToAdd);
-                }
+                promotionHandler(position, foundMoves, newSpot);
             }
         }
 
@@ -73,21 +60,8 @@ public class PawnMove implements PieceMove{
                 newSpot = new ChessPosition(position.getRow()-1, position.getColumn()+1);
             }
 
-            if((board.available(newSpot, piece.getTeamColor())) && (board.empty(newSpot) == false)){
-                if((newSpot.getRow() == 1) || (newSpot.getRow() ==8)){ //touchdowns//
-                    ChessMove moveToAdd = new ChessMove(position, newSpot, ChessPiece.PieceType.QUEEN);
-                    foundMoves.add(moveToAdd);
-                    moveToAdd = new ChessMove(position, newSpot, ChessPiece.PieceType.BISHOP);
-                    foundMoves.add(moveToAdd);
-                    moveToAdd = new ChessMove(position, newSpot, ChessPiece.PieceType.KNIGHT);
-                    foundMoves.add(moveToAdd);
-                    moveToAdd = new ChessMove(position, newSpot, ChessPiece.PieceType.ROOK);
-                    foundMoves.add(moveToAdd);
-                }
-                else{
-                    ChessMove moveToAdd = new ChessMove(position, newSpot, null);
-                    foundMoves.add(moveToAdd);
-                }
+            if((board.available(newSpot, piece.getTeamColor())) && (!board.empty(newSpot))){
+                promotionHandler(position, foundMoves, newSpot);
             }
         }
 
@@ -101,25 +75,29 @@ public class PawnMove implements PieceMove{
                 newSpot = new ChessPosition(position.getRow()-1, position.getColumn()-1);
             }
 
-            if((board.available(newSpot, piece.getTeamColor())) && (board.empty(newSpot) == false)){
-                if((newSpot.getRow() == 1) || (newSpot.getRow() ==8)){ //touchdowns//
-                    ChessMove moveToAdd = new ChessMove(position, newSpot, ChessPiece.PieceType.QUEEN);
-                    foundMoves.add(moveToAdd);
-                    moveToAdd = new ChessMove(position, newSpot, ChessPiece.PieceType.BISHOP);
-                    foundMoves.add(moveToAdd);
-                    moveToAdd = new ChessMove(position, newSpot, ChessPiece.PieceType.KNIGHT);
-                    foundMoves.add(moveToAdd);
-                    moveToAdd = new ChessMove(position, newSpot, ChessPiece.PieceType.ROOK);
-                    foundMoves.add(moveToAdd);
-                }
-                else{
-                    ChessMove moveToAdd = new ChessMove(position, newSpot, null);
-                    foundMoves.add(moveToAdd);
-                }
+            if((board.available(newSpot, piece.getTeamColor())) && (!board.empty(newSpot))){
+                promotionHandler(position, foundMoves, newSpot);
 
             }
         }
 
         return foundMoves;
+    }
+
+    public void promotionHandler(ChessPosition position, Collection<ChessMove> foundMoves, ChessPosition newSpot) {
+        if((newSpot.getRow() == 1) || (newSpot.getRow() ==8)){ //touchdowns//
+            ChessMove moveToAdd = new ChessMove(position, newSpot, ChessPiece.PieceType.QUEEN);
+            foundMoves.add(moveToAdd);
+            moveToAdd = new ChessMove(position, newSpot, ChessPiece.PieceType.BISHOP);
+            foundMoves.add(moveToAdd);
+            moveToAdd = new ChessMove(position, newSpot, ChessPiece.PieceType.KNIGHT);
+            foundMoves.add(moveToAdd);
+            moveToAdd = new ChessMove(position, newSpot, ChessPiece.PieceType.ROOK);
+            foundMoves.add(moveToAdd);
+        }
+        else{
+            ChessMove moveToAdd = new ChessMove(position, newSpot, null);
+            foundMoves.add(moveToAdd);
+        }
     }
 }
