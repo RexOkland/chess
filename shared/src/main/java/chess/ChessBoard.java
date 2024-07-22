@@ -142,6 +142,22 @@ public class ChessBoard {
         boardArray[7][3] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.QUEEN);
     }
 
+    public boolean available(ChessPosition position, ChessGame.TeamColor color){
+        if(position.getRow() > 8){return false;}
+        if(position.getRow() < 0){return false;}
+        if(position.getColumn() > 8){return false;}
+        if(position.getColumn() < 0){return false;}
+        if(boardArray[position.getRow()-1][position.getColumn()-1] == null){ //no piece on position... available//
+            return true;
+        }
+        else if(getPiece(position).getTeamColor() != color){ //piece on the position is on opposite team//
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
