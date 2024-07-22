@@ -16,15 +16,15 @@ public class DatabaseHolder {
         this.UserDAO = new UserDao();
     }
 
-    public AuthDao AuthDAO(){
+    public AuthDao authDAO(){
         return this.AuthDAO;
     }
 
-    public GamesDao GamesDAO(){
+    public GamesDao gamesDAO(){
         return this.GamesDAO;
     }
 
-    public UserDao UserDAO(){
+    public UserDao userDAO(){
         return this.UserDAO;
     }
 

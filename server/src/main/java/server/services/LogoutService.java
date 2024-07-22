@@ -18,7 +18,7 @@ public class LogoutService {
         //response data//
         String responseMessage = null;
 
-        AuthDao authDao = db.AuthDAO();
+        AuthDao authDao = db.authDAO();
         AuthData foundData = authDao.findAuth(authString);
         if(foundData == null){
             responseMessage = "error: unauthorized";

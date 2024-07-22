@@ -18,14 +18,14 @@ public class JoinGameService {
         //response data//
         String responseMessage = null;
 
-        AuthDao authDao = db.AuthDAO();
+        AuthDao authDao = db.authDAO();
         AuthData foundAuth = authDao.findAuth(authString);
         if(foundAuth == null){
             //auth token not found - not logged in//
             responseMessage = "error: unauthorized";
         }
         else{
-            GamesDao gameDao = db.GamesDAO();
+            GamesDao gameDao = db.gamesDAO();
             GameData foundGame = gameDao.findGame(gameID);
             if(foundGame == null){
                 //game not found - requesting a game that doesn't exist//

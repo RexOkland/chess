@@ -22,7 +22,7 @@ public class RegisterService {
         String responseAuth = null;
         String responseMessage = null;
 
-        UserDao userDao = db.UserDAO();
+        UserDao userDao = db.userDAO();
         if( (Objects.equals(userData.username(), "")) || (Objects.equals(userData.password(), ""))){
             //neither can be left empty... that's a bad request to me//
             responseMessage = "error: bad request";
@@ -43,7 +43,7 @@ public class RegisterService {
                 responseUser = userData.username(); //RESPONSE DATA//
                 responseAuth = UUID.randomUUID().toString(); //RESPONSE DATA//
 
-                AuthDao authDao = db.AuthDAO();
+                AuthDao authDao = db.authDAO();
                 authDao.addItem( new AuthData(responseAuth, responseUser) );
                 //auth data added//
                 userDao.addItem(userData);

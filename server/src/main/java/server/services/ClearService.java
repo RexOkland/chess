@@ -6,9 +6,9 @@ import responses.ClearResponse;
 public class ClearService {
     String responseMessage = null;
     public ClearResponse clear(DatabaseHolder db){
-        db.GamesDAO().clearDAO();
-        db.AuthDAO().clearDAO();
-        db.UserDAO().clearDAO();
+        db.gamesDAO().clearDAO();
+        db.authDAO().clearDAO();
+        db.userDAO().clearDAO();
         return new ClearResponse(null);
     }
 }

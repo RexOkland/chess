@@ -16,7 +16,7 @@ public class ListGamesService {
         HashSet<GameData> responseCollection= null;
         String responseString = null;
 
-        AuthDao authDao = db.AuthDAO();
+        AuthDao authDao = db.authDAO();
         AuthData foundData = authDao.findAuth(authString);
         if(foundData == null){
             //no token found//
@@ -24,7 +24,7 @@ public class ListGamesService {
         }
         else{
             //found it! - they're all good//
-            responseCollection = db.GamesDAO().getAllGames();
+            responseCollection = db.gamesDAO().getAllGames();
         }
         return new ListGamesResponse(responseCollection, responseString);
     }

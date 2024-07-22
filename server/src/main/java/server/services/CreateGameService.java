@@ -17,14 +17,14 @@ public class CreateGameService {
         Integer responseGameID = null; //not good//
         String responseMessage = null;
 
-        AuthDao authDao = db.AuthDAO();
+        AuthDao authDao = db.authDAO();
         AuthData foundData = authDao.findAuth(authString);
         if(foundData == null){
             //auth token not found - not logged in//
             responseMessage = "error: unauthorized";
         }
         else{
-            GamesDao gamesDao= db.GamesDAO();
+            GamesDao gamesDao= db.gamesDAO();
             GameData foundGame = gamesDao.findGame(gameName);
             if(foundGame == null){
                 //no existing game with that name - all good!

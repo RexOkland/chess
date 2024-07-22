@@ -20,7 +20,7 @@ public class LoginService {
         String responseAuth = null;
         String responseMessage = null;
 
-        UserDao userDao = db.UserDAO();
+        UserDao userDao = db.userDAO();
         if( (Objects.equals(userData.username(), "")) || (Objects.equals(userData.password(), ""))){
             responseMessage = "error: unauthorized";
             return new LoginResponse(responseUser, responseAuth, responseMessage);
@@ -41,7 +41,7 @@ public class LoginService {
             else{ //they DO match up//
                 responseAuth = UUID.randomUUID().toString();
                 responseUser = foundData.username();
-                db.AuthDAO().addItem( new AuthData(responseAuth, responseUser) );
+                db.authDAO().addItem( new AuthData(responseAuth, responseUser) );
             }
             return new LoginResponse(responseUser, responseAuth, responseMessage);
         }
