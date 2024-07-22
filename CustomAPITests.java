@@ -4,25 +4,15 @@ import chess.ChessGame;
 import org.junit.jupiter.api.*;
 import passoff.model.*;
 import passoff.server.TestServerFacade;
-import requests.JoinGameRequest;
-import responses.LogoutResponse;
 import server.Server;
 import server.services.LoginService;
 
-import java.net.HttpURLConnection;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Locale;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public class CustomTests {
+public class CustomAPITests {
 
     private static TestUser existingUser;
-    private static TestUser newUser;
-    private static TestCreateRequest createRequest;
     private static TestServerFacade serverFacade;
     private static Server server;
-    private String existingAuth;
 
     @AfterAll
     static void stopServer() {
@@ -39,18 +29,13 @@ public class CustomTests {
 
         existingUser = new TestUser("ExistingUser", "existingUserPassword", "eu@mail.com");
 
-        newUser = new TestUser("NewUser", "newUserPassword", "nu@mail.com");
-
-        createRequest = new TestCreateRequest("testGame");
     }
 
     @BeforeEach
     public void setup() {
         serverFacade.clear();
-
         //one user already logged in
         TestAuthResult regResult = serverFacade.register(existingUser);
-        existingAuth = regResult.getAuthToken();
     }
 
     @Test
