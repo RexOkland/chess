@@ -143,7 +143,7 @@ public class ChessBoard {
     }
 
     public boolean available(ChessPosition position, ChessGame.TeamColor color){
-        if (onBoard(position)) return false;
+        if (onBoard(position)) {return false;}
         if(boardArray[position.getRow()-1][position.getColumn()-1] == null){ //no piece on position... available//
             return true;
         }
@@ -156,7 +156,7 @@ public class ChessBoard {
     }
 
     public boolean empty(ChessPosition position){
-        if (onBoard(position)) return false;
+        if (onBoard(position)) {return false;}
         return (boardArray[position.getRow()-1][position.getColumn()-1] == null);
     }
 
@@ -170,16 +170,13 @@ public class ChessBoard {
         if(position.getColumn() > 8){
             return true;
         }
-        if(position.getColumn() < 0){
-            return true;
-        }
-        return false;
+        return position.getColumn() < 0;
     }
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {return true;}
+        if (o == null || getClass() != o.getClass()) {return false;}
         ChessBoard that = (ChessBoard) o;
         return Arrays.deepEquals(boardArray, that.boardArray);
     }

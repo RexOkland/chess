@@ -23,9 +23,6 @@ public class UserDao implements UserDaoInterface{
     public void addItem(UserData item){
         this.dataItems.add(item);
     }
-    public Collection<UserData> returnItems(){
-        return this.dataItems;
-    }
 
     public UserData searchUser(String user){
         for(UserData u : dataItems){

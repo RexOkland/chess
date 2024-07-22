@@ -29,10 +29,6 @@ public class AuthDao implements AuthDaoInterface {
         dataItems.add(item);
     }
 
-    public Collection<AuthData> returnItems(){
-        return this.dataItems;
-    }
-
     public void removeItem(AuthData item){
         dataItems.remove(item);
     }

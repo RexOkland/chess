@@ -22,8 +22,8 @@ public class ChessPiece {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {return true;}
+        if (o == null || getClass() != o.getClass()) {return false;}
         ChessPiece that = (ChessPiece) o;
         return teamColor == that.teamColor && pieceType == that.pieceType;
     }
@@ -59,8 +59,6 @@ public class ChessPiece {
      * @return Which team this chess piece belongs to
      */
     public ChessGame.TeamColor getTeamColor() {
-        //throw new RuntimeException("Not implemented");
-        //attempting to implement 06/29/2024 @ 11:39am//
         return this.teamColor;
     }
 
@@ -68,8 +66,6 @@ public class ChessPiece {
      * @return which type of chess piece this piece is
      */
     public PieceType getPieceType() {
-        //throw new RuntimeException("Not implemented");
-        //attempting to implement 06/29/2024 @ 11:40am//
         return this.pieceType;
     }
 
@@ -85,9 +81,6 @@ public class ChessPiece {
      * @return Collection of valid moves
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
-        //throw new RuntimeException("Not implemented");
-        //attempting to implement 06/29/2024 @ 11:40am//
-        //attempting to implement 06/29/2024 @ 3:21pm//
 
         PieceMove moves = switch(this.pieceType){
             case PAWN -> new PawnMove();
