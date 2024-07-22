@@ -143,10 +143,7 @@ public class ChessBoard {
     }
 
     public boolean available(ChessPosition position, ChessGame.TeamColor color){
-        if(position.getRow() > 8){return false;}
-        if(position.getRow() < 0){return false;}
-        if(position.getColumn() > 8){return false;}
-        if(position.getColumn() < 0){return false;}
+        if (onBoard(position)) return false;
         if(boardArray[position.getRow()-1][position.getColumn()-1] == null){ //no piece on position... available//
             return true;
         }
@@ -156,6 +153,27 @@ public class ChessBoard {
         else{
             return false;
         }
+    }
+
+    public boolean empty(ChessPosition position){
+        if (onBoard(position)) return false;
+        return (boardArray[position.getRow()-1][position.getColumn()-1] == null);
+    }
+
+    public boolean onBoard(ChessPosition position) {
+        if(position.getRow() > 8){
+            return true;
+        }
+        if(position.getRow() < 0){
+            return true;
+        }
+        if(position.getColumn() > 8){
+            return true;
+        }
+        if(position.getColumn() < 0){
+            return true;
+        }
+        return false;
     }
 
     @Override

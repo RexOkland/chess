@@ -1,242 +1,125 @@
 package chess.ruleset;
 
 import chess.*;
+
 import java.util.Collection;
 import java.util.HashSet;
 
-public class PawnMove implements PieceMove {
-    Collection<ChessMove> moves = new HashSet<ChessMove>();
-    public Collection<ChessMove> calculateMoves (ChessBoard board, ChessPiece piece, ChessPosition location){
-        //attempting to implement 06/29/2024 @ 12:04pm//
-        //attempting to implement 6/29/2024 @ 12:13pm//
-        moves.clear();
-        //assuming that white starts on the bottom (row 2) and black starts on the top (row 7)
-        if(piece.teamColor == ChessGame.TeamColor.WHITE){
-            //looking to see if the first two spaces in front of pawn are AVAILABLE//
-            if (location.onBoard() && board.boardArray[location.getRow() - 1 + 1][location.getColumn() - 1] == null) {
-                if(location.getRow() + 1 == 8){
-                    for(ChessPiece.PieceType p : ChessPiece.PieceType.values()){
-                        if((p == ChessPiece.PieceType.QUEEN)
-                            || (p == ChessPiece.PieceType.ROOK)
-                            || (p == ChessPiece.PieceType.BISHOP)
-                            || (p == ChessPiece.PieceType.KNIGHT)) {
-                            moves.add(
-                                    new ChessMove(
-                                            location,
-                                            new ChessPosition(location.getRow() + 1, location.getColumn()),
-                                            //ChessPiece.PieceType.PAWN ... it doesn't want this//
-                                            p
-                                    )//add the space directly in front as a move//
-                            );
-                        }
-                    }
-                }
-                else{
-                    moves.add(
-                            new ChessMove(
-                                    location,
-                                    new ChessPosition(location.getRow()+1, location.getColumn()),
-                                    //ChessPiece.PieceType.PAWN ... it doesn't want this//
-                                    null
-                            )//add the space directly in front as a move//
-                    );
-                }
-                if(location.getRow() == 2){
-                    //piece IS in initial position - check for additional square//
-                    if(board.boardArray[location.getRow() - 1 + 2][location.getColumn() - 1] == null){
-                        moves.add(
-                                new ChessMove(
-                                        location,
-                                        new ChessPosition(location.getRow()+2, location.getColumn()),
-                                        //ChessPiece.PieceType.PAWN... it doesn't want this//
-                                        null
-                                )//add the space two spots in front as a move//
-                        );
-                    }
-                }
+public class PawnMove implements PieceMove{
+    public Collection<ChessMove> calculateMoves(ChessBoard board, ChessPiece piece, ChessPosition position) {
+        Collection<ChessMove> foundMoves = new HashSet<ChessMove>();
+
+        ChessPosition newSpot = new ChessPosition(position.getRow()+2, position.getColumn());
+        //pawns can land in 4 different spots//
+
+
+        //jumping two//
+        ChessPosition middleSpot;
+        int specialRow = 2;
+        if(piece.getTeamColor() == ChessGame.TeamColor.BLACK){
+            specialRow = 7;
+        }
+        if(position.getRow() == specialRow){
+            if(specialRow == 2){
+                middleSpot = new ChessPosition(position.getRow()+1, position.getColumn());
+                newSpot = new ChessPosition(position.getRow()+2, position.getColumn());
             }
-            //now we've got to look at the diagonal squares to see if there's potential moves there//
-                //check right//
-            if (    location.relativePositiion(1,1).onBoard()
-                    && (board.boardArray[location.getRow() - 1 + 1][location.getColumn() - 1 + 1] != null)
-                    && board.boardArray[location.getRow() - 1 + 1][location.getColumn() - 1 + 1].teamColor == ChessGame.TeamColor.BLACK) {//check to see if the diagonal is on the board//
-                if(location.getRow() + 1 == 8){
-                    for(ChessPiece.PieceType p : ChessPiece.PieceType.values()){
-                        if((p == ChessPiece.PieceType.QUEEN)
-                                || (p == ChessPiece.PieceType.ROOK)
-                                || (p == ChessPiece.PieceType.BISHOP)
-                                || (p == ChessPiece.PieceType.KNIGHT)) {
-                            moves.add(
-                                    new ChessMove(
-                                            location,
-                                            location.relativePositiion(1,1),
-                                            //ChessPiece.PieceType.PAWN ... it doesn't want this//
-                                            p
-                                    )//add the space directly in front as a move//
-                            );
-                        }
-                    }
-                }
-                else{
-                    moves.add(
-                            new ChessMove(
-                                    location,
-                                    location.relativePositiion(1,1),
-                                    //ChessPiece.PieceType.PAWN ... it doesn't want this//
-                                    null
-                            )//add the space directly in front as a move//
-                    );
-                }
-            };
-                //check left//
-            if (    location.relativePositiion(1,-1).onBoard() &&
-                    (board.boardArray[location.getRow() - 1 + 1][location.getColumn() - 1 - 1] != null)
-                    && board.boardArray[location.getRow() - 1 + 1][location.getColumn() - 1 - 1].teamColor == ChessGame.TeamColor.BLACK) {
-                if(location.getRow() + 1 == 8){
-                    for(ChessPiece.PieceType p : ChessPiece.PieceType.values()){
-                        if((p == ChessPiece.PieceType.QUEEN)
-                                || (p == ChessPiece.PieceType.ROOK)
-                                || (p == ChessPiece.PieceType.BISHOP)
-                                || (p == ChessPiece.PieceType.KNIGHT)) {
-                            moves.add(
-                                    new ChessMove(
-                                            location,
-                                            location.relativePositiion(1,-1),
-                                            //ChessPiece.PieceType.PAWN ... it doesn't want this//
-                                            p
-                                    )//add the space directly in front as a move//
-                            );
-                        }
-                    }
-                }
-                else{
-                    moves.add(
-                            new ChessMove(
-                                    location,
-                                    location.relativePositiion(1,-1),
-                                    //ChessPiece.PieceType.PAWN ... it doesn't want this//
-                                    null
-                            )//add the space directly in front as a move//
-                    );
-                }
-            };
-
-            //BLACK//
-
-        }else if (piece.teamColor == ChessGame.TeamColor.BLACK) {
-            //looking to see if the first two spaces in front of pawn are AVAILABLE//
-            if (location.onBoard()  && board.boardArray[location.getRow() - 1 - 1][location.getColumn() - 1] == null) {
-                if(location.getRow() - 1 == 1){
-                    for(ChessPiece.PieceType p : ChessPiece.PieceType.values()){
-                        if((p == ChessPiece.PieceType.QUEEN)
-                                || (p == ChessPiece.PieceType.ROOK)
-                                || (p == ChessPiece.PieceType.BISHOP)
-                                || (p == ChessPiece.PieceType.KNIGHT)) {
-                            moves.add(
-                                    new ChessMove(
-                                            location,
-                                            new ChessPosition(location.getRow() - 1, location.getColumn()),
-                                            //ChessPiece.PieceType.PAWN ... it doesn't want this//
-                                            p
-                                    )//add the space directly in front as a move//
-                            );
-                        }
-                    }
-                }
-                else{
-                    moves.add(
-                            new ChessMove(
-                                    location,
-                                    new ChessPosition(location.getRow() - 1, location.getColumn()),
-                                    //ChessPiece.PieceType.PAWN ... it doesn't want this//
-                                    null
-                            )//add the space directly in front as a move//
-                    );
-                }
-                if(location.getRow() == 7){
-                    //piece IS in initial position - check for additional square//
-                    if(board.boardArray[location.getRow() - 1 - 2][location.getColumn() - 1] == null){
-                        moves.add(
-                                new ChessMove(
-                                        location,
-                                        new ChessPosition(location.getRow()-2, location.getColumn()),
-                                        //ChessPiece.PieceType.PAWN... it doesn't want this//
-                                        null
-                                )//add the space two spots in front as a move//
-                        );
-                    }
-                }
+            else{
+                middleSpot = new ChessPosition(position.getRow()-1, position.getColumn());
+                newSpot = new ChessPosition(position.getRow()-2, position.getColumn());
             }
-            //now we've got to look at the diagonal squares to see if there's potential moves there//
-            //check right//
-            if (    location.relativePositiion(-1,1).onBoard() &&
-                    (board.boardArray[location.getRow() - 1 - 1][location.getColumn() - 1 + 1] != null)
-                    && board.boardArray[location.getRow() - 1 - 1][location.getColumn() - 1 + 1].teamColor == ChessGame.TeamColor.WHITE) {//check to see if the diagonal is on the board//
-                if(location.getRow() - 1 == 1){
-                    for(ChessPiece.PieceType p : ChessPiece.PieceType.values()){
-                        if((p == ChessPiece.PieceType.QUEEN)
-                                || (p == ChessPiece.PieceType.ROOK)
-                                || (p == ChessPiece.PieceType.BISHOP)
-                                || (p == ChessPiece.PieceType.KNIGHT)) {
-                            moves.add(
-                                    new ChessMove(
-                                            location,
-                                            location.relativePositiion(-1,1),
-                                            //ChessPiece.PieceType.PAWN ... it doesn't want this//
-                                            p
-                                    )//add the space directly in front as a move//
-                            );
-                        }
-                    }
-                }
-                else{
-                    moves.add(
-                            new ChessMove(
-                                    location,
-                                    location.relativePositiion(-1,1),
-                                    //ChessPiece.PieceType.PAWN ... it doesn't want this//
-                                    null
-                            )//add the space directly in front as a move//
-                    );
-                }
-            };
-            //check left//
-            if (    location.relativePositiion(-1,-1).onBoard() &&
-            (board.boardArray[location.getRow() - 1 - 1][location.getColumn() - 1 - 1] != null)
-                    && board.boardArray[location.getRow() - 1 - 1][location.getColumn() - 1 - 1].teamColor == ChessGame.TeamColor.WHITE) {
-                if(location.getRow() - 1 == 1){
-                    for(ChessPiece.PieceType p : ChessPiece.PieceType.values()){
-                        if((p == ChessPiece.PieceType.QUEEN)
-                                || (p == ChessPiece.PieceType.ROOK)
-                                || (p == ChessPiece.PieceType.BISHOP)
-                                || (p == ChessPiece.PieceType.KNIGHT)) {
-                            moves.add(
-                                    new ChessMove(
-                                            location,
-                                            location.relativePositiion(-1,-1),
-                                            //ChessPiece.PieceType.PAWN ... it doesn't want this//
-                                            p
-                                    )//add the space directly in front as a move//
-                            );
-                        }
-                    }
-                }
-                else{
-                    moves.add(
-                            new ChessMove(
-                                    location,
-                                    location.relativePositiion(-1,-1),
-                                    //ChessPiece.PieceType.PAWN ... it doesn't want this//
-                                    null
-                            )//add the space directly in front as a move//
-                    );
-                }
-            };
-
-        }else{
-            throw new RuntimeException("something aint right - no team color identified");
+            boolean empty_a = board.empty(newSpot);
+            boolean empty_b = board.empty(middleSpot);
+            if(empty_a && empty_b){
+                ChessMove moveToAdd = new ChessMove(position, newSpot, null);
+                foundMoves.add(moveToAdd);
+            }
         }
 
-        return moves;
+        //jumping one//
+        if((position.getRow() != 8) && (position.getRow() != 1)){ //cannot be run on top/bottom edges//
+            if(piece.getTeamColor() == ChessGame.TeamColor.WHITE){
+                newSpot = new ChessPosition(position.getRow()+1, position.getColumn());
+            }
+            else{
+                newSpot = new ChessPosition(position.getRow()-1, position.getColumn());
+            }
+            boolean empty = board.empty(newSpot);
+            if(empty){
+                if((newSpot.getRow() == 1) || (newSpot.getRow() ==8)){ //touchdowns//
+                    ChessMove moveToAdd = new ChessMove(position, newSpot, ChessPiece.PieceType.QUEEN);
+                    foundMoves.add(moveToAdd);
+                    moveToAdd = new ChessMove(position, newSpot, ChessPiece.PieceType.BISHOP);
+                    foundMoves.add(moveToAdd);
+                    moveToAdd = new ChessMove(position, newSpot, ChessPiece.PieceType.KNIGHT);
+                    foundMoves.add(moveToAdd);
+                    moveToAdd = new ChessMove(position, newSpot, ChessPiece.PieceType.ROOK);
+                    foundMoves.add(moveToAdd);
+                }
+                else{
+                    ChessMove moveToAdd = new ChessMove(position, newSpot, null);
+                    foundMoves.add(moveToAdd);
+                }
+            }
+        }
+
+
+        //attack right//
+        if((position.getRow() != 8) && (position.getRow() != 1) && (position.getColumn() != 8)){
+            if(piece.getTeamColor() == ChessGame.TeamColor.WHITE){
+                newSpot = new ChessPosition(position.getRow()+1, position.getColumn()+1);
+            }
+            else{
+                newSpot = new ChessPosition(position.getRow()-1, position.getColumn()+1);
+            }
+
+            if((board.available(newSpot, piece.getTeamColor())) && (board.empty(newSpot) == false)){
+                if((newSpot.getRow() == 1) || (newSpot.getRow() ==8)){ //touchdowns//
+                    ChessMove moveToAdd = new ChessMove(position, newSpot, ChessPiece.PieceType.QUEEN);
+                    foundMoves.add(moveToAdd);
+                    moveToAdd = new ChessMove(position, newSpot, ChessPiece.PieceType.BISHOP);
+                    foundMoves.add(moveToAdd);
+                    moveToAdd = new ChessMove(position, newSpot, ChessPiece.PieceType.KNIGHT);
+                    foundMoves.add(moveToAdd);
+                    moveToAdd = new ChessMove(position, newSpot, ChessPiece.PieceType.ROOK);
+                    foundMoves.add(moveToAdd);
+                }
+                else{
+                    ChessMove moveToAdd = new ChessMove(position, newSpot, null);
+                    foundMoves.add(moveToAdd);
+                }
+            }
+        }
+
+
+        //attack left//
+        if((position.getRow() != 8) && (position.getRow() != 1) && (position.getColumn() != 1)){
+            if(piece.getTeamColor() == ChessGame.TeamColor.WHITE){
+                newSpot = new ChessPosition(position.getRow()+1, position.getColumn()-1);
+            }
+            else{
+                newSpot = new ChessPosition(position.getRow()-1, position.getColumn()-1);
+            }
+
+            if((board.available(newSpot, piece.getTeamColor())) && (board.empty(newSpot) == false)){
+                if((newSpot.getRow() == 1) || (newSpot.getRow() ==8)){ //touchdowns//
+                    ChessMove moveToAdd = new ChessMove(position, newSpot, ChessPiece.PieceType.QUEEN);
+                    foundMoves.add(moveToAdd);
+                    moveToAdd = new ChessMove(position, newSpot, ChessPiece.PieceType.BISHOP);
+                    foundMoves.add(moveToAdd);
+                    moveToAdd = new ChessMove(position, newSpot, ChessPiece.PieceType.KNIGHT);
+                    foundMoves.add(moveToAdd);
+                    moveToAdd = new ChessMove(position, newSpot, ChessPiece.PieceType.ROOK);
+                    foundMoves.add(moveToAdd);
+                }
+                else{
+                    ChessMove moveToAdd = new ChessMove(position, newSpot, null);
+                    foundMoves.add(moveToAdd);
+                }
+
+            }
+        }
+
+        return foundMoves;
     }
 }
