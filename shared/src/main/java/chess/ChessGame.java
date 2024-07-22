@@ -253,29 +253,28 @@ public class ChessGame {
         if (!isInCheck(teamColor)) {
             return false; //if you're not in check, it can't be checkmate//
         }
-        else {
-            Collection<ChessMove> avoidCheckmateMoves = new HashSet<ChessMove>();
-            if (isInCheck(teamColor)) {
-                for (int i = 0; i < 8; ++i) {
-                    for (int j = 0; j < 8; ++j) {
-                        if (gameBoard.getPiece(new ChessPosition(i + 1, j + 1)) == null) {
-                            //EMPTY SPOT ON BOARD - no moves to be found//
-                            continue;//do nothing//
-                        } else if (gameBoard.getPiece(new ChessPosition(i + 1, j + 1)).getTeamColor() != teamColor) {
-                            //IT'S NOT OUR TEAM - we can't move these guys//
-                            continue;//do nothing//
-                        } else {
-                            //OPPOSING PIECE//
-                            Collection<ChessMove> pieceMoves = validMoves(new ChessPosition(i + 1, j + 1));
-                            //valid moves for THAT piece//
-                            avoidCheckmateMoves.addAll(pieceMoves);
-                        }
+
+        Collection<ChessMove> avoidCheckmateMoves = new HashSet<ChessMove>();
+        if (isInCheck(teamColor)) {
+            for (int i = 0; i < 8; ++i) {
+                for (int j = 0; j < 8; ++j) {
+                    if (gameBoard.getPiece(new ChessPosition(i + 1, j + 1)) == null) {
+                        //EMPTY SPOT ON BOARD - no moves to be found//
+                        continue;//do nothing//
+                    } else if (gameBoard.getPiece(new ChessPosition(i + 1, j + 1)).getTeamColor() != teamColor) {
+                        //IT'S NOT OUR TEAM - we can't move these guys//
+                        continue;//do nothing//
+                    } else {
+                        //OPPOSING PIECE//
+                        Collection<ChessMove> pieceMoves = validMoves(new ChessPosition(i + 1, j + 1));
+                        //valid moves for THAT piece//
+                        avoidCheckmateMoves.addAll(pieceMoves);
                     }
                 }
             }
-            //if it's empty, you're cooked//
-            return avoidCheckmateMoves.isEmpty();
         }
+        //if it's empty, you're cooked//
+        return avoidCheckmateMoves.isEmpty();
 
     }
 

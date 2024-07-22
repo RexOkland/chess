@@ -10,8 +10,7 @@ import java.util.Collection;
 import java.util.HashSet;
 
 public class KingMove implements PieceMove {
-    public Collection<ChessMove>
-    calculateMoves(ChessBoard board, ChessPiece piece, ChessPosition pos){
+    public Collection<ChessMove> calculateMoves(ChessBoard board, ChessPiece piece, ChessPosition pos){
 
         Collection<ChessMove> foundMoves = new HashSet<ChessMove>();
 
