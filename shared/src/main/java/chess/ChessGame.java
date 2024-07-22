@@ -98,25 +98,27 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
-        if(gameBoard.getPiece(move.getStartPosition()) == null){
-            //there's no piece @ the start point//
-            throw new InvalidMoveException("there's no piece here lol");
-        };
-        if(gameBoard.getPiece(move.getStartPosition()).teamColor != getTeamTurn()){
-            throw new InvalidMoveException("not your turn");
-        }
-        ChessPosition from = move.getStartPosition(); //A//
-        ChessPosition to = move.getEndPosition(); //B//
-        //check to see if move is even allowed//
-        Collection<ChessMove> allowedMoves =
-                gameBoard.getPiece(new ChessPosition(from.getRow(), from.getColumn())).pieceMoves(gameBoard, move.getStartPosition());
-        boolean everythingOK = false;
-        for(ChessMove m : allowedMoves){
-            if(m.equals(move)){
-                everythingOK = true;
-                break;
+            if(gameBoard.getPiece(move.getStartPosition()) == null){
+                //there's no piece @ the start point//
+                throw new InvalidMoveException("there's no piece here lol");
+            };
+            if(gameBoard.getPiece(move.getStartPosition()).teamColor != getTeamTurn()){
+                throw new InvalidMoveException("not your turn");
             }
-        }
+            ChessPosition from = move.getStartPosition(); //A//
+            ChessPosition to = move.getEndPosition(); //B//
+            //check to see if move is even allowed//
+            Collection<ChessMove> allowedMoves =
+                    gameBoard.getPiece(new ChessPosition(from.getRow(), from.getColumn())).pieceMoves(gameBoard, move.getStartPosition());
+            boolean everythingOK = false;
+            for(ChessMove m : allowedMoves){
+                if(m.equals(move)){
+                    everythingOK = true;
+                    break;
+                }
+            }
+
+
         if (!everythingOK) {
             throw new InvalidMoveException("illegal move attempted");
         }
@@ -151,6 +153,11 @@ public class ChessGame {
     }
 
     public void uncheckedMakeMove(ChessMove move, ChessBoard customBoard) {
+        makeMoveLogicA(move,customBoard);
+        makeMoveLogicB(move, customBoard);
+    }
+
+    public void makeMoveLogicA(ChessMove move, ChessBoard customBoard){
         ChessPosition from = move.getStartPosition(); //A//
         ChessPosition to = move.getEndPosition(); //B//
         //check to see if move is even allowed//
@@ -163,6 +170,12 @@ public class ChessGame {
                 break;
             }
         }
+    }
+
+    public void makeMoveLogicB(ChessMove move, ChessBoard customBoard){
+        ChessPosition from = move.getStartPosition(); //A//
+        ChessPosition to = move.getEndPosition(); //B//
+
         //okay, it's allowed, we're going to move a piece from point A to point B//
         ChessPiece piece = customBoard.boardArray[from.getRow()-1][from.getColumn()-1];
 
@@ -185,64 +198,43 @@ public class ChessGame {
 
     }
 
+
+
     /**
      * Determines if the given team is in check
      *
      * @param teamColor which team to check for check
      * @return True if the specified team is in check
      */
-    public boolean isInCheck(TeamColor teamColor)  {
-        //so we've got to see if any of the opposing team's pieces have the King's position in their moves//
-        for(int i = 0; i < 8; i++){ //CHECKING ALL 64 SPOTS//
-            for(int j = 0; j < 8; j++){
-                if(gameBoard.getPiece(new ChessPosition(i+1, j+1)) == null){
-                    //EMPTY SPOT ON BOARD - no moves to be found//
-                    continue;//do nothing//
-                }
-                else if(gameBoard.getPiece(new ChessPosition(i+1, j+1)).getTeamColor() == teamColor){
-                    //IT'S OUR OWN TEAM - moves effecting the king don't matter//
-                    continue;//do nothing//
-                }
-                else {
-                    //OPPOSING PIECE//
-                    Collection<ChessMove> movesFromPoint = gameBoard.getPiece(new ChessPosition(i+1, j+1)).pieceMoves(gameBoard, new ChessPosition(i+1, j+1));
-                    for(ChessMove m : movesFromPoint){
-                        ChessPiece opposingPiece = gameBoard.getPiece(m.getEndPosition());
-                        if(opposingPiece != null){
-                            if( (opposingPiece.getPieceType() == ChessPiece.PieceType.KING)
-                                    && (gameBoard.getPiece(m.getEndPosition()).teamColor == teamColor) ){
-                                return true; //if these are both true, the piece has the potential to attack the king... osea check//
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        return false; //if we check the whole board and nobody can touch the king... it's not check.
+    public boolean isInCheck(TeamColor teamColor) {
+        return isInCheckInternal(teamColor, gameBoard);
     }
 
-    public boolean isInCheckCustom(TeamColor teamColor, ChessBoard customBoard)  {
+    public boolean isInCheckCustom(TeamColor teamColor, ChessBoard customBoard) {
+        return isInCheckInternal(teamColor, customBoard);
+    }
+
+    private boolean isInCheckInternal(TeamColor teamColor, ChessBoard board) {
         //so we've got to see if any of the opposing team's pieces have the King's position in their moves//
-        for(int i = 0; i < 8; i++){ //CHECKING ALL 64 SPOTS//
-            for(int j = 0; j < 8; j++){
-                if(customBoard.getPiece(new ChessPosition(i+1, j+1)) == null){
+        for (int i = 0; i < 8; i++) { //CHECKING ALL 64 SPOTS//
+            for (int j = 0; j < 8; j++) {
+                ChessPosition currentPosition = new ChessPosition(i + 1, j + 1);
+                ChessPiece currentPiece = board.getPiece(currentPosition);
+
+                if (currentPiece == null) {
                     //EMPTY SPOT ON BOARD - no moves to be found//
-                    continue;//do nothing//
-                }
-                else if(customBoard.getPiece(new ChessPosition(i+1, j+1)).getTeamColor() == teamColor){
-                    //IT'S OUR OWN TEAM - moves effecting the king don't matter//
-                    continue;//do nothing//
-                }
-                else {
+                    continue; //do nothing//
+                } else if (currentPiece.getTeamColor() == teamColor) {
+                    //IT'S OUR OWN TEAM - moves affecting the king don't matter//
+                    continue; //do nothing//
+                } else {
                     //OPPOSING PIECE//
-                    Collection<ChessMove> movesFromPoint = customBoard.getPiece(new ChessPosition(i+1, j+1)).pieceMoves(customBoard, new ChessPosition(i+1, j+1));
-                    for(ChessMove m : movesFromPoint){
-                        ChessPiece opposingPiece = customBoard.getPiece(m.getEndPosition());
-                        if(opposingPiece != null){
-                            if( (opposingPiece.getPieceType() == ChessPiece.PieceType.KING)
-                                    && (customBoard.getPiece(m.getEndPosition()).teamColor == teamColor) ){
-                                return true; //if these are both true, the piece has the potential to attack the king... osea check//
-                            }
+                    Collection<ChessMove> movesFromPoint = currentPiece.pieceMoves(board, currentPosition);
+                    for (ChessMove m : movesFromPoint) {
+                        ChessPiece opposingPiece = board.getPiece(m.getEndPosition());
+                        if (opposingPiece != null && opposingPiece.getPieceType() == ChessPiece.PieceType.KING &&
+                                opposingPiece.getTeamColor() == teamColor) {
+                            return true; //if these are both true, the piece has the potential to attack the king... osea check//
                         }
                     }
                 }
