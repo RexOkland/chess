@@ -83,7 +83,7 @@ public class ChessGame {
             ChessGame duplicateGame = new ChessGame(color, this.getBoard());
 
             duplicateGame.uncheckedMakeMove(m, duplicateGame.getBoard());
-            boolean check = isInCheck_custom(color, duplicateGame.getBoard());
+            boolean check = isInCheckCustom(color, duplicateGame.getBoard());
             if(!check){
                 allowedMoves.add(m);
             }
@@ -221,7 +221,7 @@ public class ChessGame {
         return false; //if we check the whole board and nobody can touch the king... it's not check.
     }
 
-    public boolean isInCheck_custom(TeamColor teamColor, ChessBoard customBoard)  {
+    public boolean isInCheckCustom(TeamColor teamColor, ChessBoard customBoard)  {
         //so we've got to see if any of the opposing team's pieces have the King's position in their moves//
         for(int i = 0; i < 8; i++){ //CHECKING ALL 64 SPOTS//
             for(int j = 0; j < 8; j++){
