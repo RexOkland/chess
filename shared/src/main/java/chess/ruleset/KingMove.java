@@ -11,9 +11,7 @@ import java.util.HashSet;
 
 public class KingMove implements PieceMove {
     public Collection<ChessMove> calculateMoves(ChessBoard board, ChessPiece piece, ChessPosition pos){
-
         Collection<ChessMove> foundMoves = new HashSet<ChessMove>();
-
         //we're going to check all eight spots that a King could potentially go//
         boolean topLeft = true;
         boolean topCenter = true;
@@ -40,7 +38,6 @@ public class KingMove implements PieceMove {
         else if(pos.getColumn() ==8){//far-right column//
             topRight = false; midRight = false; bottomRight = false;
         }
-
         //checking each potential spot now//
         //tops//
         if(topLeft){
@@ -67,7 +64,6 @@ public class KingMove implements PieceMove {
                 foundMoves.add(moveToAdd);
             }
         }
-
         //mids//
         if(topLeft){
             ChessPosition newSpot = new ChessPosition(pos.getRow(), pos.getColumn()-1);
@@ -85,7 +81,6 @@ public class KingMove implements PieceMove {
                 foundMoves.add(moveToAdd);
             }
         }
-
         //bottoms//
         if(bottomLeft){
             ChessPosition newSpot = new ChessPosition(pos.getRow()-1, pos.getColumn()-1);
@@ -111,7 +106,6 @@ public class KingMove implements PieceMove {
                 foundMoves.add(moveToAdd);
             }
         }
-
         return foundMoves;
     }
 }

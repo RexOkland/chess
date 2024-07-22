@@ -17,23 +17,11 @@ public class RookMove implements PieceMove{
         int i = 1;
         while(location.relativePositiion(i, 0).onBoard()){
             if(board.getPiece(location.relativePositiion(i,0)) == null){
-                moves.add(
-                        new ChessMove(
-                                location,
-                                location.relativePositiion(i,0),
-                                null
-                        )
-                );
+                moves.add(new ChessMove(location, location.relativePositiion(i,0), null));
                 ++i;
             }
             else if(board.getPiece(location.relativePositiion(i, 0)).teamColor != piece.teamColor){
-                moves.add(
-                        new ChessMove(
-                                location,
-                                location.relativePositiion(i, 0),
-                                null
-                        )
-                );
+                moves.add(new ChessMove(location, location.relativePositiion(i, 0), null));
                 break;
             }
             else{
@@ -45,23 +33,11 @@ public class RookMove implements PieceMove{
         i = 1;
         while(location.relativePositiion(0, i).onBoard()){
             if(board.getPiece(location.relativePositiion(0, i)) == null){
-                moves.add(
-                        new ChessMove(
-                                location,
-                                location.relativePositiion(0, i),
-                                null
-                        )
-                );
+                moves.add(new ChessMove(location, location.relativePositiion(0, i), null));
                 ++i;
             }
             else if(board.getPiece(location.relativePositiion(0, i)).teamColor != piece.teamColor){
-                moves.add(
-                        new ChessMove(
-                                location,
-                                location.relativePositiion(0, i),
-                                null
-                        )
-                );
+                moves.add(new ChessMove(location, location.relativePositiion(0, i), null));
                 break;
             }
             else{
@@ -73,23 +49,11 @@ public class RookMove implements PieceMove{
         i = 1;
         while(location.relativePositiion(-i, 0).onBoard()){
             if(board.getPiece(location.relativePositiion(-i, 0)) == null){
-                moves.add(
-                        new ChessMove(
-                                location,
-                                location.relativePositiion(-i, 0),
-                                null
-                        )
-                );
+                moves.add(new ChessMove(location, location.relativePositiion(-i, 0), null));
                 ++i;
             }
             else if(board.getPiece(location.relativePositiion(-i, 0)).teamColor != piece.teamColor){
-                moves.add(
-                        new ChessMove(
-                                location,
-                                location.relativePositiion(-i, 0),
-                                null
-                        )
-                );
+                moves.add(new ChessMove(location, location.relativePositiion(-i, 0), null));
                 break;
             }
             else{
@@ -101,23 +65,11 @@ public class RookMove implements PieceMove{
         i = 1;
         while(location.relativePositiion(0, -i).onBoard()){
             if(board.getPiece(location.relativePositiion(0, -i)) == null){
-                moves.add(
-                        new ChessMove(
-                                location,
-                                location.relativePositiion(0, -i),
-                                null
-                        )
-                );
+                moves.add(new ChessMove(location, location.relativePositiion(0, -i), null));
                 ++i;
             }
             else if(board.getPiece(location.relativePositiion(0, -i)).teamColor != piece.teamColor){
-                moves.add(
-                        new ChessMove(
-                                location,
-                                location.relativePositiion(0, -i),
-                                null
-                        )
-                );
+                moves.add(new ChessMove(location, location.relativePositiion(0, -i), null));
                 break;
             }
             else{
@@ -125,8 +77,6 @@ public class RookMove implements PieceMove{
             }
 
         };
-
-
         return moves;
 
     };
