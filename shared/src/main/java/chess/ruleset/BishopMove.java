@@ -10,7 +10,7 @@ import java.util.HashSet;
 
 public class BishopMove implements PieceMove{
 
-    Collection<ChessMove> moves = new HashSet<ChessMove>();
+    private Collection<ChessMove> moves = new HashSet<ChessMove>();
     public Collection<ChessMove> calculateMoves (ChessBoard board, ChessPiece piece, ChessPosition location){
         //throw new RuntimeException("not done yet");
         //okay, so we're gonna check in the four directions the bishop can go in, adding moves until he's blocked or off the board//
@@ -131,4 +131,8 @@ public class BishopMove implements PieceMove{
 
         return moves;
     };
+
+    public Collection<ChessMove> getMoves(){
+        return this.moves;
+    }
 }

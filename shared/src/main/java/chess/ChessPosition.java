@@ -52,7 +52,7 @@ public class ChessPosition {
         if(getColumn() > 8){return false;}
         else if(getColumn() <= 0){return false;}
         else if(getRow() > 8){return false;}
-        else return (getRow() > 0);
+        else {return (getRow() > 0);}
     }
 
     public ChessPosition relativePositiion(int r, int c) {

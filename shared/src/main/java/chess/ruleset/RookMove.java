@@ -10,7 +10,7 @@ import java.util.HashSet;
 
 public class RookMove implements PieceMove{
 
-    Collection<ChessMove> moves = new HashSet<ChessMove>();
+    private Collection<ChessMove> moves = new HashSet<ChessMove>();
     public Collection<ChessMove> calculateMoves (ChessBoard board, ChessPiece piece, ChessPosition location){
 
         //up//
@@ -130,4 +130,8 @@ public class RookMove implements PieceMove{
         return moves;
 
     };
+
+    public Collection<ChessMove> getMoves(){
+        return this.moves;
+    }
 }
