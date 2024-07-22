@@ -100,29 +100,55 @@ public class ChessGame {
     public void makeMove(ChessMove move) throws InvalidMoveException {
             if(gameBoard.getPiece(move.getStartPosition()) == null){
                 //there's no piece @ the start point//
-                throw new InvalidMoveException("there's no piece here lol");
+                throw new InvalidMoveException("there's no piece here");
             };
             if(gameBoard.getPiece(move.getStartPosition()).teamColor != getTeamTurn()){
                 throw new InvalidMoveException("not your turn");
             }
-            ChessPosition from = move.getStartPosition(); //A//
-            ChessPosition to = move.getEndPosition(); //B//
-            //check to see if move is even allowed//
-            Collection<ChessMove> allowedMoves =
-                    gameBoard.getPiece(new ChessPosition(from.getRow(), from.getColumn())).pieceMoves(gameBoard, move.getStartPosition());
-            boolean everythingOK = false;
-            for(ChessMove m : allowedMoves){
-                if(m.equals(move)){
-                    everythingOK = true;
-                    break;
-                }
-            }
+
+            boolean everythingOK = makeMoveLogicA(move, this.gameBoard);
 
 
         if (!everythingOK) {
             throw new InvalidMoveException("illegal move attempted");
         }
 
+
+        makeMoveLogicB(move, this.gameBoard);
+        //adding in the piece in its new spot// point B //
+
+        //double-check that we're not in check still//
+        if(isInCheck(getTeamTurn())){throw new InvalidMoveException("still in check");}
+
+        //change turns//
+        if (this.currentTurn == WHITE) {setTeamTurn(BLACK);}
+        else{setTeamTurn(WHITE);}
+    }
+
+    public void uncheckedMakeMove(ChessMove move, ChessBoard customBoard) {
+        makeMoveLogicA(move,customBoard);
+        makeMoveLogicB(move, customBoard);
+    }
+
+    public boolean makeMoveLogicA(ChessMove move, ChessBoard customBoard){
+        ChessPosition from = move.getStartPosition(); //A//
+        ChessPosition to = move.getEndPosition(); //B//
+        //check to see if move is even allowed//
+        Collection<ChessMove> allowedMoves =
+                gameBoard.getPiece(new ChessPosition(from.getRow(), from.getColumn())).pieceMoves(gameBoard, move.getStartPosition());
+        boolean everythingOK = false;
+        for(ChessMove m : allowedMoves){
+            if(m.equals(move)){
+                everythingOK = true;
+                break;
+            }
+        }
+        return everythingOK;
+    }
+
+    public void makeMoveLogicB(ChessMove move, ChessBoard customBoard){
+        ChessPosition from = move.getStartPosition(); //A//
+        ChessPosition to = move.getEndPosition(); //B//
 
         //okay, it's allowed, we're going to move a piece from point A to point B//
         ChessPiece piece = gameBoard.boardArray[from.getRow()-1][from.getColumn()-1];
@@ -144,61 +170,7 @@ public class ChessGame {
         }
         //adding in the piece in its new spot// point B //
 
-        //double-check that we're not in check still//
-        if(isInCheck(getTeamTurn())){throw new InvalidMoveException("still in check");}
-
-        //change turns//
-        if (this.currentTurn == WHITE) {setTeamTurn(BLACK);}
-        else{setTeamTurn(WHITE);}
     }
-
-    public void uncheckedMakeMove(ChessMove move, ChessBoard customBoard) {
-        makeMoveLogicA(move,customBoard);
-        makeMoveLogicB(move, customBoard);
-    }
-
-    public void makeMoveLogicA(ChessMove move, ChessBoard customBoard){
-        ChessPosition from = move.getStartPosition(); //A//
-        ChessPosition to = move.getEndPosition(); //B//
-        //check to see if move is even allowed//
-        Collection<ChessMove> allowedMoves =
-                customBoard.getPiece(new ChessPosition(from.getRow(), from.getColumn())).pieceMoves(customBoard, move.getStartPosition());
-        boolean everythingOK = false;
-        for(ChessMove m : allowedMoves){
-            if(m.equals(move)){
-                everythingOK = true;
-                break;
-            }
-        }
-    }
-
-    public void makeMoveLogicB(ChessMove move, ChessBoard customBoard){
-        ChessPosition from = move.getStartPosition(); //A//
-        ChessPosition to = move.getEndPosition(); //B//
-
-        //okay, it's allowed, we're going to move a piece from point A to point B//
-        ChessPiece piece = customBoard.boardArray[from.getRow()-1][from.getColumn()-1];
-
-        customBoard.boardArray[from.getRow()-1][from.getColumn()-1] = null;
-        //clearing where piece was on the array// point A //
-
-        ChessPiece opp = customBoard.boardArray[to.getRow()-1][to.getColumn()-1];//is there an opposing piece in the spot we're moving to?//
-        if(opp != null){
-            customBoard.boardArray[to.getRow()-1][to.getColumn()-1] = null;
-        }
-
-        if(move.getPromotionPiece() != null){
-            piece.promote(move.getPromotionPiece());//change piece type / promote//
-            customBoard.addPiece(to, piece);//put piece on spot//
-        }
-        else{
-            customBoard.addPiece(to, piece);//put piece on spot//
-        }
-        //adding in the piece in its new spot// point B //
-
-    }
-
-
 
     /**
      * Determines if the given team is in check
