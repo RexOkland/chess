@@ -1,6 +1,6 @@
 package chess;
 
-import java.nio.file.AtomicMoveNotSupportedException;
+
 import java.util.Collection;
 import java.util.HashSet;
 
@@ -231,22 +231,7 @@ public class ChessGame {
 
         Collection<ChessMove> avoidCheckmateMoves = new HashSet<ChessMove>();
         if (isInCheck(teamColor)) {
-            for (int i = 0; i < 8; ++i) {
-                for (int j = 0; j < 8; ++j) {
-                    if (gameBoard.getPiece(new ChessPosition(i + 1, j + 1)) == null) {
-                        //EMPTY SPOT ON BOARD - no moves to be found//
-                        continue;//do nothing//
-                    } else if (gameBoard.getPiece(new ChessPosition(i + 1, j + 1)).getTeamColor() != teamColor) {
-                        //IT'S NOT OUR TEAM - we can't move these guys//
-                        continue;//do nothing//
-                    } else {
-                        //OPPOSING PIECE//
-                        Collection<ChessMove> pieceMoves = validMoves(new ChessPosition(i + 1, j + 1));
-                        //valid moves for THAT piece//
-                        avoidCheckmateMoves.addAll(pieceMoves);
-                    }
-                }
-            }
+            findEscapeMoves(teamColor, avoidCheckmateMoves);
         }
         //if it's empty, you're cooked//
         return avoidCheckmateMoves.isEmpty();
@@ -265,6 +250,12 @@ public class ChessGame {
             return false; //can't be in check while having a stalemate//
         }
         Collection<ChessMove> avoidCheckmateMoves = new HashSet<ChessMove>();
+        findEscapeMoves(teamColor, avoidCheckmateMoves);
+        //if it's empty, there aren't any moves to be made//
+        return avoidCheckmateMoves.isEmpty();
+    }
+
+    public void findEscapeMoves(TeamColor teamColor, Collection<ChessMove> avoidCheckmateMoves) {
         for (int i = 0; i < 8; ++i) {
             for (int j = 0; j < 8; ++j) {
                 if (gameBoard.getPiece(new ChessPosition(i + 1, j + 1)) == null) {
@@ -281,8 +272,6 @@ public class ChessGame {
                 }
             }
         }
-        //if it's empty, there aren't any moves to be made//
-        return avoidCheckmateMoves.isEmpty();
     }
 
     /**
