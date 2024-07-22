@@ -7,6 +7,7 @@ import passoff.server.TestServerFacade;
 import requests.JoinGameRequest;
 import responses.LogoutResponse;
 import server.Server;
+import server.services.LoginService;
 
 import java.net.HttpURLConnection;
 import java.util.Arrays;
@@ -64,7 +65,10 @@ public class CustomTests {
         //password left blank!//
         TestUser existingUserB = new TestUser("anotherUser", "", "qwertyuiop@gmail.com");
         TestAuthResult loginResultB = serverFacade.login(existingUserB);
-        Assertions.assertNull(loginResultB.getUsername(), "Response Username should be left null"); //should be left null//
+        Assertions.assertNull(loginResultB.getUsername(), "Response Username should be left null");
+
+
+        LoginService testService = new LoginService();
     }
 
     @Test
@@ -99,7 +103,7 @@ public class CustomTests {
     @Test
     @Order(4)
     @DisplayName("Good Register Request")
-    public void GoodRegister(){
+    public void goodRegister(){
         TestUser existingUserA = new TestUser("existingUser", "pw", "qwertyuiop@gmail.com");
         TestAuthResult registerResultA = serverFacade.register(existingUserA);
         Assertions.assertEquals(registerResultA.getUsername(), existingUserA.getUsername());
@@ -114,7 +118,7 @@ public class CustomTests {
     @Test
     @Order(5)
     @DisplayName("Good Logout Request")
-    public void GoodLogout(){
+    public void goodLogout(){
         TestUser existingUserA = new TestUser("existingUser", "pw", "qwertyuiop@gmail.com");
         TestAuthResult registerResultA = serverFacade.register(existingUserA);
         Assertions.assertEquals(registerResultA.getUsername(), existingUserA.getUsername());
@@ -126,7 +130,7 @@ public class CustomTests {
     @Test
     @Order(6)
     @DisplayName("Bad Logout Request")
-    public void BadLogout(){
+    public void badLogout(){
         TestResult logoutResult = serverFacade.logout("someRandomString");
         Assertions.assertNotNull(logoutResult.getMessage()); //should be some sort of error message//
     }
@@ -135,7 +139,7 @@ public class CustomTests {
     @Test
     @Order(7)
     @DisplayName("Good List Games Request")
-    public void GoodListGames(){
+    public void goodListGames(){
         TestUser existingUserA = new TestUser("existingUser", "pw", "qwertyuiop@gmail.com");
         TestAuthResult registerResultA = serverFacade.register(existingUserA);
         Assertions.assertEquals(registerResultA.getUsername(), existingUserA.getUsername());
@@ -147,7 +151,7 @@ public class CustomTests {
     @Test
     @Order(8)
     @DisplayName("Bad List Games Request")
-    public void ListGamesWithoutAuthentication(){
+    public void listGamesWithoutAuthentication(){
         TestResult listGamesResult = serverFacade.listGames("someRandomString");
         Assertions.assertNotNull(listGamesResult.getMessage()); //should be some sort of error message//
     }
@@ -156,7 +160,7 @@ public class CustomTests {
     @Test
     @Order(9)
     @DisplayName("Good Create Game Request")
-    public void GoodCreateGame(){
+    public void goodCreateGame(){
         TestUser existingUserA = new TestUser("existingUser", "pw", "qwertyuiop@gmail.com");
         TestAuthResult registerResultA = serverFacade.register(existingUserA);
         Assertions.assertEquals(registerResultA.getUsername(), existingUserA.getUsername());
@@ -169,7 +173,7 @@ public class CustomTests {
     @Test
     @Order(10)
     @DisplayName("Bad Create Game Request")
-    public void BadCreateGame(){
+    public void badCreateGame(){
         TestUser existingUserA = new TestUser("existingUser", "pw", "qwertyuiop@gmail.com");
         TestAuthResult registerResultA = serverFacade.register(existingUserA);
         Assertions.assertEquals(registerResultA.getUsername(), existingUserA.getUsername());
@@ -183,7 +187,7 @@ public class CustomTests {
     @Test
     @Order(11)
     @DisplayName("Good Join Game Request")
-    public void GoodJoinGame(){
+    public void goodJoinGame(){
         TestUser existingUserA = new TestUser("existingUser", "pw", "qwertyuiop@gmail.com");
         TestAuthResult registerResultA = serverFacade.register(existingUserA);
         Assertions.assertEquals(registerResultA.getUsername(), existingUserA.getUsername());
@@ -201,7 +205,7 @@ public class CustomTests {
     @Test
     @Order(12)
     @DisplayName("Bad Join Game Request - Color Already Taken")
-    public void ColorAlreadyTaken(){
+    public void colorAlreadyTaken(){
         TestUser existingUserA = new TestUser("existingUser", "pw", "qwertyuiop@gmail.com");
         TestAuthResult registerResultA = serverFacade.register(existingUserA);
         Assertions.assertEquals(registerResultA.getUsername(), existingUserA.getUsername());
@@ -226,7 +230,7 @@ public class CustomTests {
     @Test
     @Order(13)
     @DisplayName("Clear Successful!")
-    public void ClearTest(){
+    public void clearTest(){
         TestResult clearResult = serverFacade.clear();
         Assertions.assertNull(clearResult.getMessage());
     }
