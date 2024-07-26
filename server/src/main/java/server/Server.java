@@ -1,6 +1,7 @@
 package server;
 
 import dataaccess.DataAccessException;
+import dataaccess.DatabaseAccess;
 import dataaccess.DatabaseHolder;
 import dataaccess.DatabaseManager;
 import spark.*;
@@ -10,7 +11,7 @@ import javax.xml.crypto.Data;
 
 public class Server {
     //my Database Holder//
-    DatabaseHolder db = new DatabaseHolder();
+    //DatabaseHolder db = new DatabaseHolder();
 
     public int run(int desiredPort) {
         Spark.port(desiredPort);
@@ -26,7 +27,7 @@ public class Server {
             System.out.print("error");
         }
 
-        DatabaseHolder db = new DatabaseHolder(); //make our dbManager//
+        DatabaseAccess db = new DatabaseHolder(); //make our dbManager//
 
         //Spark.delete("/db", ((request, response) -> new ClearHandler(db).handle(request,response)));//why//
         Spark.post("/user", new RegisterHandler(db));

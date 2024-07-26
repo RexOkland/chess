@@ -1,5 +1,7 @@
 package server.services;
 
+import dataaccess.DataAccessException;
+import dataaccess.DatabaseAccess;
 import dataaccess.DatabaseHolder;
 import dataaccess.authdao.AuthDao;
 import dataaccess.authdao.AuthDaoInterface;
@@ -14,19 +16,29 @@ import java.util.UUID;
 
 public class LogoutService {
 
-    public LogoutResponse logout(String authString, DatabaseHolder db){
+    public LogoutResponse logout(String authString, DatabaseAccess db){
 
         //response data//
         String responseMessage = null;
 
         AuthDaoInterface authDao = db.authDAO();
-        AuthData foundData = authDao.findAuth(authString);
+        AuthData foundData;
+        try{foundData= authDao.findAuth(authString);}
+        catch (DataAccessException ex){ //500 type error//
+            responseMessage = "data access error: " + ex.getMessage();
+            return new LogoutResponse(responseMessage);
+        }
+
         if(foundData == null){
             responseMessage = "error: unauthorized";
             return new LogoutResponse(responseMessage);
         }
         else{
-            authDao.removeItem(foundData);
+            try{authDao.removeItem(foundData);}
+            catch (DataAccessException ex){ //500 type error//
+                responseMessage = "data access error: " + ex.getMessage();
+                return new LogoutResponse(responseMessage);
+            }
             return new LogoutResponse(responseMessage);
         }
     }

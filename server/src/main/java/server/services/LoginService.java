@@ -1,6 +1,7 @@
 package server.services;
 
 import dataaccess.DataAccessException;
+import dataaccess.DatabaseAccess;
 import dataaccess.DatabaseHolder;
 import dataaccess.userdao.UserDao;
 import dataaccess.userdao.UserDaoInterface;
@@ -15,7 +16,7 @@ import java.util.UUID;
 
 public class LoginService {
 
-    public LoginResponse login(UserData userData, DatabaseHolder db){
+    public LoginResponse login(UserData userData, DatabaseAccess db){
 
         //response data//
         String responseUser = null;
@@ -37,7 +38,7 @@ public class LoginService {
         else{
             UserData foundData; //declaring a variable before try-catch statements//
             try{foundData = userDao.searchUser(userData.username());}
-            catch(DataAccessException exception){
+            catch(DataAccessException exception){ //500-type error//
                 responseMessage = "error: failed to connect to server";
                 return new LoginResponse(responseUser, responseAuth, responseMessage);
             }
@@ -50,7 +51,11 @@ public class LoginService {
             else{ //they DO match up//
                 responseAuth = UUID.randomUUID().toString();
                 responseUser = foundData.username();
-                db.authDAO().addItem( new AuthData(responseAuth, responseUser) );
+                try{db.authDAO().addItem( new AuthData(responseAuth, responseUser) );}
+                catch(DataAccessException ex){
+                    responseMessage = "data access error: " + ex.getMessage();
+                    return new LoginResponse(responseUser, responseAuth, responseMessage);
+                }
             }
             return new LoginResponse(responseUser, responseAuth, responseMessage);
         }

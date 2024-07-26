@@ -1,6 +1,7 @@
 package server.handlers;
 
 import com.google.gson.Gson;
+import dataaccess.DatabaseAccess;
 import dataaccess.DatabaseHolder;
 import models.GameData;
 import requests.JoinGameRequest;
@@ -13,9 +14,9 @@ import spark.Route;
 
 public class JoinGameHandler implements Route {
     JoinGameService service;
-    DatabaseHolder holder;
+    DatabaseAccess holder;
 
-    public JoinGameHandler(DatabaseHolder databaseHolder){
+    public JoinGameHandler(DatabaseAccess databaseHolder){
         this.service = new JoinGameService();
         this.holder = databaseHolder;
     }

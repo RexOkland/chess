@@ -4,7 +4,7 @@ import dataaccess.authdao.*;
 import dataaccess.gamesdao.*;
 import dataaccess.userdao.*;
 
-public class DatabaseHolder {
+public class DatabaseHolder implements DatabaseAccess{
     //we've got an object here to access each of the db tables//
     AuthDao authDAO;
     GamesDao gamesDAO;
@@ -15,18 +15,13 @@ public class DatabaseHolder {
         this.gamesDAO = new GamesDao();
         this.userDAO = new UserDao();
     }
-
     public AuthDao authDAO(){
         return this.authDAO;
     }
-
     public GamesDao gamesDAO(){
         return this.gamesDAO;
     }
-
     public UserDao userDAO(){
         return this.userDAO;
     }
-
-
 }

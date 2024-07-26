@@ -1,6 +1,7 @@
 package server.handlers;
 
 import com.google.gson.Gson;
+import dataaccess.DatabaseAccess;
 import dataaccess.DatabaseHolder;
 import models.*;
 import responses.LoginResponse;
@@ -11,11 +12,11 @@ import spark.Route;
 
 public class LoginHandler implements Route {
     LoginService service;
-    DatabaseHolder holder;
+    DatabaseAccess holder;
 
 
 
-    public LoginHandler(DatabaseHolder databaseHolder){
+    public LoginHandler(DatabaseAccess databaseHolder){
         this.service = new LoginService();
         this.holder = databaseHolder;
     }

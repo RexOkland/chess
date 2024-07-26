@@ -1,6 +1,7 @@
 package server.services;
 
 import dataaccess.DataAccessException;
+import dataaccess.DatabaseAccess;
 import dataaccess.DatabaseHolder;
 import dataaccess.authdao.*;
 import dataaccess.userdao.*;
@@ -17,7 +18,7 @@ import java.util.UUID;
 public class RegisterService {
     //business logic function I think//
 
-    public RegisterResponse register(UserData userData, DatabaseHolder db){
+    public RegisterResponse register(UserData userData, DatabaseAccess db){
 
         //response data//
         String responseUser = null;
@@ -46,7 +47,6 @@ public class RegisterService {
                 return new RegisterResponse(responseUser, responseAuth, responseMessage);
             }
 
-
             if(foundData == null){
                 //username not found in system... which is good//
                 //all logic tests passed @ this point//
@@ -56,12 +56,16 @@ public class RegisterService {
                 responseAuth = UUID.randomUUID().toString();
 
                 //adding new auth token to authentication table//
-                AuthDao authDao = db.authDAO();
-                authDao.addItem( new AuthData(responseAuth, responseUser) );
+                AuthDaoInterface authDao = db.authDAO();
+                try{authDao.addItem( new AuthData(responseAuth, responseUser) );}
+                catch(DataAccessException ex){ //500 data access error//
+                    responseMessage = "data access error: " + ex.getMessage();
+                    return new RegisterResponse(responseUser, responseAuth, responseMessage);
+                }
 
                 //adding new user to user table//
                 try{userDao.addItem(userData);}
-                catch(DataAccessException ex){//catching a potential type 500 error//
+                catch(DataAccessException ex){ //500 data access error//
                     responseMessage = "data access error: " + ex.getMessage();
                     return new RegisterResponse(responseUser, responseAuth, responseMessage);
                 }

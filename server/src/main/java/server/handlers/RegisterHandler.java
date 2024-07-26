@@ -1,6 +1,7 @@
 package server.handlers;
 
 import com.google.gson.Gson;
+import dataaccess.DatabaseAccess;
 import dataaccess.DatabaseHolder;
 import models.UserData;
 import responses.RegisterResponse;
@@ -11,11 +12,11 @@ import spark.Route;
 
 public class RegisterHandler implements Route {
     RegisterService service;
-    DatabaseHolder holder;
+    DatabaseAccess holder;
 
 
 
-    public RegisterHandler(DatabaseHolder databaseHolder){
+    public RegisterHandler(DatabaseAccess databaseHolder){
         this.service = new RegisterService();
         this.holder = databaseHolder;
     }

@@ -1,6 +1,8 @@
 package server.services;
 
 import chess.ChessGame;
+import dataaccess.DataAccessException;
+import dataaccess.DatabaseAccess;
 import dataaccess.DatabaseHolder;
 import dataaccess.authdao.AuthDao;
 import dataaccess.authdao.AuthDaoInterface;
@@ -11,24 +13,38 @@ import models.GameData;
 import responses.CreateGameResponse;
 import responses.JoinGameResponse;
 
+import javax.xml.crypto.Data;
 import java.util.Objects;
 import java.util.UUID;
 
 public class JoinGameService {
 
-    public JoinGameResponse joinGame(String authString, String team, int gameID, DatabaseHolder db){
+    public JoinGameResponse joinGame(String authString, String team, int gameID, DatabaseAccess db){
         //response data//
         String responseMessage = null;
 
         AuthDaoInterface authDao = db.authDAO();
-        AuthData foundAuth = authDao.findAuth(authString);
+        AuthData foundAuth;
+
+        try{foundAuth = authDao.findAuth(authString);}
+        catch (DataAccessException ex){ //500 type error//
+            responseMessage = "data access error: " + ex.getMessage();
+            return new JoinGameResponse(responseMessage);
+        }
+
         if(foundAuth == null){
             //auth token not found - not logged in//
             responseMessage = "error: unauthorized";
         }
         else{
             GamesDaoInterface gameDao = db.gamesDAO();
-            GameData foundGame = gameDao.findGame(gameID);
+            GameData foundGame;
+            try{foundGame = gameDao.findGame(gameID);}
+            catch(DataAccessException ex){ // 500 type error//
+                responseMessage = "data access error: " + ex.getMessage();
+                return new JoinGameResponse(responseMessage);
+            }
+
             if(foundGame == null){
                 //game not found - requesting a game that doesn't exist//
                 responseMessage = "error: bad request";
@@ -40,7 +56,11 @@ public class JoinGameService {
                         responseMessage = "error: already taken";
                     }
                     else{
-                        gameDao.updateGame(foundGame.setWhite(foundAuth.username()));
+                        try{gameDao.updateGame(foundGame.setWhite(foundAuth.username()));}
+                        catch(DataAccessException ex){ // 500 type error//
+                            responseMessage = "data access error: " + ex.getMessage();
+                            return new JoinGameResponse(responseMessage);
+                        }
                     }
 
                 }else if(Objects.equals(team, "BLACK")) {
@@ -49,7 +69,11 @@ public class JoinGameService {
                         responseMessage = "error: already taken";
                     }
                     else{
-                        gameDao.updateGame(foundGame.setBlack(foundAuth.username()));
+                        try{gameDao.updateGame(foundGame.setBlack(foundAuth.username()));}
+                        catch(DataAccessException ex){
+                            responseMessage = "data access error: " + ex.getMessage();
+                            return new JoinGameResponse(responseMessage);
+                        }
                     }
 
                 }else{

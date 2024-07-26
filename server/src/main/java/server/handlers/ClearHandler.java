@@ -1,5 +1,6 @@
 package server.handlers;
 
+import dataaccess.DatabaseAccess;
 import dataaccess.DatabaseHolder;
 import responses.ClearResponse;
 import server.services.ClearService;
@@ -10,9 +11,9 @@ import spark.Route;
 
 public class ClearHandler implements Route {
     ClearService service;
-    DatabaseHolder holder;
+    DatabaseAccess holder;
 
-    public ClearHandler(DatabaseHolder databaseHolder){
+    public ClearHandler(DatabaseAccess databaseHolder){
         this.service = new ClearService();
         this.holder = databaseHolder;
     }

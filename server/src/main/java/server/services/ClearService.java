@@ -1,6 +1,7 @@
 package server.services;
 
 import dataaccess.DataAccessException;
+import dataaccess.DatabaseAccess;
 import dataaccess.DatabaseHolder;
 import dataaccess.authdao.AuthDaoInterface;
 import dataaccess.gamesdao.GamesDaoInterface;
@@ -9,7 +10,7 @@ import responses.ClearResponse;
 
 public class ClearService {
     String responseMessage = null;
-    public ClearResponse clear(DatabaseHolder db){
+    public ClearResponse clear(DatabaseAccess db){
         //interface objects allow for local and sql solutions to work//
         AuthDaoInterface authDao = db.authDAO();
         GamesDaoInterface gamesDao = db.gamesDAO();

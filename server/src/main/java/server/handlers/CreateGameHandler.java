@@ -1,6 +1,7 @@
 package server.handlers;
 
 import com.google.gson.Gson;
+import dataaccess.DatabaseAccess;
 import dataaccess.DatabaseHolder;
 import models.GameData;
 import models.UserData;
@@ -14,9 +15,9 @@ import spark.Route;
 
 public class CreateGameHandler implements Route {
     CreateGameService service;
-    DatabaseHolder holder;
+    DatabaseAccess holder;
 
-    public CreateGameHandler(DatabaseHolder databaseHolder){
+    public CreateGameHandler(DatabaseAccess databaseHolder){
         this.service = new CreateGameService();
         this.holder = databaseHolder;
     }

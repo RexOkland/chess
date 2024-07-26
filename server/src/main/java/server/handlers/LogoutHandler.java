@@ -1,6 +1,7 @@
 package server.handlers;
 
 import com.google.gson.Gson;
+import dataaccess.DatabaseAccess;
 import dataaccess.DatabaseHolder;
 import models.AuthData;
 import models.UserData;
@@ -16,11 +17,11 @@ import java.io.Reader;
 
 public class LogoutHandler implements Route {
     LogoutService service;
-    DatabaseHolder holder;
+    DatabaseAccess holder;
 
 
 
-    public LogoutHandler(DatabaseHolder databaseHolder){
+    public LogoutHandler(DatabaseAccess databaseHolder){
         this.service = new LogoutService();
         this.holder = databaseHolder;
     }
