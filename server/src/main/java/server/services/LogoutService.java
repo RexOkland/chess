@@ -2,6 +2,7 @@ package server.services;
 
 import dataaccess.DatabaseHolder;
 import dataaccess.authdao.AuthDao;
+import dataaccess.authdao.AuthDaoInterface;
 import dataaccess.userdao.UserDao;
 import models.AuthData;
 import models.UserData;
@@ -18,7 +19,7 @@ public class LogoutService {
         //response data//
         String responseMessage = null;
 
-        AuthDao authDao = db.authDAO();
+        AuthDaoInterface authDao = db.authDAO();
         AuthData foundData = authDao.findAuth(authString);
         if(foundData == null){
             responseMessage = "error: unauthorized";

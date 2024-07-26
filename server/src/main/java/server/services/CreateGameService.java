@@ -3,7 +3,9 @@ package server.services;
 import chess.ChessGame;
 import dataaccess.DatabaseHolder;
 import dataaccess.authdao.AuthDao;
+import dataaccess.authdao.AuthDaoInterface;
 import dataaccess.gamesdao.GamesDao;
+import dataaccess.gamesdao.GamesDaoInterface;
 import models.AuthData;
 import models.GameData;
 import responses.CreateGameResponse;
@@ -17,14 +19,14 @@ public class CreateGameService {
         Integer responseGameID = null; //not good//
         String responseMessage = null;
 
-        AuthDao authDao = db.authDAO();
+        AuthDaoInterface authDao = db.authDAO();
         AuthData foundData = authDao.findAuth(authString);
         if(foundData == null){
             //auth token not found - not logged in//
             responseMessage = "error: unauthorized";
         }
         else{
-            GamesDao gamesDao= db.gamesDAO();
+            GamesDaoInterface gamesDao= db.gamesDAO();
             GameData foundGame = gamesDao.findGame(gameName);
             if(foundGame == null){
                 //no existing game with that name - all good!

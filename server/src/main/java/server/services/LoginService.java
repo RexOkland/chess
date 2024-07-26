@@ -35,14 +35,14 @@ public class LoginService {
 
         //userData is NOT blank/null//
         else{
-            UserData foundData; //declare//
-            try{
-                foundData = userDao.searchUser(userData.username()); //initialize//
-            }
+            UserData foundData; //declaring a variable before try-catch statements//
+            try{foundData = userDao.searchUser(userData.username());}
             catch(DataAccessException exception){
                 responseMessage = "error: failed to connect to server";
                 return new LoginResponse(responseUser, responseAuth, responseMessage);
             }
+
+            //at this point, database connection was successful//
             if((foundData == null) || (!Objects.equals(foundData.password(), userData.password()))){
                 responseMessage = "error: unauthorized";
                 return new LoginResponse(responseUser, responseAuth, responseMessage);

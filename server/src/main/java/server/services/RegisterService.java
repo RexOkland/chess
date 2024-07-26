@@ -1,5 +1,6 @@
 package server.services;
 
+import dataaccess.DataAccessException;
 import dataaccess.DatabaseHolder;
 import dataaccess.authdao.*;
 import dataaccess.userdao.*;
@@ -8,6 +9,7 @@ import models.UserData;
 import org.eclipse.jetty.server.Authentication;
 import responses.RegisterResponse;
 
+import javax.xml.crypto.Data;
 import java.util.Collection;
 import java.util.Objects;
 import java.util.UUID;
@@ -22,7 +24,7 @@ public class RegisterService {
         String responseAuth = null;
         String responseMessage = null;
 
-        UserDao userDao = db.userDAO();
+        UserDaoInterface userDao = db.userDAO();
         if( (Objects.equals(userData.username(), "")) || (Objects.equals(userData.password(), ""))){
             //neither can be left empty... that's a bad request to me//
             responseMessage = "error: bad request";
@@ -32,22 +34,37 @@ public class RegisterService {
             //neither can be left empty... that's a bad request to me//
             responseMessage = "error: bad request";
         }
-
-        //userData is NOT blank or null//
+        //userData is NOT blank or null... which is good//
         else{
+            UserData foundData; //declaring this variable before try-catch blocs=ks//
 
-            UserData foundData = userDao.searchUser(userData.username());
+            //searching user table to see if the username is taken already//
+            try {
+                foundData = userDao.searchUser(userData.username());
+            }catch (DataAccessException ex){
+                responseMessage = "data access error: " + ex.getMessage();
+                return new RegisterResponse(responseUser, responseAuth, responseMessage);
+            }
+
+
             if(foundData == null){
-                //username not found in system//
+                //username not found in system... which is good//
                 //all logic tests passed @ this point//
-                responseUser = userData.username(); //RESPONSE DATA//
-                responseAuth = UUID.randomUUID().toString(); //RESPONSE DATA//
 
+                //ASSIGNING RESPONSE DATA//
+                responseUser = userData.username();
+                responseAuth = UUID.randomUUID().toString();
+
+                //adding new auth token to authentication table//
                 AuthDao authDao = db.authDAO();
                 authDao.addItem( new AuthData(responseAuth, responseUser) );
-                //auth data added//
-                userDao.addItem(userData);
-                //user data added/
+
+                //adding new user to user table//
+                try{userDao.addItem(userData);}
+                catch(DataAccessException ex){//catching a potential type 500 error//
+                    responseMessage = "data access error: " + ex.getMessage();
+                    return new RegisterResponse(responseUser, responseAuth, responseMessage);
+                }
             }
             else{
                 responseMessage = "error: username taken";
