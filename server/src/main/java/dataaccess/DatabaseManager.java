@@ -71,10 +71,10 @@ public class DatabaseManager {
 
         try (var conn = DriverManager.getConnection(CONNECTION_URL, USER, PASSWORD)) {
             try (var statement = conn.createStatement()) {
-                // Execute the initial statement
+                // This is the 'use' statement - identifies the database //
                 statement.execute(initialStatement);
 
-                // Execute the table creation statements
+                // Creating the individual tables in identified database //
                 statement.executeUpdate(strA);
                 statement.executeUpdate(strB);
                 statement.executeUpdate(strC);
