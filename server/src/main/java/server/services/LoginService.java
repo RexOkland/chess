@@ -1,7 +1,9 @@
 package server.services;
 
+import dataaccess.DataAccessException;
 import dataaccess.DatabaseHolder;
 import dataaccess.userdao.UserDao;
+import dataaccess.userdao.UserDaoInterface;
 import models.AuthData;
 import models.UserData;
 import responses.LoginResponse;
@@ -20,7 +22,8 @@ public class LoginService {
         String responseAuth = null;
         String responseMessage = null;
 
-        UserDao userDao = db.userDAO();
+        UserDaoInterface userDao = db.userDAO();
+
         if( (Objects.equals(userData.username(), "")) || (Objects.equals(userData.password(), ""))){
             responseMessage = "error: unauthorized";
             return new LoginResponse(responseUser, responseAuth, responseMessage);
@@ -32,8 +35,14 @@ public class LoginService {
 
         //userData is NOT blank/null//
         else{
-
-            UserData foundData = userDao.searchUser(userData.username());
+            UserData foundData; //declare//
+            try{
+                foundData = userDao.searchUser(userData.username()); //initialize//
+            }
+            catch(DataAccessException exception){
+                responseMessage = "error: failed to connect to server";
+                return new LoginResponse(responseUser, responseAuth, responseMessage);
+            }
             if((foundData == null) || (!Objects.equals(foundData.password(), userData.password()))){
                 responseMessage = "error: unauthorized";
                 return new LoginResponse(responseUser, responseAuth, responseMessage);

@@ -1,7 +1,9 @@
 package dataaccess;
 
+import javax.xml.crypto.Data;
 import java.sql.*;
 import java.util.Properties;
+import java.util.Vector;
 
 public class DatabaseManager {
     private static final String DATABASE_NAME;
@@ -36,7 +38,7 @@ public class DatabaseManager {
     /**
      * Creates the database if it does not already exist.
      */
-    static void createDatabase() throws DataAccessException {
+    public static void createDatabase() throws DataAccessException {
         try {
             var statement = "CREATE DATABASE IF NOT EXISTS " + DATABASE_NAME;
             var conn = DriverManager.getConnection(CONNECTION_URL, USER, PASSWORD);
@@ -48,6 +50,44 @@ public class DatabaseManager {
         }
     }
 
+    public static void createChessTables() throws DataAccessException {
+        String initialStatement = "USE " + DATABASE_NAME + ";";
+        String strA = "CREATE TABLE IF NOT EXISTS user (" +
+                "username VARCHAR(50) PRIMARY KEY," +
+                "password VARCHAR(50)," +
+                "email VARCHAR(250)" +
+                ");";
+        String strB = "CREATE TABLE IF NOT EXISTS authentication (" +
+                "token VARCHAR(250) PRIMARY KEY," +
+                "username VARCHAR(50)" +
+                ");";
+        String strC = "CREATE TABLE IF NOT EXISTS game (" +
+                "gameID INT PRIMARY KEY," +
+                "whiteUsername VARCHAR(50)," +
+                "blackUsername VARCHAR(50)," +
+                "gameName VARCHAR(50)," +
+                "gameData VARCHAR(8000)" +
+                ");";
+
+        try (var conn = DriverManager.getConnection(CONNECTION_URL, USER, PASSWORD)) {
+            try (var statement = conn.createStatement()) {
+                // Execute the initial statement
+                statement.execute(initialStatement);
+
+                // Execute the table creation statements
+                statement.executeUpdate(strA);
+                statement.executeUpdate(strB);
+                statement.executeUpdate(strC);
+            }
+        } catch (SQLException e) {
+            System.err.println("Error creating tables: " + e.getMessage());
+            e.printStackTrace(); // Print the stack trace for more detailed error information
+            throw new DataAccessException("Error creating tables: " + e.getMessage());
+        }
+    }
+
+
+
     /**
      * Create a connection to the database and sets the catalog based upon the
      * properties specified in db.properties. Connections to the database should
@@ -57,7 +97,6 @@ public class DatabaseManager {
      * <code>
      * try (var conn = DbInfo.getConnection(databaseName)) {
      * // execute SQL statements.
-     * }
      * </code>
      */
     static Connection getConnection() throws DataAccessException {

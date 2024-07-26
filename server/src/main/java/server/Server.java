@@ -1,17 +1,16 @@
 package server;
 
+import dataaccess.DataAccessException;
 import dataaccess.DatabaseHolder;
+import dataaccess.DatabaseManager;
 import spark.*;
 import server.handlers.*;
 
+import javax.xml.crypto.Data;
+
 public class Server {
-    //my Database Manager//
+    //my Database Holder//
     DatabaseHolder db = new DatabaseHolder();
-
-    //handlers//
-    RegisterHandler regHandler;
-    LoginHandler logHandler;
-
 
     public int run(int desiredPort) {
         Spark.port(desiredPort);
@@ -19,7 +18,15 @@ public class Server {
         Spark.staticFiles.location("web");
         // Register your endpoints and handle exceptions here.
 
-        //DatabaseHolder db = new DatabaseHolder(); //make our dbManager//
+        try{
+            DatabaseManager.createDatabase();
+            DatabaseManager.createChessTables();
+
+        }catch (DataAccessException exception){
+            System.out.print("error");
+        }
+
+        DatabaseHolder db = new DatabaseHolder(); //make our dbManager//
 
         //Spark.delete("/db", ((request, response) -> new ClearHandler(db).handle(request,response)));//why//
         Spark.post("/user", new RegisterHandler(db));
