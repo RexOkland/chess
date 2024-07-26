@@ -9,7 +9,6 @@ import dataaccess.userdao.UserDaoInterface;
 import responses.ClearResponse;
 
 public class ClearService {
-    String responseMessage = null;
     public ClearResponse clear(DatabaseAccess db){
         //interface objects allow for local and sql solutions to work//
         AuthDaoInterface authDao = db.authDAO();
@@ -20,7 +19,7 @@ public class ClearService {
             gamesDao.clearDAO();
             userDao.clearDAO();
         }
-        catch(DataAccessException ex){
+        catch(DataAccessException ex){ //500 type error//
             return new ClearResponse(ex.getMessage());
         }
         return new ClearResponse(null);

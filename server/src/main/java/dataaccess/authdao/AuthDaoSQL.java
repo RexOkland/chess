@@ -3,6 +3,8 @@ package dataaccess.authdao;
 import models.AuthData;
 
 public class AuthDaoSQL implements AuthDaoInterface {
+
+    public AuthDaoSQL(){}
     @Override
     public void addItem(AuthData item) {
         //TODO: implement

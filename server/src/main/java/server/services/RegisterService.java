@@ -64,6 +64,8 @@ public class RegisterService {
                 }
 
                 //adding new user to user table//
+
+                //TODO: //encrypt the password//
                 try{userDao.addItem(userData);}
                 catch(DataAccessException ex){ //500 data access error//
                     responseMessage = "data access error: " + ex.getMessage();

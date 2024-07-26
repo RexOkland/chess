@@ -1,9 +1,6 @@
 package server;
 
-import dataaccess.DataAccessException;
-import dataaccess.DatabaseAccess;
-import dataaccess.DatabaseHolder;
-import dataaccess.DatabaseManager;
+import dataaccess.*;
 import spark.*;
 import server.handlers.*;
 
@@ -18,16 +15,18 @@ public class Server {
 
         Spark.staticFiles.location("web");
         // Register your endpoints and handle exceptions here.
+        DatabaseAccess db = null;
 
         try{
             DatabaseManager.createDatabase();
             DatabaseManager.createChessTables();
+            db = new DatabaseHolderSQL(); //make our dbManager//
 
         }catch (DataAccessException exception){
             System.out.print("error");
         }
 
-        DatabaseAccess db = new DatabaseHolder(); //make our dbManager//
+
 
         //Spark.delete("/db", ((request, response) -> new ClearHandler(db).handle(request,response)));//why//
         Spark.post("/user", new RegisterHandler(db));

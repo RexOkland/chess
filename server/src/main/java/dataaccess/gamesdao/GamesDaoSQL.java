@@ -5,6 +5,8 @@ import models.GameData;
 import java.util.HashSet;
 
 public class GamesDaoSQL implements GamesDaoInterface{
+
+    public GamesDaoSQL(){}
     @Override
     public void addGame(GameData game) {
         //TODO: implement
