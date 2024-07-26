@@ -1,4 +1,3 @@
 package dataaccess.userdao;
 
-public interface UserDaoInterface {
-}
+public interface UserDaoInterface {}
