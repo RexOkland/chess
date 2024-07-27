@@ -343,6 +343,113 @@ public class CustomDaoTests {
         cleanUpShop();
     }
 
+    @Test
+    @DisplayName("GameDao - good find test")
+    public void gameDaoGoodFind(){
+        setStage();
+        String noException = null;
+
+        GamesDaoInterface gameDaoSQL = new GamesDaoSQL();
+        GameData existingGame = existingGame();
+        GameData foundDataA = null;
+        GameData foundDataB = null;
+        try{
+            foundDataA = gameDaoSQL.findGame(existingGame.gameID());
+            foundDataB = gameDaoSQL.findGame(existingGame.gameName());
+        } catch(DataAccessException ex){
+            noException = ex.getMessage();
+        }
+
+        Assertions.assertNull(noException);
+        Assertions.assertEquals(existingGame.gameName(), foundDataA.gameName());
+        Assertions.assertEquals(existingGame.gameID(), foundDataB.gameID());
+        Assertions.assertEquals(foundDataA.whiteUsername(), foundDataB.whiteUsername());
+        Assertions.assertEquals(foundDataB.blackUsername(), foundDataA.blackUsername());
+        cleanUpShop();
+    }
+
+    @Test
+    @DisplayName("GameDao - bad find test")
+    public void gameDaoBadFind(){
+        setStage();
+        String stillNoException = null;
+
+        GamesDaoInterface gameDaoSQL = new GamesDaoSQL();
+        GameData fakeGame = new GameData(9999, "w","b","notEvenReal", new ChessGame());
+        GameData foundDataA = null;
+        GameData foundDataB = null;
+        try{
+            foundDataA = gameDaoSQL.findGame(fakeGame.gameID());
+            foundDataB = gameDaoSQL.findGame(fakeGame.gameName());
+        } catch(DataAccessException ex){
+            stillNoException = ex.getMessage();
+        }
+
+        Assertions.assertNull(stillNoException);
+        Assertions.assertNull(foundDataA);
+        Assertions.assertNull(foundDataB);
+        cleanUpShop();
+    }
+
+    @Test
+    @DisplayName("GameDao - good list games test")
+    public void gameDaoGoodList(){
+        setStage();
+        String noException = null;
+        HashSet<GameData> listedGames = new HashSet<GameData>();
+
+        GamesDaoInterface gameDao = new GamesDaoSQL();
+        GameData validGameA = new GameData(2, null, null, "game_2", new ChessGame());
+        GameData validGameB = new GameData(3, null, null, "game_3", new ChessGame());
+        try{
+            gameDao.addGame(validGameA);
+            gameDao.addGame(validGameB);
+            listedGames = gameDao.getAllGames();
+        } catch(DataAccessException ex){
+            noException = ex.getMessage();
+        }
+        Assertions.assertNull(noException);
+        Assertions.assertNotNull(listedGames);
+        cleanUpShop();
+    }
+
+    @Test
+    @DisplayName("GameDao - bad list games test")
+    public void gameDaoBadList(){
+        setStage();
+        String noException = null;
+        HashSet<GameData> listedGames = new HashSet<GameData>();
+
+        GamesDaoInterface gameDao = new GamesDaoSQL();
+        GameData validGameA = new GameData(2, null, null, "game_2", new ChessGame());
+        GameData validGameB = new GameData(3, null, null, "game_3", new ChessGame());
+        try{
+            gameDao.addGame(validGameA);
+            gameDao.addGame(validGameB);
+            gameDao.clearDAO();
+            listedGames = gameDao.getAllGames();
+        } catch(DataAccessException ex){
+            noException = ex.getMessage();
+        }
+        Assertions.assertNull(noException);
+        Assertions.assertEquals(listedGames, new HashSet<GameData>());
+        cleanUpShop();
+    }
+
+    @Test
+    @DisplayName("GameDao - good clear test")
+    public void gameDaoGoodClear(){
+        GamesDaoInterface testGameDao = new GamesDaoSQL();
+        String noExcepction = null;
+        try{
+            testGameDao.clearDAO();
+        }catch (DataAccessException ex){
+            noExcepction = ex.getMessage();
+        }
+        Assertions.assertNull(noExcepction);
+        cleanUpShop();
+    }
+
 
     //Rex's helper Functions//
     private void cleanUpShop(){
