@@ -13,13 +13,7 @@ import java.util.HashSet;
 
 public class GamesDaoSQL implements GamesDaoInterface{
 
-    public GamesDaoSQL(){
-        /*try{
-            addGame(new GameData(0, null,null,"rexsDefaultGame", new ChessGame()));
-        }catch(DataAccessException ex){
-            System.out.println("error in the GamesDaoSQL contructor");
-        }*/
-    }
+    public GamesDaoSQL(){}
     @Override
     public void addGame(GameData game) throws DataAccessException {
         var conn = DatabaseManager.getConnection();
@@ -138,10 +132,10 @@ public class GamesDaoSQL implements GamesDaoInterface{
     }
 
 
-    public void removeGame(Integer ID) throws DataAccessException {
+    public void removeGame(Integer id) throws DataAccessException {
         var conn = DatabaseManager.getConnection();
 
-        String sql = "DELETE FROM game WHERE `gameID` =" + "\"" + ID + "\"";
+        String sql = "DELETE FROM game WHERE `gameID` =" + "\"" + id + "\"";
         try{
             var preparedStatement = conn.prepareStatement(sql);
 

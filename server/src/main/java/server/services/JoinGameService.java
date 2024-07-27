@@ -54,26 +54,24 @@ public class JoinGameService {
                     //user wants to join as white//
                     if(foundGame.whiteUsername() != null){
                         responseMessage = "error: already taken";
+                        return new JoinGameResponse(responseMessage);
                     }
-                    else{
-                        try{gameDao.updateGame(foundGame.setWhite(foundAuth.username()));}
-                        catch(DataAccessException ex){ // 500 type error//
-                            responseMessage = "data access error: " + ex.getMessage();
-                            return new JoinGameResponse(responseMessage);
-                        }
+                    try{gameDao.updateGame(foundGame.setWhite(foundAuth.username()));}
+                    catch(DataAccessException ex){ // 500 type error//
+                        responseMessage = "data access error: " + ex.getMessage();
+                        return new JoinGameResponse(responseMessage);
                     }
 
                 }else if(Objects.equals(team, "BLACK")) {
                     //user wants to join as black//
                     if(foundGame.blackUsername() != null){
                         responseMessage = "error: already taken";
+                        return new JoinGameResponse(responseMessage);
                     }
-                    else{
-                        try{gameDao.updateGame(foundGame.setBlack(foundAuth.username()));}
-                        catch(DataAccessException ex){
-                            responseMessage = "data access error: " + ex.getMessage();
-                            return new JoinGameResponse(responseMessage);
-                        }
+                    try{gameDao.updateGame(foundGame.setBlack(foundAuth.username()));}
+                    catch(DataAccessException ex){
+                        responseMessage = "data access error: " + ex.getMessage();
+                        return new JoinGameResponse(responseMessage);
                     }
 
                 }else{

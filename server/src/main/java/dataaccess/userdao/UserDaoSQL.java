@@ -9,15 +9,7 @@ import java.sql.SQLException;
 
 public class UserDaoSQL implements UserDaoInterface {
 
-    public UserDaoSQL(){
-        //adding myself to every userTable//
-        /*try {
-            addItem(new UserData("RexOkland", "xalapanoChess", "rex.okland@gmail.com"));
-        } catch(DataAccessException ex){
-            System.out.println("error in userDaoSQL constructor");
-        }*/
-
-    }
+    public UserDaoSQL(){}
     @Override
     public void addItem(UserData item) throws DataAccessException {
         var conn = DatabaseManager.getConnection();

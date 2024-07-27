@@ -9,13 +9,7 @@ import java.sql.SQLException;
 
 public class AuthDaoSQL implements AuthDaoInterface {
 
-    public AuthDaoSQL(){
-        /*try{
-            addItem(new AuthData("rex's special auth token", "RexOkland"));
-        }catch(DataAccessException ex){
-            System.out.println("error in the AuthDaoSQL contructor");
-        }*/
-    }
+    public AuthDaoSQL(){}
     @Override
     public void addItem(AuthData item) throws DataAccessException{
         var conn = DatabaseManager.getConnection();

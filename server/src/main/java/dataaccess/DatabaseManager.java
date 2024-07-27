@@ -90,53 +90,6 @@ public class DatabaseManager {
         }
     }
 
-    public static void addToSQL(Object loQueSea) throws DataAccessException{
-        String initialStatement = "USE " + DATABASE_NAME + ";";
-        String secondStatement;
-
-        try (var conn = DriverManager.getConnection(CONNECTION_URL, USER, PASSWORD)) {
-            try (var statement = conn.createStatement()) {
-
-                if(loQueSea.getClass() == AuthData.class){
-                    secondStatement = "INSERT INTO authentication (token, username) VALUES (?, ?)";
-                    var preparedStatement = conn.prepareStatement(secondStatement);
-                    preparedStatement.setString(1, ((AuthData) loQueSea).authToken());
-                    preparedStatement.setString(2, ((AuthData) loQueSea).username());
-                }
-                else if(loQueSea.getClass() == GameData.class){
-                    secondStatement = "INSERT INTO game (gameID, whiteUsername, blackUsername, gameName, gameData)"
-                            + " VALUES (?, ?, ?, ?, ?)";
-                    var preparedStatement = conn.prepareStatement(secondStatement);
-                    preparedStatement.setInt(1, ((GameData) loQueSea).gameID());
-                    preparedStatement.setString(2, ((GameData) loQueSea).whiteUsername());
-                    preparedStatement.setString(3, ((GameData) loQueSea).blackUsername());
-                    preparedStatement.setString(4, ((GameData) loQueSea).gameName());
-                    //serialize the chessGame for the fifth parameter//
-                    Gson gson = new Gson();
-                    String gameData = gson.toJson(((GameData) loQueSea).game());
-                    preparedStatement.setString(5, gameData);
-                }
-                else if(loQueSea.getClass() == UserData.class){
-                    secondStatement = "INSERT INTO user (username, password, email) VALUES (?, ?, ?)";
-                    var preparedStatement = conn.prepareStatement(secondStatement);
-                    preparedStatement.setString(1, ((UserData) loQueSea).username());
-                    preparedStatement.setString(2, ((UserData) loQueSea).password());
-                    //TODO: encrypt this guy^//
-                    preparedStatement.setString(3, ((UserData) loQueSea).email());
-                }
-                else{
-                    throw new DataAccessException("table not found");
-                }
-                // This is the 'use' statement - identifies the database //
-                statement.execute(initialStatement);
-                // inserts data into corresponding table//
-                statement.executeUpdate(secondStatement);
-            }
-        } catch (SQLException e) {
-            System.err.println("Error creating tables: " + e.getMessage());
-            throw new DataAccessException("Error creating tables: " + e.getMessage());
-        }
-    }
 
     /**
      * Create a connection to the database and sets the catalog based upon the

@@ -49,10 +49,8 @@ public class RegisterService {
             }
 
             if(foundData == null){
-                //username not found in system... which is good//
-                //all logic tests passed @ this point//
-
-                //ASSIGNING RESPONSE DATA//
+                /*username not found in system... which is good//
+                //all logic tests passed @ this point*/
                 responseUser = userData.username();
                 responseAuth = UUID.randomUUID().toString();
 
@@ -65,8 +63,6 @@ public class RegisterService {
                 }
 
                 //adding new user to user table//
-
-                //TODO: //encrypt the password//
                 try{userDao.addItem(userData);}
                 catch(DataAccessException ex){ //500 data access error//
                     responseMessage = "data access error: " + ex.getMessage();

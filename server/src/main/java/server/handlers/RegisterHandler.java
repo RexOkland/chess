@@ -29,7 +29,7 @@ public class RegisterHandler implements Route {
         else{
             Gson gson = new Gson();
             UserData givenData = gson.fromJson(request.body(), UserData.class);
-            //TODO: encrypt passwords on register//
+
             String encryptedPass = BCrypt.hashpw(givenData.password(), BCrypt.gensalt());
             if(givenData.password() == null){ encryptedPass = null;}
             UserData encryptedData = new UserData(givenData.username(), encryptedPass, givenData.email());
