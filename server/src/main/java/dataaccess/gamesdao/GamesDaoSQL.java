@@ -46,9 +46,40 @@ public class GamesDaoSQL implements GamesDaoInterface{
     }
 
     @Override
-    public HashSet<GameData> getAllGames() {
-        //TODO: implement
-        return null;
+    public HashSet<GameData> getAllGames() throws DataAccessException {
+        var conn = DatabaseManager.getConnection();
+        HashSet<GameData> foundGames = new HashSet<GameData>();
+
+        String sql = "SELECT * FROM game";
+        try{
+            var preparedStatement = conn.prepareStatement(sql);
+            var queryResult = preparedStatement.executeQuery();
+
+            Integer id = null;
+            String white = null;
+            String black = null;
+            String name = null;
+            String data = null;
+
+            while (queryResult.next()) {
+                id = queryResult.getInt("gameID");
+                white = queryResult.getString("whiteUsername");
+                black = queryResult.getString("blackUsername");
+                name = queryResult.getString("gameName");
+                data = queryResult.getString("gameData");
+
+                Gson gson = new Gson();
+                ChessGame formattedData = gson.fromJson(data, ChessGame.class);
+
+                GameData foundGame = new GameData(id, white, black, name, formattedData);
+                foundGames.add(foundGame);
+            }
+        }
+        catch(SQLException ex){
+            throw new DataAccessException(ex.getMessage());
+        }
+
+        return foundGames;
     }
 
     @Override
@@ -75,7 +106,6 @@ public class GamesDaoSQL implements GamesDaoInterface{
                 preparedStatement.setInt(1, (Integer) parameter);
             }
 
-            // Execute the query
             var queryResult = preparedStatement.executeQuery();
 
             Integer foundID = null;
