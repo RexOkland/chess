@@ -7,6 +7,7 @@ import dataaccess.userdao.UserDao;
 import dataaccess.userdao.UserDaoInterface;
 import models.AuthData;
 import models.UserData;
+import org.mindrot.jbcrypt.BCrypt;
 import responses.LoginResponse;
 import responses.RegisterResponse;
 
@@ -44,7 +45,8 @@ public class LoginService {
             }
 
             //at this point, database connection was successful//
-            if((foundData == null) || (!Objects.equals(foundData.password(), userData.password()))){
+            //!Objects.equals(foundData.password(), userData.password()))
+            if( (foundData == null) || (!BCrypt.checkpw(userData.password(), foundData.password())) ){
                 responseMessage = "error: unauthorized";
                 return new LoginResponse(responseUser, responseAuth, responseMessage);
             }

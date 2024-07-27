@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import dataaccess.DatabaseAccess;
 import dataaccess.DatabaseHolder;
 import models.*;
+import org.mindrot.jbcrypt.BCrypt;
 import responses.LoginResponse;
 import server.services.*;
 import spark.Request;
@@ -29,6 +30,7 @@ public class LoginHandler implements Route {
         else{
             Gson gson = new Gson();
             UserData givenData = gson.fromJson(request.body(), UserData.class);
+
             LoginResponse loginResponse = service.login(givenData, holder);
             if(loginResponse.message() == null){
                 response.status(200); //sets status to 200//

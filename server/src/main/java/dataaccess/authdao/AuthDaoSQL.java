@@ -10,11 +10,11 @@ import java.sql.SQLException;
 public class AuthDaoSQL implements AuthDaoInterface {
 
     public AuthDaoSQL(){
-        try{
+        /*try{
             addItem(new AuthData("rex's special auth token", "RexOkland"));
         }catch(DataAccessException ex){
             System.out.println("error in the AuthDaoSQL contructor");
-        }
+        }*/
     }
     @Override
     public void addItem(AuthData item) throws DataAccessException{
@@ -46,6 +46,10 @@ public class AuthDaoSQL implements AuthDaoInterface {
         catch(SQLException ex){
             throw new DataAccessException(ex.getMessage());
         }
+        try {conn.close();}
+        catch(SQLException ex){
+            throw new DataAccessException("failed to close connection");
+        }
     }
 
     @Override
@@ -65,12 +69,17 @@ public class AuthDaoSQL implements AuthDaoInterface {
                 userData = queryResult.getString("username");
             }
 
+            conn.close();
+
             if(tokenData == null){return null;}
             else{return new AuthData(tokenData, userData);}
+
+
         }
         catch(SQLException ex){
             throw new DataAccessException(ex.getMessage());
         }
+
     }
 
     @Override
@@ -82,6 +91,8 @@ public class AuthDaoSQL implements AuthDaoInterface {
             var preparedStatement = conn.prepareStatement(sql);
 
             preparedStatement.executeUpdate();
+
+            conn.close();
         }
         catch(SQLException ex){
             throw new DataAccessException(ex.getMessage());

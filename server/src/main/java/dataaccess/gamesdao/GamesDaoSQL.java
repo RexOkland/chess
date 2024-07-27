@@ -14,11 +14,11 @@ import java.util.HashSet;
 public class GamesDaoSQL implements GamesDaoInterface{
 
     public GamesDaoSQL(){
-        try{
+        /*try{
             addGame(new GameData(0, null,null,"rexsDefaultGame", new ChessGame()));
         }catch(DataAccessException ex){
             System.out.println("error in the GamesDaoSQL contructor");
-        }
+        }*/
     }
     @Override
     public void addGame(GameData game) throws DataAccessException {
@@ -73,7 +73,9 @@ public class GamesDaoSQL implements GamesDaoInterface{
 
                 GameData foundGame = new GameData(id, white, black, name, formattedData);
                 foundGames.add(foundGame);
+
             }
+            conn.close();
         }
         catch(SQLException ex){
             throw new DataAccessException(ex.getMessage());
@@ -124,6 +126,7 @@ public class GamesDaoSQL implements GamesDaoInterface{
 
             Gson gson = new Gson();
             ChessGame formattedGameData = gson.fromJson(foundGameData, ChessGame.class);
+            conn.close();
 
             if (foundID == null) {return null;}
             else {
@@ -143,6 +146,7 @@ public class GamesDaoSQL implements GamesDaoInterface{
             var preparedStatement = conn.prepareStatement(sql);
 
             preparedStatement.executeUpdate();
+            conn.close();
         }
         catch(SQLException ex){
             throw new DataAccessException(ex.getMessage());
@@ -165,6 +169,7 @@ public class GamesDaoSQL implements GamesDaoInterface{
             var preparedStatement = conn.prepareStatement(sql);
 
             preparedStatement.executeUpdate();
+            conn.close();
         }
         catch(SQLException ex){
             throw new DataAccessException(ex.getMessage());

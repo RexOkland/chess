@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import dataaccess.DatabaseAccess;
 import dataaccess.DatabaseHolder;
 import models.UserData;
+import org.mindrot.jbcrypt.BCrypt;
 import responses.RegisterResponse;
 import spark.Request;
 import spark.Response;
@@ -28,7 +29,12 @@ public class RegisterHandler implements Route {
         else{
             Gson gson = new Gson();
             UserData givenData = gson.fromJson(request.body(), UserData.class);
-            RegisterResponse registerResponse = service.register(givenData, holder);
+            //TODO: encrypt passwords on register//
+            String encryptedPass = BCrypt.hashpw(givenData.password(), BCrypt.gensalt());
+            if(givenData.password() == null){ encryptedPass = null;}
+            UserData encryptedData = new UserData(givenData.username(), encryptedPass, givenData.email());
+
+            RegisterResponse registerResponse = service.register(encryptedData, holder);
             if(registerResponse.message() == null){
                 response.status(200); //sets status to 200//
             }

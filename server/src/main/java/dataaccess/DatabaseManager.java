@@ -58,19 +58,19 @@ public class DatabaseManager {
     public static void createChessTables() throws DataAccessException {
         String initialStatement = "USE " + DATABASE_NAME + ";";
         String strA = "CREATE TABLE IF NOT EXISTS user (" +
-                "username VARCHAR(50) PRIMARY KEY," +
-                "password VARCHAR(50)," +
+                "username VARCHAR(250) PRIMARY KEY," +
+                "password VARCHAR(250)," +
                 "email VARCHAR(250)" +
                 ");";
         String strB = "CREATE TABLE IF NOT EXISTS authentication (" +
                 "token VARCHAR(250) PRIMARY KEY," +
-                "username VARCHAR(50)" +
+                "username VARCHAR(250)" +
                 ");";
         String strC = "CREATE TABLE IF NOT EXISTS game (" +
                 "gameID INT PRIMARY KEY," +
-                "whiteUsername VARCHAR(50)," +
-                "blackUsername VARCHAR(50)," +
-                "gameName VARCHAR(50)," +
+                "whiteUsername VARCHAR(250)," +
+                "blackUsername VARCHAR(250)," +
+                "gameName VARCHAR(250)," +
                 "gameData BLOB" +
                 ");";
 

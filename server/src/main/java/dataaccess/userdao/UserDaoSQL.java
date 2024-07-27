@@ -11,11 +11,12 @@ public class UserDaoSQL implements UserDaoInterface {
 
     public UserDaoSQL(){
         //adding myself to every userTable//
-        try {
+        /*try {
             addItem(new UserData("RexOkland", "xalapanoChess", "rex.okland@gmail.com"));
         } catch(DataAccessException ex){
             System.out.println("error in userDaoSQL constructor");
-        }
+        }*/
+
     }
     @Override
     public void addItem(UserData item) throws DataAccessException {
@@ -29,6 +30,8 @@ public class UserDaoSQL implements UserDaoInterface {
             preparedStatement.setString(3, item.email());
 
             preparedStatement.executeUpdate();
+
+            conn.close();
         }
         catch(SQLException ex){
             throw new DataAccessException(ex.getMessage());
@@ -54,6 +57,8 @@ public class UserDaoSQL implements UserDaoInterface {
                 emailData = queryResult.getString("email");
             }
 
+            conn.close();
+
             if(userData == null){return null;}
             else{return new UserData(userData, passwordData, emailData);}
         }
@@ -71,6 +76,8 @@ public class UserDaoSQL implements UserDaoInterface {
             var preparedStatement = conn.prepareStatement(sql);
 
             preparedStatement.executeUpdate();
+
+            conn.close();;
         }
         catch(SQLException ex){
             throw new DataAccessException(ex.getMessage());

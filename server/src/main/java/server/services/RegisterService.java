@@ -34,6 +34,7 @@ public class RegisterService {
         if( (userData.username() == null) || (userData.password() == null) ){
             //neither can be left empty... that's a bad request to me//
             responseMessage = "error: bad request";
+            return new RegisterResponse(responseUser, responseAuth, responseMessage);
         }
         //userData is NOT blank or null... which is good//
         else{
