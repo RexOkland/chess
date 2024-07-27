@@ -262,6 +262,87 @@ public class CustomDaoTests {
         cleanUpShop();
     }
 
+    //GAME DAO TESTS//
+
+    @Test
+    @DisplayName("GameDao - good add item test")
+    public void gameDaoGoodAddItem(){
+        //adding good data, there shouldn't be any exceptions set off//
+        String noException = null;
+        GamesDaoInterface gameDao = new GamesDao();
+        GamesDaoInterface gameDaoSQL = new GamesDaoSQL();
+        GameData validGame = new GameData(99, null, null, "game99", new ChessGame());
+
+        try{
+            gameDao.addGame(validGame);
+            gameDaoSQL.addGame(validGame);
+        } catch (DataAccessException ex){
+            noException = ex.getMessage();
+        }
+        Assertions.assertNull(noException);
+        cleanUpShop();
+    }
+
+    @Test
+    @DisplayName("GameDao - bad add item test")
+    public void gameDaoBadAddItem(){
+        //duplicate data should make SQL mad//
+        setStage();
+        String exception = null;
+        GamesDaoInterface gameDao = new GamesDao();
+        GamesDaoInterface gameDaoSQL = new GamesDaoSQL();
+        GameData duplicateData = existingGame();
+
+        try{
+            gameDaoSQL.addGame(duplicateData); //already in system cause of setStage();//
+        } catch (DataAccessException ex){
+            exception = ex.getMessage();
+        }
+        Assertions.assertNotNull(exception);
+        cleanUpShop();
+    }
+
+    @Test
+    @DisplayName("GameDao - good update test")
+    public void gameDaoGoodUpdate(){
+        //loading in a valid game//
+        setStage();
+        String noException = null;
+        GamesDaoInterface gameDaoSQL = new GamesDaoSQL();
+
+        GameData before = existingGame();
+        GameData expectedAfter = new GameData(before.gameID(), before.whiteUsername(), "update!", before.gameName(), before.game());
+        GameData actualAfter = null;
+        try{
+            gameDaoSQL.updateGame(expectedAfter);
+            actualAfter = gameDaoSQL.findGame(before.gameID());
+        } catch (DataAccessException ex){
+            noException = ex.getMessage();
+        }
+        Assertions.assertNull(noException);
+        Assertions.assertNotNull(actualAfter.blackUsername());
+        Assertions.assertEquals(actualAfter.blackUsername(), expectedAfter.blackUsername());
+        cleanUpShop();
+    }
+
+    @Test
+    @DisplayName("GameDao - bad update test")
+    public void gameDaoBadUpdate(){
+        //we're going to try and update a game that doesn't exist//
+        String exception = null;
+        GamesDaoInterface gameDaoSQL = new GamesDaoSQL();
+        GameData notRealGame = new GameData(1000, null, null, "notRealGame", new ChessGame());
+
+        try{
+            gameDaoSQL.updateGame(notRealGame);
+        } catch (DataAccessException ex){
+            exception = ex.getMessage();
+        }
+
+        Assertions.assertNotNull(exception);
+        cleanUpShop();
+    }
+
 
     //Rex's helper Functions//
     private void cleanUpShop(){

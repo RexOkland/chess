@@ -132,7 +132,7 @@ public class GamesDaoSQL implements GamesDaoInterface{
     }
 
 
-    public void removeGame(Integer id) throws DataAccessException {
+    private void removeGame(Integer id) throws DataAccessException {
         var conn = DatabaseManager.getConnection();
 
         String sql = "DELETE FROM game WHERE `gameID` =" + "\"" + id + "\"";
@@ -150,6 +150,8 @@ public class GamesDaoSQL implements GamesDaoInterface{
 
     @Override
     public void updateGame(GameData game) throws DataAccessException{
+        GameData foundGame = this.findGame(game.gameID());
+        if(foundGame == null){throw new DataAccessException("this game don't exist...");}
         this.removeGame(game.gameID());
         this.addGame(game);
     }
