@@ -39,7 +39,7 @@ public class UserDaoSQL implements UserDaoInterface {
     public UserData searchUser(String user) throws DataAccessException {
         var conn = DatabaseManager.getConnection();
 
-        String sql = "SELECT * FROM user WHERE `username` = " + "\"" +user + "\"";
+        String sql = "SELECT * FROM user WHERE `username` = " + "\"" + user + "\"";
         try{
             var preparedStatement = conn.prepareStatement(sql);
             var queryResult = preparedStatement.executeQuery();

@@ -6,6 +6,7 @@ import dataaccess.DataAccessException;
 import dataaccess.DatabaseManager;
 import models.AuthData;
 import models.GameData;
+import models.UserData;
 
 import java.sql.SQLException;
 import java.util.HashSet;
@@ -51,20 +52,78 @@ public class GamesDaoSQL implements GamesDaoInterface{
     }
 
     @Override
-    public GameData findGame(String gameName) {
-        //TODO: implement
-        return null;
+    public GameData findGame(String gameName) throws DataAccessException {
+        String sql = "SELECT * FROM game WHERE gameName = ?";
+        return findGameLogic(sql, gameName);
     }
 
     @Override
-    public GameData findGame(int gameID) {
-        //TODO: implement
-        return null;
+    public GameData findGame(int gameID) throws DataAccessException {
+        String sql = "SELECT * FROM game WHERE gameID = ?";
+        return findGameLogic(sql, gameID);
     }
 
+    //chatGPT used my two original codes - which were identical besides the parameter - into this helper function//
+    private GameData findGameLogic(String sql, Object parameter) throws DataAccessException {
+        try (var conn = DatabaseManager.getConnection();
+             var preparedStatement = conn.prepareStatement(sql)) {
+
+            // Set the parameter for the SQL statement
+            if (parameter instanceof String) {
+                preparedStatement.setString(1, (String) parameter);
+            } else if (parameter instanceof Integer) {
+                preparedStatement.setInt(1, (Integer) parameter);
+            }
+
+            // Execute the query
+            var queryResult = preparedStatement.executeQuery();
+
+            Integer foundID = null;
+            String foundWhiteUser = null;
+            String foundBlackUser = null;
+            String foundGameName = null;
+            String foundGameData = null;
+
+            while (queryResult.next()) {
+                foundID = queryResult.getInt("gameID");
+                foundWhiteUser = queryResult.getString("whiteUsername");
+                foundBlackUser = queryResult.getString("blackUsername");
+                foundGameName = queryResult.getString("gameName");
+                foundGameData = queryResult.getString("gameData");
+            }
+
+            Gson gson = new Gson();
+            ChessGame formattedGameData = gson.fromJson(foundGameData, ChessGame.class);
+
+            if (foundID == null) {return null;}
+            else {
+                return new GameData(foundID, foundWhiteUser, foundBlackUser, foundGameName, formattedGameData);
+            }
+        } catch (SQLException ex) {
+            throw new DataAccessException(ex.getMessage());
+        }
+    }
+
+
+    public void removeGame(Integer ID) throws DataAccessException {
+        var conn = DatabaseManager.getConnection();
+
+        String sql = "DELETE FROM game WHERE `gameID` =" + "\"" + ID + "\"";
+        try{
+            var preparedStatement = conn.prepareStatement(sql);
+
+            preparedStatement.executeUpdate();
+        }
+        catch(SQLException ex){
+            throw new DataAccessException(ex.getMessage());
+        }
+    }
+
+
     @Override
-    public void updateGame(GameData game) {
-        //TODO: implement
+    public void updateGame(GameData game) throws DataAccessException{
+        this.removeGame(game.gameID());
+        this.addGame(game);
     }
 
     @Override
