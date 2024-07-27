@@ -3,6 +3,7 @@ package dataaccess.gamesdao;
 import dataaccess.DataAccessException;
 import models.GameData;
 
+import javax.xml.crypto.Data;
 import java.util.HashSet;
 
 public interface GamesDaoInterface {
@@ -12,6 +13,6 @@ public interface GamesDaoInterface {
     public GameData findGame(String gameName) throws DataAccessException;
     public GameData findGame(int gameID) throws DataAccessException;
     public void updateGame(GameData game) throws DataAccessException;
-    public void clearDAO();
+    public void clearDAO() throws DataAccessException;
 
 }

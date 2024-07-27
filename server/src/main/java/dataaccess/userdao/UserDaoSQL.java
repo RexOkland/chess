@@ -64,6 +64,16 @@ public class UserDaoSQL implements UserDaoInterface {
 
     @Override
     public void clearDAO() throws DataAccessException {
-        //TODO: implement//
+        var conn = DatabaseManager.getConnection();
+
+        String sql = "TRUNCATE TABLE user";
+        try{
+            var preparedStatement = conn.prepareStatement(sql);
+
+            preparedStatement.executeUpdate();
+        }
+        catch(SQLException ex){
+            throw new DataAccessException(ex.getMessage());
+        }
     }
 }
