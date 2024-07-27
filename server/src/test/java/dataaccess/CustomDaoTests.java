@@ -21,6 +21,8 @@ import java.util.HashSet;
 
 public class CustomDaoTests {
 
+    //AUTH DAO TESTS//
+
     @Test
     @DisplayName("AuthDao - good add item test")
     public void authDaoGoodAddItem(){
@@ -153,6 +155,110 @@ public class CustomDaoTests {
 
         Assertions.assertNull(stillNoException);
         Assertions.assertNull(foundDataSQL);
+        cleanUpShop();
+    }
+
+    @Test
+    @DisplayName("AuthDao - good clear test")
+    public void authDaoGoodClear(){
+        AuthDaoInterface testAuthDao = new AuthDaoSQL();
+        String noExcepction = null;
+        try{
+            testAuthDao.clearDAO();
+        }catch (DataAccessException ex){
+            noExcepction = ex.getMessage();
+        }
+        Assertions.assertNull(noExcepction);
+        cleanUpShop();
+    }
+
+    //USER DAO TESTS//
+
+    @Test
+    @DisplayName("UserDao - good add item test")
+    public void userDaoGoodAddItem(){
+        //adding good data, there shouldn't be any exceptions set off//
+        String noException = null;
+        UserDaoInterface userDao = new UserDao();
+        UserDaoInterface userDaoSQL = new UserDaoSQL();
+        UserData validItem = new UserData("goodName", "okayPassword", "validEmail");
+
+        try{
+            userDao.addItem(validItem);
+            userDaoSQL.addItem(validItem);
+        } catch (DataAccessException ex){
+            noException = ex.getMessage();
+        }
+        Assertions.assertNull(noException);
+        cleanUpShop();
+    }
+
+    @Test
+    @DisplayName("UserDao - bad add item test")
+    public void userDaoBadAddItem(){
+        //we're gonna try and add the same user twice... should be a no no//
+        String exception = null;
+        UserDaoInterface userDaoSQL = new UserDaoSQL();
+        UserData duplicateItem = existingUser();
+
+        try{
+            userDaoSQL.addItem(duplicateItem);
+            userDaoSQL.addItem(duplicateItem);
+        } catch (DataAccessException ex){
+            exception = ex.getMessage();
+        }
+        Assertions.assertNotNull(exception);
+        cleanUpShop();
+    }
+
+    @Test
+    @DisplayName("UserDao - good find item test")
+    public void userDaoGoodFind(){
+        setStage();
+        String noException = null;
+        UserDaoInterface userDaoSQL = new UserDaoSQL();
+        UserData existingUserData = existingUser();
+        UserData foundData = null;
+        try{
+            foundData = userDaoSQL.searchUser(existingUserData.username()); //searches by user//
+        }catch (DataAccessException ex){
+            noException = ex.getMessage();
+        }
+        Assertions.assertNull(noException);
+        Assertions.assertEquals(existingUserData.username(), foundData.username());
+        cleanUpShop();
+    }
+
+
+    @Test
+    @DisplayName("UserDao - bad find item test")
+    public void userDaoBadFind(){
+        setStage();
+        String stillNoException = null;
+        UserDaoInterface userDaoSQL = new UserDaoSQL();
+        String madeUpUser = "notEvenARealUser";
+        UserData foundData = null;
+        try{
+            foundData = userDaoSQL.searchUser(madeUpUser); //searches by user//
+        }catch (DataAccessException ex){
+            stillNoException = ex.getMessage();
+        }
+        Assertions.assertNull(stillNoException);
+        Assertions.assertNull(foundData);
+        cleanUpShop();
+    }
+
+    @Test
+    @DisplayName("AuthDao - good clear test")
+    public void userDaoGoodClear(){
+        UserDaoInterface testUserDao = new UserDaoSQL();
+        String noExcepction = null;
+        try{
+            testUserDao.clearDAO();
+        }catch (DataAccessException ex){
+            noExcepction = ex.getMessage();
+        }
+        Assertions.assertNull(noExcepction);
         cleanUpShop();
     }
 
