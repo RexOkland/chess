@@ -26,10 +26,14 @@ public class ChessClient {
         //input is the whole line that we'll have to make sense of here//
         try {
             //making sense of the input string//
-            var tokens = input.split(" ");
-            String[] params = new String[tokens.length - 1];
+            String[] tokens = input.split(" ");
+            String[] params = null;
+            if(tokens.length > 1){
+                params = new String[tokens.length - 1];
+                System.arraycopy(tokens, 1, params, 0, params.length);
+            }
             var command = tokens[0].toLowerCase();
-            if(tokens.length > 1){ System.arraycopy(tokens, 1, params, 0, tokens.length - 1);}
+
             //first token is the command, the rest are parameters//
 
             NavState currentUI = this.nav; //the nav decides which options are available, and which menu we'll see//
@@ -37,12 +41,13 @@ public class ChessClient {
                 //first ui / logged out//
                 case "login" -> this.login(params);
                 case "register"-> this.register(params);
+                case "help" -> this.help();
                 case "quit" -> this.quit();
                 //second ui / logged in//
                 //todo: implement this in phase 5!//
                 //third ui / gameplay//
                 //todo: implement this in phase 6//
-                default -> this.help();
+                default -> this.options();
             };
             setNav(currentUI);
             return currentUI;
@@ -66,30 +71,49 @@ public class ChessClient {
     public NavState register(String... params) throws Exception {
         //initial check to see if we can be running this function//
         if(this.nav != NavState.PRELOGIN){throw new Exception("register attempted while already logged in");}
+
+        UserData givenData;
+        //makes sure we have username/password... email is optional which is why I have the else{} statement//
+        if(params.length < 2){throw new Exception("We're short parameters for this operation");}
+        else if(params.length == 2){ givenData = new UserData(params[0], params[1], null); }
+        else{givenData = new UserData(params[0], params[1], params[2]);}
+
+        RegisterResponse response = facade.clientRegister(givenData); //run it//
+
+        NavState newState = null;
+        if(response.authToken().length() > 10){
+            /*SUCCESSFUL*/ newState = NavState.POSTLOGIN;
+            System.out.println("Welcome " + response.username() + "! Select a command:");
+        }
+        else{
+            /*UNSUCCESSFUL*/ newState = NavState.PRELOGIN;
+            System.out.println("Register unsuccessful: " + response.message());
+        }
+        setNav(newState);
+        this.options(); //list out new options depending on result//
         /*
+        RETURN LOGIC
         register successful -> move to the POSTLOGIN nav - returns NavState.PRELOGIN
         register unsuccessful -> stay in the PRELOGIN nav - returns NavState.POSTLOGIN
          */
-        UserData givenData = new UserData(params[0], params[1], params[2]); //todo: prolly check these params//
-        RegisterResponse response = facade.clientRegister(givenData);
-        NavState newState = null;
-        if(response.authToken().length() > 10){
-            System.out.println("Welcome " + response.username() + "! Select a command:");
-            newState = NavState.POSTLOGIN;
-        }
-        else{
-            System.out.println("Register unsuccessful: " + response.message());
-            newState = NavState.PRELOGIN;
-        }
-        //todo: implement actual function//
         return newState;
     }
 
     public NavState help() throws Exception {
+        System.out.println("Here are your current options: ");
+        this.options(); //uses current nav//
+        return getNav(); //DOES NOT CHANGE NAV STATE//
+    }
+
+    public NavState quit(){
+        return NavState.QUIT;
+    }
+
+    //HELPER FUNCTIONS//
+    public NavState options() throws Exception {
         String currentMenu = null;
         if(this.nav == NavState.PRELOGIN){
             currentMenu = """
-                         CHESS SERVER: Enter a command:
                          - register
                          - login
                          - help
@@ -99,7 +123,6 @@ public class ChessClient {
         else if(this.nav == NavState.POSTLOGIN){
             //todo: implement this parte//
             currentMenu = """
-                         CHESS SERVER: Enter a command:
                          - play game
                          - create game
                          - list games
@@ -119,9 +142,11 @@ public class ChessClient {
         return this.nav; //nav state stays the same in all cases on the help function//
     }
 
-    public NavState quit(){
-        return NavState.QUIT;
+    public boolean hasParams(String[] params, int number){
+        if(params.length < number){return false;}
+        return true;
     }
+
 
     public void setNav(NavState state){this.nav = state;}
     public NavState getNav(){return this.nav;}
