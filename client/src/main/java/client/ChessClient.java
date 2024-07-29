@@ -1,5 +1,7 @@
 package client;
 
+import models.UserData;
+import responses.RegisterResponse;
 import server.Server;
 
 
@@ -68,8 +70,19 @@ public class ChessClient {
         register successful -> move to the POSTLOGIN nav - returns NavState.PRELOGIN
         register unsuccessful -> stay in the PRELOGIN nav - returns NavState.POSTLOGIN
          */
+        UserData givenData = new UserData(params[0], params[1], params[2]); //todo: prolly check these params//
+        RegisterResponse response = facade.clientRegister(givenData);
+        NavState newState = null;
+        if(response.authToken().length() > 10){
+            System.out.println("Welcome " + response.username() + "! Select a command:");
+            newState = NavState.POSTLOGIN;
+        }
+        else{
+            System.out.println("Register unsuccessful: " + response.message());
+            newState = NavState.PRELOGIN;
+        }
         //todo: implement actual function//
-        return null;
+        return newState;
     }
 
     public NavState help() throws Exception {
