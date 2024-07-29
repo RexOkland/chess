@@ -11,72 +11,106 @@ public class ChessClient {
     private final String serverUrl = null;
     //private final NotificationHandler notificationHandler;
     //private WebSocketFacade ws;
-    private LoginState state = LoginState.SIGNEDOUT;
+    private NavState nav = NavState.PRELOGIN;
 
     ChessClient(){
-        facade = new ServerFacade();
+        facade = new ServerFacade("http://localhost:8080");
     };
+    ChessClient(String url){
+        facade = new ServerFacade(url);
+    }
 
-    public String eval(String input){ //input is the whole line that we'll have to make sense of here//
+    public NavState eval(String input) throws Exception {
+        //input is the whole line that we'll have to make sense of here//
         try {
             //making sense of the input string//
-            var tokens = input.toLowerCase().split(" ");
+            var tokens = input.split(" ");
             String[] params = new String[tokens.length - 1];
-            var command = tokens[0];
+            var command = tokens[0].toLowerCase();
             if(tokens.length > 1){ System.arraycopy(tokens, 1, params, 0, tokens.length - 1);}
             //first token is the command, the rest are parameters//
 
-            String result = switch(command){
+            NavState currentUI = this.nav; //the nav decides which options are available, and which menu we'll see//
+            currentUI = switch(command){
                 //first ui / logged out//
                 case "login" -> this.login(params);
                 case "register"-> this.register(params);
                 case "quit" -> this.quit();
                 //second ui / logged in//
-                //todo: implement//
+                //todo: implement this in phase 5!//
                 //third ui / gameplay//
-                //this is for phase 6//
+                //todo: implement this in phase 6//
                 default -> this.help();
             };
-
+            setNav(currentUI);
+            return currentUI;
         }
         catch(Exception ex){
-            return "some sort of invalid input identified: " + ex.getMessage();
+            throw new Exception(ex.getMessage());
         }
+    }
+
+    public NavState login(String... params) throws Exception {
+        //initial check to see if we can be running this function//
+        if(this.nav != NavState.PRELOGIN){throw new Exception("login attempted while already logged in");}
+        /*
+        login successful -> move to the POSTLOGIN nav - returns NavState.PRELOGIN
+        login unsuccessful -> stay in the PRELOGIN nav - returns NavState.POSTLOGIN
+         */
+        //todo: implement actual function//
+        return null; //will result in an exception until I fix this//
+    }
+
+    public NavState register(String... params) throws Exception {
+        //initial check to see if we can be running this function//
+        if(this.nav != NavState.PRELOGIN){throw new Exception("register attempted while already logged in");}
+        /*
+        register successful -> move to the POSTLOGIN nav - returns NavState.PRELOGIN
+        register unsuccessful -> stay in the PRELOGIN nav - returns NavState.POSTLOGIN
+         */
+        //todo: implement actual function//
         return null;
     }
 
-    public String login(String... params){ //not sure if these parameters are valid//
-        //todo: implement
-        System.out.println("login operator reached");
-        for(int i = 0 ; i < params.length; ++i){
-            System.out.println("param " + i + ": " + params[i]);
+    public NavState help() throws Exception {
+        String currentMenu = null;
+        if(this.nav == NavState.PRELOGIN){
+            currentMenu = """
+                         CHESS SERVER: Enter a command:
+                         - register
+                         - login
+                         - help
+                         - quit
+                    """;
         }
-        return null;
-    }
-
-    public String register(String... params){
-        //todo: implement
-        System.out.println("register operator reached");
-        return null;
-    }
-
-    public String help(){
-        String returnString = null;
-        if(this.state == LoginState.SIGNEDOUT){
-            returnString =  "     - register" + "\n" +
-                            "     - login" + "\n" +
-                            "     - help" + "\n" +
-                            "     - quit" + "\n";
+        else if(this.nav == NavState.POSTLOGIN){
+            //todo: implement this parte//
+            currentMenu = """
+                         CHESS SERVER: Enter a command:
+                         - play game
+                         - create game
+                         - list games
+                         - observe game
+                         - help
+                         - logout
+                    """;
+        }
+        else if(this.nav == NavState.GAMEPLAY){
+            //todo: implement this parte in PHASE 6//
+            currentMenu = "not there yet";
         }
         else{
-            //todo: implement this parte//
-            returnString = "not there yet";
+            throw new Exception("nav state not found");
         }
-        return returnString;
+        System.out.println(currentMenu);
+        return this.nav; //nav state stays the same in all cases on the help function//
     }
 
-    public String quit(){
-        return "quit";
+    public NavState quit(){
+        return NavState.QUIT;
     }
+
+    public void setNav(NavState state){this.nav = state;}
+    public NavState getNav(){return this.nav;}
 
 }
