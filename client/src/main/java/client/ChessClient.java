@@ -18,13 +18,39 @@ public class ChessClient {
     };
 
     public String eval(String input){ //input is the whole line that we'll have to make sense of here//
-        //todo: implement
+        try {
+            //making sense of the input string//
+            var tokens = input.toLowerCase().split(" ");
+            String[] params = new String[tokens.length - 1];
+            var command = tokens[0];
+            if(tokens.length > 1){ System.arraycopy(tokens, 1, params, 0, tokens.length - 1);}
+            //first token is the command, the rest are parameters//
+
+            String result = switch(command){
+                //first ui / logged out//
+                case "login" -> this.login(params);
+                case "register"-> this.register(params);
+                case "quit" -> this.quit();
+                //second ui / logged in//
+                //todo: implement//
+                //third ui / gameplay//
+                //this is for phase 6//
+                default -> this.help();
+            };
+
+        }
+        catch(Exception ex){
+            return "some sort of invalid input identified: " + ex.getMessage();
+        }
         return null;
     }
 
     public String login(String... params){ //not sure if these parameters are valid//
         //todo: implement
         System.out.println("login operator reached");
+        for(int i = 0 ; i < params.length; ++i){
+            System.out.println("param " + i + ": " + params[i]);
+        }
         return null;
     }
 
