@@ -4,7 +4,7 @@ import dataaccess.*;
 import spark.*;
 import server.handlers.*;
 
-import javax.xml.crypto.Data;
+//import javax.xml.crypto.Data;
 
 public class Server {
     //my Database Holder//
@@ -25,7 +25,6 @@ public class Server {
         }catch (DataAccessException exception){
             System.out.print("error");
         }
-
 
 
         //Spark.delete("/db", ((request, response) -> new ClearHandler(db).handle(request,response)));//why//

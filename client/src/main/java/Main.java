@@ -7,7 +7,8 @@ public class Main {
         System.out.println("♕ 240 Chess Client: " + piece);
 
 
-        var serverUrl = "http://localhost:8080";
+        var serverUrl = "http://localhost:8080"; //server we're going to connect to//
+
         if (args.length == 1) {
             serverUrl = args[0];
         }
