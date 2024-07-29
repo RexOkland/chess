@@ -2,6 +2,7 @@ package client;
 
 import com.google.gson.Gson;
 import models.UserData;
+import responses.LoginResponse;
 import responses.RegisterResponse;
 
 import java.io.InputStream;
@@ -23,7 +24,10 @@ public class ServerFacade {
         return makeRequest("POST", path, user, RegisterResponse.class);
     }
 
-
+    public LoginResponse clientLogin(UserData user) throws Exception {
+        var path = "/session";
+        return makeRequest("POST", path, user, LoginResponse.class);
+    }
 
     private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass) throws Exception {
         try {
@@ -37,7 +41,7 @@ public class ServerFacade {
             throwIfNotSuccessful(http);
             return readBody(http, responseClass);
         } catch (Exception ex) {
-            throw new Exception("500 " + ex.getMessage());
+            throw new Exception("error code:  " + ex.getMessage());
         }
     }
 
@@ -54,7 +58,7 @@ public class ServerFacade {
     private void throwIfNotSuccessful(HttpURLConnection http) throws Exception {
         var status = http.getResponseCode();
         if (!isSuccessful(status)) {
-            throw new Exception(status + "failure: " + status);
+            throw new Exception(String.valueOf(status));
         }
     }
 

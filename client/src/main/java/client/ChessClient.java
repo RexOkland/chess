@@ -1,6 +1,7 @@
 package client;
 
 import models.UserData;
+import responses.LoginResponse;
 import responses.RegisterResponse;
 import server.Server;
 
@@ -38,16 +39,18 @@ public class ChessClient {
 
             NavState currentUI = this.nav; //the nav decides which options are available, and which menu we'll see//
             currentUI = switch(command){
+                //can be ran from ANY nav state//
+                case "help" -> this.help();
+                case "quit" -> this.quit();
                 //first ui / logged out//
                 case "login" -> this.login(params);
                 case "register"-> this.register(params);
-                case "help" -> this.help();
-                case "quit" -> this.quit();
                 //second ui / logged in//
+                
                 //todo: implement this in phase 5!//
                 //third ui / gameplay//
                 //todo: implement this in phase 6//
-                default -> this.options();
+                default -> this.unrecognized();
             };
             setNav(currentUI);
             return currentUI;
@@ -60,12 +63,30 @@ public class ChessClient {
     public NavState login(String... params) throws Exception {
         //initial check to see if we can be running this function//
         if(this.nav != NavState.PRELOGIN){throw new Exception("login attempted while already logged in");}
+
+        UserData givenData;
+        //makes sure we have username AND password//
+        if(params.length < 2){throw new Exception("We're short parameters for this operation");}
+        else{ givenData = new UserData(params[0], params[1], null); }
+
+        LoginResponse response = facade.clientLogin(givenData);
+
+        NavState newState;
+        if(response.authToken().length() > 10){
+            /*SUCCESSFUL*/ newState = NavState.POSTLOGIN;
+            System.out.println("Welcome back " + response.username() + "! Select a command:");
+        }
+        else{
+            /*UNSUCCESSFUL*/ newState = NavState.PRELOGIN;
+            System.out.println("Login unsuccessful: " + response.message());
+        }
+        setNav(newState);
+        this.options(); //list out new options depending on result//
         /*
         login successful -> move to the POSTLOGIN nav - returns NavState.PRELOGIN
         login unsuccessful -> stay in the PRELOGIN nav - returns NavState.POSTLOGIN
          */
-        //todo: implement actual function//
-        return null; //will result in an exception until I fix this//
+        return newState;
     }
 
     public NavState register(String... params) throws Exception {
@@ -105,6 +126,13 @@ public class ChessClient {
         return getNav(); //DOES NOT CHANGE NAV STATE//
     }
 
+    public NavState unrecognized() throws Exception {
+        System.out.println("Request not recognized, please try again: ");
+        this.options(); //uses current nav//
+        return getNav(); //DOES NOT CHANGE NAV STATE//
+    }
+
+
     public NavState quit(){
         return NavState.QUIT;
     }
@@ -140,11 +168,6 @@ public class ChessClient {
         }
         System.out.println(currentMenu);
         return this.nav; //nav state stays the same in all cases on the help function//
-    }
-
-    public boolean hasParams(String[] params, int number){
-        if(params.length < number){return false;}
-        return true;
     }
 
 
