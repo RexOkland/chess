@@ -1,12 +1,10 @@
 package client;
 
-import chess.ChessGame;
 import models.AuthData;
 import models.GameData;
 import models.UserData;
+import requests.JoinGameRequest;
 import responses.*;
-import server.Server;
-
 
 
 public class ChessClient {
@@ -150,7 +148,7 @@ public class ChessClient {
 
     public NavState list(String... params) throws Exception {
         //initial check to see if we can be running this function//
-        if(this.nav == NavState.PRELOGIN){throw new Exception("register attempted while already logged in");}
+        if(this.nav != NavState.POSTLOGIN){throw new Exception("must be logged in to access game list");}
         try{
             String activeToken = this.getClientAuthToken();
             ListGamesResponse response = facade.clientListGame(activeToken);
@@ -158,8 +156,8 @@ public class ChessClient {
             for(GameData g : response.games()){
                 System.out.println("Name: " + g.gameName());
                 System.out.println("ID: " + g.gameID());
-                System.out.println(" - white: " + g.whiteUsername());
-                System.out.println(" - black: " + g.blackUsername());
+                System.out.println(" - white: " + g.whiteUsername() );
+                System.out.println(" - black: " + g.blackUsername() );
             }
         }catch(Exception ex){
             throw new Exception(ex.getMessage());
@@ -169,8 +167,24 @@ public class ChessClient {
 
     }
 
-    public NavState join(String...params){
+    public NavState join(String...params) throws Exception {
+        //initial check to see if we can be running this function//
+        if(this.nav != NavState.POSTLOGIN){throw new Exception("must be logged in to join game");}
+        if(params.length < 2){throw new Exception("We're short parameters for this operation");}
 
+        try{
+            String activeToken = this.getClientAuthToken();
+            JoinGameRequest request = new JoinGameRequest(params[1], Integer.parseInt(params[0]) );
+            JoinGameResponse response = facade.clientJoinGame(activeToken, request);
+            if(response.message() == null){
+                System.out.println("Game Joined!");
+
+            }
+        }
+        catch(Exception ex){
+            throw new Exception(ex.getMessage());
+            //something went wrong with joining the game//
+        }
 
         return getNav();
     }
@@ -193,7 +207,7 @@ public class ChessClient {
     }
 
     //HELPER FUNCTIONS//
-    public NavState options() throws Exception {
+    public void options() throws Exception {
         String currentMenu = null;
         if(this.nav == NavState.PRELOGIN){
             currentMenu = """
@@ -221,7 +235,6 @@ public class ChessClient {
             throw new Exception("nav state not found");
         }
         System.out.println(currentMenu);
-        return this.nav; //nav state stays the same in all cases on the help function//
     }
 
 

@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import models.AuthData;
 import models.GameData;
 import models.UserData;
+import requests.JoinGameRequest;
 import responses.*;
 
 import java.io.InputStream;
@@ -39,6 +40,11 @@ public class ServerFacade {
     public ListGamesResponse clientListGame(String token) throws Exception{
         var path = "/game";
         return makeRequest("GET", path, token, null, ListGamesResponse.class);
+    }
+
+    public JoinGameResponse clientJoinGame(String token, JoinGameRequest request) throws Exception {
+        var path = "/game";
+        return makeRequest("PUT", path, token, request, JoinGameResponse.class);
     }
 
     private <T> T makeRequest(String method, String path, String header, Object request, Class<T> responseClass) throws Exception {
