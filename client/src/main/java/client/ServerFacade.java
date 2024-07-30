@@ -1,8 +1,10 @@
 package client;
 
 import com.google.gson.Gson;
+import models.AuthData;
 import models.UserData;
 import responses.LoginResponse;
+import responses.LogoutResponse;
 import responses.RegisterResponse;
 
 import java.io.InputStream;
@@ -21,22 +23,31 @@ public class ServerFacade {
 
     public RegisterResponse clientRegister(UserData user) throws Exception {
         var path = "/user";
-        return makeRequest("POST", path, user, RegisterResponse.class);
+        return makeRequest("POST", path, null, user, RegisterResponse.class);
     }
 
     public LoginResponse clientLogin(UserData user) throws Exception {
         var path = "/session";
-        return makeRequest("POST", path, user, LoginResponse.class);
+        return makeRequest("POST", path, null, user, LoginResponse.class);
     }
 
-    private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass) throws Exception {
+    public LogoutResponse clientLogout(String token) throws Exception {
+        var path = "/session";
+        return makeRequest("DELETE", path, token, null, LogoutResponse.class);
+    }
+
+    private <T> T makeRequest(String method, String path, String header, Object request, Class<T> responseClass) throws Exception {
         try {
             URL url = (new URI(serverUrl + path)).toURL();
             HttpURLConnection http = (HttpURLConnection) url.openConnection();
             http.setRequestMethod(method);
             http.setDoOutput(true);
 
+
+            writeHeader(header, http);
             writeBody(request, http);
+
+
             http.connect();
             throwIfNotSuccessful(http);
             return readBody(http, responseClass);
@@ -52,6 +63,12 @@ public class ServerFacade {
             try (OutputStream reqBody = http.getOutputStream()) {
                 reqBody.write(reqData.getBytes());
             }
+        }
+    }
+
+    private static void writeHeader(String header, HttpURLConnection http) throws Exception {
+        if (header != null) {
+            http.addRequestProperty("authorization", header);
         }
     }
 

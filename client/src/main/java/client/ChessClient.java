@@ -1,14 +1,17 @@
 package client;
 
+import models.AuthData;
 import models.UserData;
 import responses.LoginResponse;
+import responses.LogoutResponse;
 import responses.RegisterResponse;
 import server.Server;
 
 
 
 public class ChessClient {
-    private String visitorName = null;
+    private String visitorName;
+    private String visitorAuthToken;
     private final ServerFacade facade;
 
     private final String serverUrl = null;
@@ -44,9 +47,9 @@ public class ChessClient {
                 case "quit" -> this.quit();
                 //first ui / logged out//
                 case "login" -> this.login(params);
-                case "register"-> this.register(params);
+                case "register" -> this.register(params);
                 //second ui / logged in//
-                
+                case "logout" -> this.logout();
                 //todo: implement this in phase 5!//
                 //third ui / gameplay//
                 //todo: implement this in phase 6//
@@ -75,6 +78,7 @@ public class ChessClient {
         if(response.authToken().length() > 10){
             /*SUCCESSFUL*/ newState = NavState.POSTLOGIN;
             System.out.println("Welcome back " + response.username() + "! Select a command:");
+            setVisitorInfo(response.username(), response.authToken());
         }
         else{
             /*UNSUCCESSFUL*/ newState = NavState.PRELOGIN;
@@ -105,6 +109,7 @@ public class ChessClient {
         if(response.authToken().length() > 10){
             /*SUCCESSFUL*/ newState = NavState.POSTLOGIN;
             System.out.println("Welcome " + response.username() + "! Select a command:");
+            setVisitorInfo(response.username(), response.authToken());
         }
         else{
             /*UNSUCCESSFUL*/ newState = NavState.PRELOGIN;
@@ -117,6 +122,24 @@ public class ChessClient {
         register successful -> move to the POSTLOGIN nav - returns NavState.PRELOGIN
         register unsuccessful -> stay in the PRELOGIN nav - returns NavState.POSTLOGIN
          */
+        return newState;
+    }
+
+    public NavState logout() throws Exception {
+        NavState newState = getNav();
+        try{
+            String activeToken = this.getClientAuthToken();
+            LogoutResponse response = facade.clientLogout(activeToken);
+            //if we make it here, nothing was thrown... which is a W//
+            if(response.message() == null){
+                System.out.println("See you later " + getVisitorName() + "!");
+                newState = NavState.PRELOGIN; //you've logged out//
+            }
+
+        }catch(Exception ex){
+            throw new Exception(ex.getMessage());
+            //something went wrong with the logout//
+        }
         return newState;
     }
 
@@ -171,7 +194,24 @@ public class ChessClient {
     }
 
 
+    //GETTERS Y SETTERS//
+
     public void setNav(NavState state){this.nav = state;}
     public NavState getNav(){return this.nav;}
+
+    public void setClientAuthToken(String authToken){this.visitorAuthToken = authToken;}
+    public String getClientAuthToken(){return this.visitorAuthToken;}
+
+    public void setVisitorName(String name){ this.visitorName = name;}
+    public String getVisitorName(){return this.visitorName;}
+
+    public void setVisitorInfo(String name, String auth){ //2 for 1//
+        this.setVisitorName(name);
+        this.setClientAuthToken(auth);
+    }
+
+    public AuthData getVisitorInfo(){
+        return new AuthData(getClientAuthToken(), getVisitorName());
+    }
 
 }
