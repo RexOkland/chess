@@ -1,10 +1,10 @@
 package client;
 
+import chess.ChessGame;
 import models.AuthData;
+import models.GameData;
 import models.UserData;
-import responses.LoginResponse;
-import responses.LogoutResponse;
-import responses.RegisterResponse;
+import responses.*;
 import server.Server;
 
 
@@ -50,7 +50,8 @@ public class ChessClient {
                 case "register" -> this.register(params);
                 //second ui / logged in//
                 case "logout" -> this.logout();
-                //todo: implement this in phase 5!//
+                case "list" -> this.list();
+                case "join" -> this.join(params);
                 //third ui / gameplay//
                 //todo: implement this in phase 6//
                 default -> this.unrecognized();
@@ -126,6 +127,8 @@ public class ChessClient {
     }
 
     public NavState logout() throws Exception {
+        //initial check to see if we can be running this function//
+        if(this.nav == NavState.PRELOGIN){throw new Exception("logout attempted while not logged in");}
         NavState newState = getNav();
         try{
             String activeToken = this.getClientAuthToken();
@@ -133,7 +136,9 @@ public class ChessClient {
             //if we make it here, nothing was thrown... which is a W//
             if(response.message() == null){
                 System.out.println("See you later " + getVisitorName() + "!");
-                newState = NavState.PRELOGIN; //you've logged out//
+                newState = NavState.PRELOGIN;//you've logged out//
+                setNav(newState);
+                this.options();
             }
 
         }catch(Exception ex){
@@ -141,6 +146,33 @@ public class ChessClient {
             //something went wrong with the logout//
         }
         return newState;
+    }
+
+    public NavState list(String... params) throws Exception {
+        //initial check to see if we can be running this function//
+        if(this.nav == NavState.PRELOGIN){throw new Exception("register attempted while already logged in");}
+        try{
+            String activeToken = this.getClientAuthToken();
+            ListGamesResponse response = facade.clientListGame(activeToken);
+            System.out.println("GAMES: ");
+            for(GameData g : response.games()){
+                System.out.println("Name: " + g.gameName());
+                System.out.println("ID: " + g.gameID());
+                System.out.println(" - white: " + g.whiteUsername());
+                System.out.println(" - black: " + g.blackUsername());
+            }
+        }catch(Exception ex){
+            throw new Exception(ex.getMessage());
+            //something went wrong with creating the game//
+        }
+        return getNav(); //NavState does not change in this function//
+
+    }
+
+    public NavState join(String...params){
+
+
+        return getNav();
     }
 
     public NavState help() throws Exception {
@@ -165,21 +197,20 @@ public class ChessClient {
         String currentMenu = null;
         if(this.nav == NavState.PRELOGIN){
             currentMenu = """
-                         - register
-                         - login
-                         - help
-                         - quit
+                         - register <USERNAME> <PASSWORD> <EMAIL> - to create an account
+                         - login <USERNAME> <PASSWORD> - to access your account
+                         - help - for more info
+                         - quit - to exit 
                     """;
         }
         else if(this.nav == NavState.POSTLOGIN){
-            //todo: implement this parte//
             currentMenu = """
-                         - play game
-                         - create game
-                         - list games
-                         - observe game
-                         - help
-                         - logout
+                         - join <GAMEID> <BLACK|WHITE> - to join a game as black or white
+                         - create <GAMENAME> - to create a new game
+                         - list - to see existing games
+                         - observe <GAMEID> - to observe an ongoing game
+                         - help - for more info
+                         - logout - to sign out of your account
                     """;
         }
         else if(this.nav == NavState.GAMEPLAY){

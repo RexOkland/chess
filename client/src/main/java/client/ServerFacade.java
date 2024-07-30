@@ -2,10 +2,9 @@ package client;
 
 import com.google.gson.Gson;
 import models.AuthData;
+import models.GameData;
 import models.UserData;
-import responses.LoginResponse;
-import responses.LogoutResponse;
-import responses.RegisterResponse;
+import responses.*;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -13,6 +12,7 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
+import java.util.UUID;
 
 public class ServerFacade {
     private final String serverUrl;
@@ -34,6 +34,11 @@ public class ServerFacade {
     public LogoutResponse clientLogout(String token) throws Exception {
         var path = "/session";
         return makeRequest("DELETE", path, token, null, LogoutResponse.class);
+    }
+
+    public ListGamesResponse clientListGame(String token) throws Exception{
+        var path = "/game";
+        return makeRequest("GET", path, token, null, ListGamesResponse.class);
     }
 
     private <T> T makeRequest(String method, String path, String header, Object request, Class<T> responseClass) throws Exception {
