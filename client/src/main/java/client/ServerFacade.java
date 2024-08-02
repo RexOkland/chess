@@ -47,6 +47,11 @@ public class ServerFacade {
         return makeRequest("PUT", path, token, request, JoinGameResponse.class);
     }
 
+    public CreateGameResponse clientCreateGame(String token, GameData data) throws Exception {
+        var path ="/game";
+        return makeRequest("POST", path, token, data,  CreateGameResponse.class);
+    }
+
     private <T> T makeRequest(String method, String path, String header, Object request, Class<T> responseClass) throws Exception {
         try {
             URL url = (new URI(serverUrl + path)).toURL();

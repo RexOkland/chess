@@ -1,5 +1,6 @@
 package client;
 
+import chess.ChessGame;
 import models.AuthData;
 import models.GameData;
 import models.UserData;
@@ -50,6 +51,7 @@ public class ChessClient {
                 case "logout" -> this.logout();
                 case "list" -> this.list();
                 case "join" -> this.join(params);
+                case "create" -> this.create(params);
                 //third ui / gameplay//
                 //todo: implement this in phase 6//
                 default -> this.unrecognized();
@@ -185,8 +187,30 @@ public class ChessClient {
             throw new Exception(ex.getMessage());
             //something went wrong with joining the game//
         }
-
         return getNav();
+    }
+
+    public NavState create(String... params) throws Exception {
+        if(this.nav != NavState.POSTLOGIN){throw new Exception("must be logged in to create a game");}
+        if(params.length < 1){throw new Exception("we need a name for the new game");}
+
+        try{
+            String activeToken = this.getClientAuthToken();
+            GameData gameData = new GameData(0, null, null, params[0], new ChessGame());
+            CreateGameResponse response = facade.clientCreateGame(activeToken, gameData);
+            if(response.message() == null){
+                System.out.println("Game Created Successfully!");
+                System.out.println("ID: " + response.gameID());
+                System.out.println("Select another option to continue: ");
+                options();
+            }
+        }
+        catch(Exception ex){
+            throw new Exception(ex.getMessage());
+            //something went wrong with creating the game//
+        }
+
+        return getNav(); //DOES NOT CHANGE NAV STATE//
     }
 
     public NavState help() throws Exception {
