@@ -59,10 +59,8 @@ public class ServerFacade {
             http.setRequestMethod(method);
             http.setDoOutput(true);
 
-
             writeHeader(header, http);
             writeBody(request, http);
-
 
             http.connect();
             throwIfNotSuccessful(http);

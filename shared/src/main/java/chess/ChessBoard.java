@@ -1,7 +1,6 @@
 package chess;
 
 import chess.*;
-
 import java.util.Arrays;
 
 import static java.lang.Character.toLowerCase;
@@ -76,24 +75,31 @@ public class ChessBoard {
     }
 
     private char getPieceChar(ChessPiece piece) {
-        //we're just making the types into single letter values//
-        //attempting to implement 06/29/2024 @ 1:15pm//
         char c;
         switch (piece.getPieceType()) {
-            case PAWN:
-                c = 'P'; break;
-            case ROOK:
-                c = 'R'; break;
-            case KNIGHT:
-                c = 'N'; break;
-            case BISHOP:
-                c = 'B'; break;
-            case QUEEN:
-                c = 'Q'; break;
-            case KING:
-                c = 'K'; break;
-            default:
-                c = '?'; break; //unrecognized piece... not good//
+            case PAWN: c = 'P'; break;
+            case ROOK: c = 'R'; break;
+            case KNIGHT: c = 'N'; break;
+            case BISHOP: c = 'B'; break;
+            case QUEEN: c = 'Q'; break;
+            case KING: c = 'K'; break;
+            default: c = '?'; break; //unrecognized piece... not good//
+        }
+        if(piece.teamColor == ChessGame.TeamColor.WHITE){c = toLowerCase(c);}
+        return c;
+    };
+
+
+    private char getFormattedChessPiece(ChessPiece piece){
+        char c;
+        switch (piece.getPieceType()) {
+            case PAWN: c = 'P'; break;
+            case ROOK: c = 'R'; break;
+            case KNIGHT: c = 'N'; break;
+            case BISHOP: c = 'B'; break;
+            case QUEEN: c = 'Q'; break;
+            case KING: c = 'K'; break;
+            default: c = '?'; break; //unrecognized piece... not good//
         }
         if(piece.teamColor == ChessGame.TeamColor.WHITE){c = toLowerCase(c);}
         return c;

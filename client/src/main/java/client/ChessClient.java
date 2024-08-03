@@ -1,11 +1,20 @@
 package client;
 
+import chess.ChessBoard;
 import chess.ChessGame;
+import chess.ChessPiece;
+import chess.ChessPosition;
 import models.AuthData;
 import models.GameData;
 import models.UserData;
 import requests.JoinGameRequest;
 import responses.*;
+import ui.EscapeSequences;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static ui.EscapeSequences.*;
 
 
 public class ChessClient {
@@ -17,10 +26,11 @@ public class ChessClient {
     //private final NotificationHandler notificationHandler;
     //private WebSocketFacade ws;
     private NavState nav = NavState.PRELOGIN;
+    private ArrayList<GameData> gameDataList;
 
     ChessClient(){
         facade = new ServerFacade("http://localhost:8080");
-    };
+    }
     ChessClient(String url){
         facade = new ServerFacade(url);
     }
@@ -52,6 +62,7 @@ public class ChessClient {
                 case "list" -> this.list();
                 case "join" -> this.join(params);
                 case "create" -> this.create(params);
+                case "observe" -> this.observe(params);
                 //third ui / gameplay//
                 //todo: implement this in phase 6//
                 default -> this.unrecognized();
@@ -60,7 +71,7 @@ public class ChessClient {
             return currentUI;
         }
         catch(Exception ex){
-            throw new Exception(ex.getMessage());
+            throw new Exception("Error detected: " + ex.getMessage());
         }
     }
 
@@ -155,18 +166,18 @@ public class ChessClient {
             String activeToken = this.getClientAuthToken();
             ListGamesResponse response = facade.clientListGame(activeToken);
             System.out.println("GAMES: ");
-            for(GameData g : response.games()){
-                System.out.println("Name: " + g.gameName());
-                System.out.println("ID: " + g.gameID());
-                System.out.println(" - white: " + g.whiteUsername() );
-                System.out.println(" - black: " + g.blackUsername() );
+            gameDataList = new ArrayList<GameData>(response.games());
+            for (int i = 0; i < gameDataList.size(); i++) {
+                GameData g = gameDataList.get(i);
+                System.out.println((i+1) + ": " + g.gameName());
+                System.out.println(" - white: " + g.whiteUsername());
+                System.out.println(" - black: " + g.blackUsername());
             }
         }catch(Exception ex){
             throw new Exception(ex.getMessage());
             //something went wrong with creating the game//
         }
         return getNav(); //NavState does not change in this function//
-
     }
 
     public NavState join(String...params) throws Exception {
@@ -176,11 +187,14 @@ public class ChessClient {
 
         try{
             String activeToken = this.getClientAuthToken();
-            JoinGameRequest request = new JoinGameRequest(params[1], Integer.parseInt(params[0]) );
+
+            int requestedGameID = this.gameDataList.get(Integer.parseInt(params[0]) - 1).gameID();
+            String requestedTeam = params[1].toUpperCase();
+
+            JoinGameRequest request = new JoinGameRequest(requestedTeam, requestedGameID);
             JoinGameResponse response = facade.clientJoinGame(activeToken, request);
             if(response.message() == null){
                 System.out.println("Game Joined!");
-
             }
         }
         catch(Exception ex){
@@ -209,8 +223,113 @@ public class ChessClient {
             throw new Exception(ex.getMessage());
             //something went wrong with creating the game//
         }
+        return getNav(); //DOES NOT CHANGE NAV STATE//
+    }
+
+    public NavState observe(String... params) throws Exception { //so this all works, I just need to format//
+        if(this.nav != NavState.POSTLOGIN){throw new Exception("must be logged in to observe a game");}
+        if(params.length < 2){throw new Exception("we're short parameters here'");}
+
+        int selectedGame = Integer.parseInt(params[0]);
+        String selectedTeam = params[1].toUpperCase();
+        System.out.println("TEAM: " + selectedTeam);
+
+        ChessGame theGame = new ChessGame();
+        ChessBoard theBoard = theGame.getBoard(); //just printing out some plain board I guess//
+        if (selectedTeam.equals("BLACK")) {this.printBlackPerspective(theBoard);}
+        else {this.printWhitePerspective(theBoard);}
 
         return getNav(); //DOES NOT CHANGE NAV STATE//
+    }
+
+
+    public void printBlackPerspective(ChessBoard theBoard){
+        int counter = 0;
+        System.out.print(SET_BG_COLOR_DARK_GREY);
+        System.out.print(SET_TEXT_COLOR_WHITE);
+        System.out.println("    h   g   f  e   d  c   b   a ");
+        for (int i = 0; i < 8; i++) {
+            System.out.print(SET_BG_COLOR_DARK_GREY);
+            System.out.print(SET_TEXT_COLOR_WHITE + " " + (i + 1) +" ");
+            System.out.print(SET_TEXT_COLOR_BLACK);
+            ++counter;
+            for (int j = 0; j < 8; j++) {
+                ++counter;
+                ChessPiece piece = theBoard.getPiece(new ChessPosition(i+1, j+1));
+                if (piece == null) {
+                    if(counter % 2 == 0){System.out.print(SET_BG_COLOR_DARK_GREEN);}
+                    else{System.out.print(SET_BG_COLOR_WHITE);}
+                    System.out.print(EMPTY);
+                } else {
+                    if(counter % 2 == 0){System.out.print(SET_BG_COLOR_DARK_GREEN);}
+                    else{System.out.print(SET_BG_COLOR_WHITE);}
+                    System.out.print( String.format(getUnicode(piece)) );
+                }
+            }
+            System.out.print(SET_BG_COLOR_DARK_GREY);
+            System.out.print(SET_TEXT_COLOR_WHITE + " " + (i + 1) +" ");
+            System.out.println();
+        }
+        System.out.print(SET_BG_COLOR_DARK_GREY);
+        System.out.print(SET_TEXT_COLOR_WHITE);
+        System.out.println("    h   g   f  e   d  c   b   a ");
+    }
+
+    public void printWhitePerspective(ChessBoard theBoard){
+        int counter = 0;
+        System.out.print(SET_BG_COLOR_DARK_GREY);
+        System.out.print(SET_TEXT_COLOR_WHITE);
+        System.out.println("    a   b   c  d   e  f   g   h ");
+        for (int i = 0; i < 8; i++) {
+            ++counter;
+            System.out.print(SET_BG_COLOR_DARK_GREY);
+            System.out.print(SET_TEXT_COLOR_WHITE + " " + (8 - i) +" ");
+            System.out.print(SET_TEXT_COLOR_BLACK);
+            for (int j = 0; j < 8; j++) {
+                ++counter;
+                ChessPiece piece = theBoard.getPiece(new ChessPosition(8-i, 8-j));
+                if (piece == null) {
+                    if(counter % 2 == 0){System.out.print(SET_BG_COLOR_DARK_GREEN);}
+                    else{System.out.print(SET_BG_COLOR_WHITE);}
+                    System.out.print(EMPTY);
+                } else {
+                    if(counter % 2 == 0){System.out.print(SET_BG_COLOR_DARK_GREEN);}
+                    else{System.out.print(SET_BG_COLOR_WHITE);}
+                    System.out.print( String.format(getUnicode(piece)) );
+                }
+            }
+            System.out.print(SET_BG_COLOR_DARK_GREY);
+            System.out.print(SET_TEXT_COLOR_WHITE + " " + (8 - i) +" ");
+            System.out.println();
+        }
+        System.out.print(SET_BG_COLOR_DARK_GREY);
+        System.out.print(SET_TEXT_COLOR_WHITE);
+        System.out.println("    a   b   c  d   e  f   g   h ");
+    }
+
+    public String getUnicode(ChessPiece p){
+        if(p.teamColor == ChessGame.TeamColor.WHITE){
+            return switch (p.getPieceType()) {
+                case PAWN -> WHITE_PAWN;
+                case ROOK -> WHITE_ROOK;
+                case KNIGHT -> WHITE_KNIGHT;
+                case BISHOP -> WHITE_BISHOP;
+                case QUEEN -> WHITE_QUEEN;
+                case KING -> WHITE_KING;
+                default -> "something off"; //unrecognized piece//
+            };
+        }
+        else{
+            return switch (p.getPieceType()) {
+                case PAWN -> BLACK_PAWN;
+                case ROOK -> BLACK_ROOK;
+                case KNIGHT -> BLACK_KNIGHT;
+                case BISHOP -> BLACK_BISHOP;
+                case QUEEN -> BLACK_QUEEN;
+                case KING -> BLACK_KING;
+                default -> "something is off"; //unrecognized piece//
+            };
+        }
     }
 
     public NavState help() throws Exception {
