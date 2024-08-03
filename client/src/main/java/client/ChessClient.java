@@ -31,9 +31,6 @@ public class ChessClient {
     ChessClient(){
         facade = new ServerFacade("http://localhost:8080");
     }
-    ChessClient(String url){
-        facade = new ServerFacade(url);
-    }
 
     public NavState eval(String input) throws Exception {
         //input is the whole line that we'll have to make sense of here//
@@ -256,15 +253,7 @@ public class ChessClient {
             for (int j = 0; j < 8; j++) {
                 ++counter;
                 ChessPiece piece = theBoard.getPiece(new ChessPosition(i+1, j+1));
-                if (piece == null) {
-                    if(counter % 2 == 0){System.out.print(SET_BG_COLOR_DARK_GREEN);}
-                    else{System.out.print(SET_BG_COLOR_WHITE);}
-                    System.out.print(EMPTY);
-                } else {
-                    if(counter % 2 == 0){System.out.print(SET_BG_COLOR_DARK_GREEN);}
-                    else{System.out.print(SET_BG_COLOR_WHITE);}
-                    System.out.print( String.format(getUnicode(piece)) );
-                }
+                printFormattedBoard(counter, piece);
             }
             System.out.print(SET_BG_COLOR_DARK_GREY);
             System.out.print(SET_TEXT_COLOR_WHITE + " " + (i + 1) +" ");
@@ -273,6 +262,18 @@ public class ChessClient {
         System.out.print(SET_BG_COLOR_DARK_GREY);
         System.out.print(SET_TEXT_COLOR_WHITE);
         System.out.println("    h   g   f  e   d  c   b   a ");
+    }
+
+    public void printFormattedBoard(int counter, ChessPiece piece) {
+        if (piece == null) {
+            if(counter % 2 == 0){System.out.print(SET_BG_COLOR_DARK_GREEN);}
+            else{System.out.print(SET_BG_COLOR_WHITE);}
+            System.out.print(EMPTY);
+        } else {
+            if(counter % 2 == 0){System.out.print(SET_BG_COLOR_DARK_GREEN);}
+            else{System.out.print(SET_BG_COLOR_WHITE);}
+            System.out.print( String.format(getUnicode(piece)) );
+        }
     }
 
     public void printWhitePerspective(ChessBoard theBoard){
@@ -288,15 +289,7 @@ public class ChessClient {
             for (int j = 0; j < 8; j++) {
                 ++counter;
                 ChessPiece piece = theBoard.getPiece(new ChessPosition(8-i, 8-j));
-                if (piece == null) {
-                    if(counter % 2 == 0){System.out.print(SET_BG_COLOR_DARK_GREEN);}
-                    else{System.out.print(SET_BG_COLOR_WHITE);}
-                    System.out.print(EMPTY);
-                } else {
-                    if(counter % 2 == 0){System.out.print(SET_BG_COLOR_DARK_GREEN);}
-                    else{System.out.print(SET_BG_COLOR_WHITE);}
-                    System.out.print( String.format(getUnicode(piece)) );
-                }
+                printFormattedBoard(counter, piece);
             }
             System.out.print(SET_BG_COLOR_DARK_GREY);
             System.out.print(SET_TEXT_COLOR_WHITE + " " + (8 - i) +" ");

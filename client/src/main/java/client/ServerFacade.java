@@ -22,6 +22,10 @@ public class ServerFacade {
         serverUrl = url;
     }
 
+    public ServerFacade(int port){
+        serverUrl = "http://localhost:" + port;
+    }
+
     public RegisterResponse clientRegister(UserData user) throws Exception {
         var path = "/user";
         return makeRequest("POST", path, null, user, RegisterResponse.class);
@@ -48,8 +52,13 @@ public class ServerFacade {
     }
 
     public CreateGameResponse clientCreateGame(String token, GameData data) throws Exception {
-        var path ="/game";
+        var path = "/game";
         return makeRequest("POST", path, token, data,  CreateGameResponse.class);
+    }
+
+    public ClearResponse clearDatabase() throws Exception {
+        var path = "/db";
+        return makeRequest("DELETE", path, null, null, ClearResponse.class);
     }
 
     private <T> T makeRequest(String method, String path, String header, Object request, Class<T> responseClass) throws Exception {
