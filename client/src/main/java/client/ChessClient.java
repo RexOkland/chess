@@ -68,7 +68,7 @@ public class ChessClient {
             return currentUI;
         }
         catch(Exception ex){
-            throw new Exception("Error detected: " + ex.getMessage());
+            throw new Exception(ex.getMessage());
         }
     }
 
@@ -81,7 +81,11 @@ public class ChessClient {
         if(params.length < 2){throw new Exception("We're short parameters for this operation");}
         else{ givenData = new UserData(params[0], params[1], null); }
 
-        LoginResponse response = facade.clientLogin(givenData);
+        LoginResponse response = null;
+        try {response = facade.clientLogin(givenData);}
+        catch (Exception ex){
+            throw new Exception("user or password is incorrect, try again please: ");
+        }
 
         NavState newState;
         if(response.authToken().length() > 10){
@@ -112,7 +116,17 @@ public class ChessClient {
         else if(params.length == 2){ givenData = new UserData(params[0], params[1], null); }
         else{givenData = new UserData(params[0], params[1], params[2]);}
 
-        RegisterResponse response = facade.clientRegister(givenData); //run it//
+        RegisterResponse response = null;
+        try{
+            response = facade.clientRegister(givenData); //run it//
+        }
+        catch(Exception ex){
+            switch (ex.getMessage()){
+                case "400" -> throw new Exception("Invalid data provided, please try again: ");
+                case "403" -> throw new Exception("Username already taken, please try again: ");
+                default -> throw new Exception("Invalid data, please try again");
+            }
+        }
 
         NavState newState = null;
         if(response.authToken().length() > 10){
@@ -182,11 +196,15 @@ public class ChessClient {
         if(this.nav != NavState.POSTLOGIN){throw new Exception("must be logged in to join game");}
         if(params.length < 2){throw new Exception("We're short parameters for this operation");}
 
+        int gameNumber = Integer.parseInt(params[0]) - 1;
+        if(gameNumber > this.gameDataList.size()){throw new Exception("game doesn't exist, please select another: ");}
+        int requestedGameID = this.gameDataList.get(Integer.parseInt(params[0]) - 1).gameID();
+
+        String requestedTeam = params[1].toUpperCase();
+        if((!requestedTeam.equals("WHITE")) && (!requestedTeam.equals("BLACK"))){throw new Exception("select a valid color please: ");}
+
         try{
             String activeToken = this.getClientAuthToken();
-
-            int requestedGameID = this.gameDataList.get(Integer.parseInt(params[0]) - 1).gameID();
-            String requestedTeam = params[1].toUpperCase();
 
             JoinGameRequest request = new JoinGameRequest(requestedTeam, requestedGameID);
             JoinGameResponse response = facade.clientJoinGame(activeToken, request);
@@ -195,7 +213,11 @@ public class ChessClient {
             }
         }
         catch(Exception ex){
-            throw new Exception(ex.getMessage());
+            switch(ex.getMessage()){
+                case "400" -> throw new Exception("bad input provided, please try again: ");
+                case "403" -> throw new Exception("spot is already taken, choose another game or color please: ");
+                default -> throw new Exception("Something went wrong, please try again: ");
+            }
             //something went wrong with joining the game//
         }
         return getNav();
@@ -228,8 +250,10 @@ public class ChessClient {
         if(params.length < 2){throw new Exception("we're short parameters here'");}
 
         int selectedGame = Integer.parseInt(params[0]);
+        if(selectedGame > this.gameDataList.size()){throw new Exception("game does not exist");}
+
         String selectedTeam = params[1].toUpperCase();
-        System.out.println("TEAM: " + selectedTeam);
+        if((!selectedTeam.equals("WHITE")) && (!selectedTeam.equals("BLACK"))){throw new Exception("select a valid color please: ");}
 
         ChessGame theGame = new ChessGame();
         ChessBoard theBoard = theGame.getBoard(); //just printing out some plain board I guess//
@@ -241,7 +265,7 @@ public class ChessClient {
 
 
     public void printBlackPerspective(ChessBoard theBoard){
-        int counter = 0;
+        int counter = 1;
         System.out.print(SET_BG_COLOR_DARK_GREY);
         System.out.print(SET_TEXT_COLOR_WHITE);
         System.out.println("    h   g   f  e   d  c   b   a ");
@@ -250,9 +274,9 @@ public class ChessClient {
             System.out.print(SET_TEXT_COLOR_WHITE + " " + (i + 1) +" ");
             System.out.print(SET_TEXT_COLOR_BLACK);
             ++counter;
-            for (int j = 0; j < 8; j++) {
+            for (int j = 8; j > 0; j--) {
                 ++counter;
-                ChessPiece piece = theBoard.getPiece(new ChessPosition(i+1, j+1));
+                ChessPiece piece = theBoard.getPiece(new ChessPosition(i+1, j));
                 printFormattedBoard(counter, piece);
             }
             System.out.print(SET_BG_COLOR_DARK_GREY);
@@ -277,7 +301,7 @@ public class ChessClient {
     }
 
     public void printWhitePerspective(ChessBoard theBoard){
-        int counter = 0;
+        int counter = 1;
         System.out.print(SET_BG_COLOR_DARK_GREY);
         System.out.print(SET_TEXT_COLOR_WHITE);
         System.out.println("    a   b   c  d   e  f   g   h ");
@@ -286,9 +310,9 @@ public class ChessClient {
             System.out.print(SET_BG_COLOR_DARK_GREY);
             System.out.print(SET_TEXT_COLOR_WHITE + " " + (8 - i) +" ");
             System.out.print(SET_TEXT_COLOR_BLACK);
-            for (int j = 0; j < 8; j++) {
+            for (int j = 8; j > 0; j--) {
                 ++counter;
-                ChessPiece piece = theBoard.getPiece(new ChessPosition(8-i, 8-j));
+                ChessPiece piece = theBoard.getPiece(new ChessPosition(8-i, 9-j));
                 printFormattedBoard(counter, piece);
             }
             System.out.print(SET_BG_COLOR_DARK_GREY);
@@ -389,6 +413,6 @@ public class ChessClient {
         this.setVisitorName(name);
         this.setClientAuthToken(auth);
     }
-    
+
 
 }
