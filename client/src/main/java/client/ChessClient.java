@@ -389,9 +389,6 @@ public class ChessClient {
         this.setVisitorName(name);
         this.setClientAuthToken(auth);
     }
-
-    public AuthData getVisitorInfo(){
-        return new AuthData(getClientAuthToken(), getVisitorName());
-    }
+    
 
 }

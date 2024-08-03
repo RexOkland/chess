@@ -89,22 +89,6 @@ public class ChessBoard {
         return c;
     };
 
-
-    private char getFormattedChessPiece(ChessPiece piece){
-        char c;
-        switch (piece.getPieceType()) {
-            case PAWN: c = 'P'; break;
-            case ROOK: c = 'R'; break;
-            case KNIGHT: c = 'N'; break;
-            case BISHOP: c = 'B'; break;
-            case QUEEN: c = 'Q'; break;
-            case KING: c = 'K'; break;
-            default: c = '?'; break; //unrecognized piece... not good//
-        }
-        if(piece.teamColor == ChessGame.TeamColor.WHITE){c = toLowerCase(c);}
-        return c;
-    }
-
     public static void main(String[] args) {
         ChessBoard board = new ChessBoard();
         board.resetBoard();
