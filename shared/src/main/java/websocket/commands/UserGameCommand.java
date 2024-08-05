@@ -55,6 +55,10 @@ public class UserGameCommand {
                 Objects.equals(getGameID(), that.getGameID());
     }
 
+    private Object getAuthString() {
+        return this.authToken.toString();
+    }
+
     @Override
     public int hashCode() {
         return Objects.hash(getCommandType(), getAuthString(), getGameID());

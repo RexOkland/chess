@@ -62,6 +62,7 @@ public class ChessClient {
                 case "create" -> this.create(params);
                 case "observe" -> this.observe(params);
                 //third ui / gameplay - UPGRADE TO WEBSOCKET COMMANDS//
+                //case "move" -> this.move(params)//TODO: another
 
                 //todo: implement this in phase 6//
 

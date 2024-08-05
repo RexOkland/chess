@@ -31,6 +31,7 @@ public class JoinGameHandler implements Route {
             JoinGameRequest givenGameData = gson.fromJson(request.body(), JoinGameRequest.class);
             String chosenColor = givenGameData.playerColor();
             Integer gameID = givenGameData.gameID();
+
             String givenAuthData = request.headers("authorization");
             JoinGameResponse joinResponse = service.joinGame(givenAuthData, chosenColor, gameID, holder);
             if (joinResponse.message() == null) {

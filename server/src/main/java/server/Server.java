@@ -27,6 +27,8 @@ public class Server {
         }
 
 
+        Spark.webSocket("/ws", new WebSocketHandler(db));//TODO: THIS//
+
         //Spark.delete("/db", ((request, response) -> new ClearHandler(db).handle(request,response)));//why//
         Spark.post("/user", new RegisterHandler(db));
         Spark.post("/session", new LoginHandler(db));
