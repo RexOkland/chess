@@ -4,6 +4,7 @@ import chess.ChessBoard;
 import chess.ChessGame;
 import chess.ChessPiece;
 import chess.ChessPosition;
+import client.websocket.WebSocketFacade;
 import models.AuthData;
 import models.GameData;
 import models.UserData;
@@ -24,7 +25,7 @@ public class ChessClient {
 
     private final String serverUrl = null;
     //private final NotificationHandler notificationHandler;
-    //private WebSocketFacade ws;
+    private WebSocketFacade webSocketFacade;
     private NavState nav = NavState.PRELOGIN;
     private ArrayList<GameData> gameDataList;
 
@@ -60,8 +61,10 @@ public class ChessClient {
                 case "join" -> this.join(params);
                 case "create" -> this.create(params);
                 case "observe" -> this.observe(params);
-                //third ui / gameplay//
+                //third ui / gameplay - UPGRADE TO WEBSOCKET COMMANDS//
+
                 //todo: implement this in phase 6//
+
                 default -> this.unrecognized();
             };
             setNav(currentUI);
@@ -413,6 +416,5 @@ public class ChessClient {
         this.setVisitorName(name);
         this.setClientAuthToken(auth);
     }
-
 
 }
