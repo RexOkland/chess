@@ -28,5 +28,28 @@ public class WebSocketHandler  {
 
     };
 
-    public void handleMoveCommand(UserGameCommand cmd){}
+    public void handleCommand(UserGameCommand cmd){
+        switch (cmd.getCommandType()){
+            case MAKE_MOVE -> this.handleMakeMove();
+            case CONNECT -> this.handleConnect();
+            case RESIGN -> this.handleResign();
+            case LEAVE -> this.handleLeave();
+        }
+    }
+
+    public void handleMakeMove(){
+        //todo:this//
+    }
+
+    public void handleConnect(){
+        //todo: this//
+    }
+
+    public void handleResign(){
+        //todo: this//
+    }
+
+    public void handleLeave(){
+        //todo: this//
+    }
 }
