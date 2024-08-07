@@ -20,6 +20,7 @@ import websocket.messages.UpdateBoardMessage;
 
 import javax.management.Notification;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -39,12 +40,18 @@ public class WebSocketHandler  {
     }
 
     @OnWebSocketMessage
-    public void onMessage(Session session, String input) throws Exception {
+    public void onMessage(Session session,  String input) /*throws Exception*/{
         this.actingSession = session; //whoever sends this message becomes the acting/active session//
 
         Gson gson = new Gson();
         UserGameCommand command = gson.fromJson(input, UserGameCommand.class);
+
         try{
+            //authenticate the Authentication String//
+            boolean validToken = service.isValidToken(databaseHolder, command.getAuthToken());
+            //throws error on failure^//
+            if(!validToken){System.out.println("we've got a problem");}
+
             if(command.getCommandType() == UserGameCommand.CommandType.MAKE_MOVE){
                 MakeMoveCommand moveCommand = gson.fromJson(input, MakeMoveCommand.class);
                 this.handleMoveCommand(moveCommand);
@@ -55,7 +62,8 @@ public class WebSocketHandler  {
 
         } catch (Exception ex) {
             //todo: currently throwing exceptions that'll be caught here... do we do anything with them?//
-            throw new Exception(ex.getMessage());
+            //throw new Exception(ex.getMessage());
+            //todo: idk if im allowed to have this//
         }
     };
 
@@ -111,7 +119,7 @@ public class WebSocketHandler  {
         catch (Exception ex) {
             this.sendError(ex);
             //todo: do we need to throw these still?//
-            throw new Exception(ex.getMessage()); //passing along any exception we get//
+            //throw new Exception(ex.getMessage()); //passing along any exception we get//
         }
     }
 
@@ -127,6 +135,12 @@ public class WebSocketHandler  {
             messageToAllInGame(notificationString, gameID);
 
             //add the message sender to their game//
+            if(sessionMap == null){//totally empty set//
+                sessionMap = new HashMap<>();
+                sessionMap.put(gameID, new HashSet<Session>());
+            }
+            else sessionMap.computeIfAbsent(gameID, k -> new HashSet<Session>());//first user to join this game//
+
             sessionMap.get(gameID).add(actingSession);
 
             //send them the updated version of the board//
@@ -208,8 +222,10 @@ public class WebSocketHandler  {
         }
     }
 
-    private void messageToAllInGame(String message, Integer gameID) throws Exception {
+    private void messageToAllInGame(String message, Integer gameID) {
         try{
+            if(sessionMap == null){return;}
+
             Gson gson = new Gson();
             NotificationMessage notificationObject = new NotificationMessage(message);
             String notificationJson = gson.toJson(notificationObject);
@@ -221,7 +237,7 @@ public class WebSocketHandler  {
             }
         }
         catch (Exception ex){
-            throw new Exception(ex.getMessage());
+            //throw new Exception(ex.getMessage());
         }
     }
 }
