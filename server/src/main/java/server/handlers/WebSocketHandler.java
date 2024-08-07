@@ -47,10 +47,8 @@ public class WebSocketHandler  {
         UserGameCommand command = gson.fromJson(input, UserGameCommand.class);
 
         try{
-            //authenticate the Authentication String//
-            boolean validToken = service.isValidToken(databaseHolder, command.getAuthToken());
-            //throws error on failure^//
-            if(!validToken){System.out.println("we've got a problem");}
+            //authenticate the Authentication String - throws error on failure//
+            service.isValidToken(databaseHolder, command.getAuthToken());
 
             if(command.getCommandType() == UserGameCommand.CommandType.MAKE_MOVE){
                 MakeMoveCommand moveCommand = gson.fromJson(input, MakeMoveCommand.class);
@@ -61,9 +59,8 @@ public class WebSocketHandler  {
             }
 
         } catch (Exception ex) {
+            this.sendError(ex);
             //todo: currently throwing exceptions that'll be caught here... do we do anything with them?//
-            //throw new Exception(ex.getMessage());
-            //todo: idk if im allowed to have this//
         }
     };
 
@@ -117,9 +114,7 @@ public class WebSocketHandler  {
             }
         }
         catch (Exception ex) {
-            this.sendError(ex);
-            //todo: do we need to throw these still?//
-            //throw new Exception(ex.getMessage()); //passing along any exception we get//
+            throw new Exception(ex.getMessage()); //passing along any exception we get//
         }
     }
 
@@ -149,8 +144,6 @@ public class WebSocketHandler  {
             actingSession.getRemote().sendString(boardJson);
         }
         catch (Exception ex){
-            this.sendError(ex);
-            //todo: do we need to throw these still?//
             throw new Exception(ex.getMessage());
         }
     }
@@ -175,8 +168,6 @@ public class WebSocketHandler  {
 
         }
         catch(Exception ex){
-            this.sendError(ex);
-            //todo: do we need to throw these still?//
             throw new Exception(ex.getMessage());
         }
 
@@ -199,8 +190,6 @@ public class WebSocketHandler  {
             messageToAllInGame(leaveMessage, gameID);
         }
         catch (Exception ex){
-            this.sendError(ex);
-            //todo: do we need to throw these still?//
             throw new Exception(ex.getMessage());
         }
 
@@ -208,7 +197,7 @@ public class WebSocketHandler  {
 
 
     //help functions//
-    private void sendError(Exception ex) throws Exception {
+    private void sendError(Exception ex) /*throws Exception*/ {
         Gson gson = new Gson();
         try{
             String errorString = String.format("error detected -> %s", ex.getMessage());
@@ -218,7 +207,7 @@ public class WebSocketHandler  {
             actingSession.getRemote().sendString(errorJson);
         }
         catch(IOException io){
-            throw new Exception(io.getMessage());
+            System.out.println("error sending out the error message... tough");
         }
     }
 

@@ -10,7 +10,7 @@ import models.GameData;
 
 public class WebService {
 
-    public boolean isValidToken(DatabaseAccess db, String authString) throws Exception {
+    public void isValidToken(DatabaseAccess db, String authString) throws Exception {
         AuthDaoInterface authDao = db.authDAO();
         AuthData foundData = null;
         try{
@@ -19,7 +19,9 @@ public class WebService {
         catch (DataAccessException DataEx){
             throw new Exception("Authentication token not found");
         }
-        return (foundData != null);
+        if (foundData == null) {
+            throw new Exception("Authentication token not found");
+        }
     }
     public GameData findGameData(DatabaseAccess db, Integer gameID) throws Exception{
         //find the game the websocket is dealing with//
@@ -32,7 +34,8 @@ public class WebService {
         catch (DataAccessException DataEx){
             throw new Exception("Authentication token not found");
         }
-        return foundGame;
+        if(foundGame == null){throw new Exception("Authentication token not found");}
+        else{ return foundGame; }
     }
 
 }
