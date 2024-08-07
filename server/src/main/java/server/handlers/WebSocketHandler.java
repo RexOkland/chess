@@ -57,8 +57,6 @@ public class WebSocketHandler  {
             //todo: currently throwing exceptions that'll be caught here... do we do anything with them?//
             throw new Exception(ex.getMessage());
         }
-
-
     };
 
     public void handleCommand(UserGameCommand cmd) throws Exception{
