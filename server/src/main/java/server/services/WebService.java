@@ -21,7 +21,7 @@ public class WebService {
         }
         return (foundData != null);
     }
-    public ChessGame findGameData(DatabaseAccess db, Integer gameID) throws Exception{
+    public GameData findGameData(DatabaseAccess db, Integer gameID) throws Exception{
         //find the game the websocket is dealing with//
 
         GamesDaoInterface gameDao = db.gamesDAO();
@@ -32,7 +32,7 @@ public class WebService {
         catch (DataAccessException DataEx){
             throw new Exception("Authentication token not found");
         }
-        return foundGame.game();
+        return foundGame;
     }
 
 }
