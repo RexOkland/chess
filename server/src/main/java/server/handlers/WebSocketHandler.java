@@ -68,7 +68,7 @@ public class WebSocketHandler  {
                 //todo: would have to change onMessage params//
                 case CONNECT -> this.handleConnect(cmd.getGameID());
                 case RESIGN -> this.handleResign(cmd.getGameID());
-                case LEAVE -> this.handleLeave();
+                case LEAVE -> this.handleLeave(cmd.getGameID());
             }
         }
         catch (Exception ex){
@@ -123,6 +123,11 @@ public class WebSocketHandler  {
             //find game... make sure it's real//
             ChessGame game = service.findGameData(databaseHolder, gameID).game();
 
+            //let other users know that this user is joining//
+            String joiningUser = "unknown"; //todo: fix this! shouldn't be unknown//
+            String notificationString = String.format("%s has joined the game!", joiningUser);
+            messageToAllInGame(notificationString, gameID);
+
             //add the message sender to their game//
             sessionMap.get(gameID).add(actingSession);
 
@@ -152,16 +157,9 @@ public class WebSocketHandler  {
                 winningUser = gameData.blackUsername();
             }
 
+            //let everyone know who resigned//
             String observerMessageString = losingUser + " has resigned, " + winningUser + " wins!";
-            NotificationMessage observerMessage = new NotificationMessage(observerMessageString);
-            String notificationJson = gson.toJson(observerMessage);
-
-            //observer message going to everyone for now// todo: customize messages for winner/loser/observer//
-            Set<Session> peopleInvolved = sessionMap.get(gameID);
-            for(Session s : peopleInvolved){
-                //acting session doesn't get the notification of their own move//
-                s.getRemote().sendString(notificationJson);
-            }
+            messageToAllInGame(observerMessageString, gameID);//todo: potentially customize messages for winner/loser//
 
         }
         catch(Exception ex){
@@ -172,9 +170,8 @@ public class WebSocketHandler  {
 
     }
 
-    public void handleLeave() throws Exception {
+    public void handleLeave(Integer gameID) throws Exception {
         Gson gson = new Gson();
-        //todo: this//
         try{
             //just goes to the acting user//
             String exitGameMessage = "exiting game!";
@@ -182,9 +179,17 @@ public class WebSocketHandler  {
             String notificationJson = gson.toJson(observerMessage);
 
             actingSession.getRemote().sendString(notificationJson);
+            this.sessionMap.get(gameID).remove(actingSession); //removing the guy leaving//
+
+            //let the rest of the game know who left//
+            String leavingUser = "unknown";//todo: fix this! shouldn't say unknown//
+            String leaveMessage = String.format("%s has left the gane", leavingUser);
+            messageToAllInGame(leaveMessage, gameID);
         }
         catch (Exception ex){
             this.sendError(ex);
+            //todo: do we need to throw these still?//
+            throw new Exception(ex.getMessage());
         }
 
     }
@@ -194,13 +199,31 @@ public class WebSocketHandler  {
     private void sendError(Exception ex) throws Exception {
         Gson gson = new Gson();
         try{
-            ErrorMessage message = new ErrorMessage(ex.getMessage());
+            String errorString = String.format("error detected -> %s", ex.getMessage());
+            ErrorMessage message = new ErrorMessage(errorString);
             String errorJson = gson.toJson(message);
 
             actingSession.getRemote().sendString(errorJson);
         }
         catch(IOException io){
             throw new Exception(io.getMessage());
+        }
+    }
+
+    private void messageToAllInGame(String message, Integer gameID) throws Exception {
+        try{
+            Gson gson = new Gson();
+            NotificationMessage notificationObject = new NotificationMessage(message);
+            String notificationJson = gson.toJson(notificationObject);
+
+            Set<Session> peopleInvolved = sessionMap.get(gameID);
+            for(Session s : peopleInvolved){
+                //goes to everyone but the acting user, so I'll just send to all before I add the acting to the list//
+                s.getRemote().sendString(notificationJson);
+            }
+        }
+        catch (Exception ex){
+            throw new Exception(ex.getMessage());
         }
     }
 }
