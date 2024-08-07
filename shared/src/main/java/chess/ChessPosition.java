@@ -47,6 +47,10 @@ public class ChessPosition {
         return String.format("col = %d \nrow = %d \n", row, col);
     }
 
+    public String print() {
+        return String.format("%d%d", row, col);
+    }
+
     //REX'S FUNCTIONS//
     public boolean onBoard(){ //returns a T/F value if a point is on the board//
         if(getColumn() > 8){return false;}

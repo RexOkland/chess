@@ -1,5 +1,7 @@
 package websocket.commands;
 
+import chess.ChessMove;
+
 import java.util.Objects;
 
 /**
@@ -23,7 +25,7 @@ public class UserGameCommand {
     }
 
     public enum CommandType {
-        CONNECT,
+        CONNECT, //todo: //
         MAKE_MOVE,
         LEAVE,
         RESIGN
