@@ -82,11 +82,11 @@ public class JoinGameService {
         return new JoinGameResponse(responseMessage);
     }
 
-    public String getUsernameFromAuth(DatabaseAccess db, String auth) throws Exception{
-        AuthData auth;
+    public String getUsernameFromAuth(DatabaseAccess db, String authString) throws Exception{
+        AuthData auth = null;
         try{
             AuthDaoInterface dao = db.authDAO();
-            auth = dao.findAuth(auth);
+            auth = dao.findAuth(authString);
         }
         catch (Exception e){
             throw new Exception("Invalid Authentication Token!"); //this should never happen//
