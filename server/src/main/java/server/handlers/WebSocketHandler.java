@@ -2,6 +2,7 @@ package server.handlers;
 
 import chess.ChessGame;
 import chess.ChessMove;
+import chess.ChessPiece;
 import com.google.gson.Gson;
 import com.mysql.cj.conf.ConnectionUrlParser;
 import dataaccess.DatabaseAccess;
@@ -20,16 +21,14 @@ import websocket.messages.UpdateBoardMessage;
 
 import javax.management.Notification;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 
 @WebSocket
 public class WebSocketHandler  {
     Map<Integer, Set<Session>> sessionMap;
     Session actingSession;
+    String actingSessionUser;
     DatabaseAccess databaseHolder;
     WebService service;
 
@@ -43,12 +42,14 @@ public class WebSocketHandler  {
     public void onMessage(Session session,  String input) /*throws Exception*/{
         this.actingSession = session; //whoever sends this message becomes the acting/active session//
 
+
         Gson gson = new Gson();
         UserGameCommand command = gson.fromJson(input, UserGameCommand.class);
 
         try{
             //authenticate the Authentication String - throws error on failure//
             service.isValidToken(databaseHolder, command.getAuthToken());
+            this.actingSessionUser = service.getUsernameFromAuth(databaseHolder, command.getAuthToken());
 
             if(command.getCommandType() == UserGameCommand.CommandType.MAKE_MOVE){
                 MakeMoveCommand moveCommand = gson.fromJson(input, MakeMoveCommand.class);
@@ -93,11 +94,22 @@ public class WebSocketHandler  {
     public void handleMakeMove(Integer gameID, ChessMove move) throws Exception {
         Gson gson = new Gson();
         try{
-            ChessGame game = service.findGameData(databaseHolder, gameID).game();
-            game.makeMove(move); //logic is all built out... in theory//
+            //going to find out what team the acting user controls... if they're not an observer//
+            GameData gameData = service.findGameData(databaseHolder, gameID);
+            ChessGame game = gameData.game();
 
+            //move details
             String start = move.getStartPosition().print();
             String end = move.getEndPosition().print();
+            ChessPiece actingPiece = game.getBoard().getPiece(move.getStartPosition());
+
+            //acting piece and acting user need to be the same color, or imma throw hands//
+            ChessGame.TeamColor actingColor = actingPiece.teamColor;
+            ChessGame.TeamColor userColor = this.getGameRole(this.actingSessionUser, gameData);
+            if(actingColor != userColor){ throw new Exception("not authorized to make this move!");}
+
+            //need to prevent this, if the actingSession isn't authorized to make the move//
+            game.makeMove(move); //logic is all built out... in theory//
             String notificationString = String.format("move made: %s -> %s", start, end);
 
             NotificationMessage notificationObject = new NotificationMessage(notificationString);
@@ -227,6 +239,18 @@ public class WebSocketHandler  {
         }
         catch (Exception ex){
             //throw new Exception(ex.getMessage());
+        }
+    }
+
+    private ChessGame.TeamColor getGameRole(String user, GameData game){
+        if(Objects.equals(user, game.whiteUsername())){
+            return ChessGame.TeamColor.WHITE;
+        }
+        else if(Objects.equals(user, game.blackUsername())){
+            return ChessGame.TeamColor.BLACK;
+        }
+        else{
+            return null; //this b an observer//
         }
     }
 }
