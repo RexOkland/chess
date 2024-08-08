@@ -95,7 +95,7 @@ public class WebSocketHandler  {
             //going to find out what team the acting user controls... if they're not an observer//
             GameData gameData = service.findGameData(databaseHolder, gameID);
             ChessGame game = gameData.game();
-
+            System.out.println("ID: " + gameID);
             //make sure the game's not already over... no moves if that's the case//
             if(game.isItOver()){throw new Exception("game's already over! can't make moves bro");}
 
@@ -122,9 +122,22 @@ public class WebSocketHandler  {
             Set<Session> peopleInvolved = sessionMap.get(gameID);
             for(Session s : peopleInvolved){
                 //acting session doesn't get the notification of their own move//
-                if(s != actingSession){ s.getRemote().sendString(notificationJson); }
+                if(s != actingSession){
+                    s.getRemote().sendString(notificationJson);
+                }
                 s.getRemote().sendString(boardJson);
             }
+
+            //set the game's next move... idk why i need to do this again//
+            if(actingColor == ChessGame.TeamColor.WHITE){
+                this.service.setGameTurn(databaseHolder, gameID, ChessGame.TeamColor.BLACK);
+            }
+            else if (actingColor == ChessGame.TeamColor.BLACK){
+                this.service.setGameTurn(databaseHolder, gameID, ChessGame.TeamColor.WHITE);
+            }
+
+            //updated the game for reals//
+            this.service.updateBoardForReals(databaseHolder, gameID, game);
         }
         catch (Exception ex) {
             throw new Exception(ex.getMessage()); //passing along any exception we get//

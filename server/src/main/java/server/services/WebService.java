@@ -69,7 +69,6 @@ public class WebService {
     }
 
     public void removeUserFromGame(DatabaseAccess db, Integer gameID, ChessGame.TeamColor color) throws Exception {
-
         try{
             GamesDaoInterface gameDao = db.gamesDAO();
             GameData foundGame = gameDao.findGame(gameID);
@@ -87,7 +86,38 @@ public class WebService {
         } catch (DataAccessException e) {
             throw new Exception("We're super cooked");
         }
+    }
 
+    public void setGameTurn(DatabaseAccess db, Integer gameID, ChessGame.TeamColor whosTurn) throws Exception {
+        try{
+            GamesDaoInterface gameDao = db.gamesDAO();
+            GameData foundData2 = gameDao.findGame(gameID);
+            ChessGame updatedGame = foundData2.game();
+
+            updatedGame.setTeamTurn(whosTurn); //switch the turn//
+
+            GameData updatedData = new GameData(foundData2.gameID(), foundData2.whiteUsername(), foundData2.blackUsername(), foundData2.gameName(), updatedGame);
+            gameDao.updateGame(updatedData);
+
+        } catch (DataAccessException e) {
+            throw new Exception(e.getMessage());
+        }
+    }
+
+    public void updateBoardForReals(DatabaseAccess db, Integer gameID, ChessGame game) throws Exception {
+        try{
+            GamesDaoInterface gameDao = db.gamesDAO();
+            GameData theFoundData = gameDao.findGame(gameID);
+            ChessGame updatedBoardGame = theFoundData.game();
+
+            updatedBoardGame.setBoard(game.getBoard());
+
+            GameData updatedData = new GameData(theFoundData.gameID(), theFoundData.whiteUsername(), theFoundData.blackUsername(), theFoundData.gameName(), updatedBoardGame);
+            gameDao.updateGame(updatedData);
+
+        } catch (DataAccessException e) {
+            throw new Exception(e.getMessage());
+        }
     }
 
 }
