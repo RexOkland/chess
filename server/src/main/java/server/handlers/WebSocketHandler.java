@@ -211,6 +211,8 @@ public class WebSocketHandler  {
     public void handleLeave(Integer gameID) throws Exception {
         Gson gson = new Gson();
         try{
+            GameData gameData = service.findGameData(databaseHolder, gameID);
+            ChessGame game = gameData.game();
             //just goes to the acting user -- actually no. they dont get a message//
             /*String exitGameMessage = "exiting game!";
             NotificationMessage observerMessage = new NotificationMessage(exitGameMessage);
@@ -220,9 +222,16 @@ public class WebSocketHandler  {
             this.sessionMap.get(gameID).remove(actingSession); //removing the guy leaving//
 
             //let the rest of the game know who left//
-            String leavingUser = this.actingSessionUser;//todo: fix this! shouldn't say unknown//
-            String leaveMessage = String.format("%s has left the gane", leavingUser);
+            String leavingUser = this.actingSessionUser;
+            String leaveMessage = String.format("%s has left the game", leavingUser);
             messageToAllInGame(leaveMessage, gameID);
+
+            //empty their spot... so someone else could take it?//
+            ChessGame.TeamColor userColor = getGameRole(leavingUser, gameData);
+            if(userColor != null){
+                service.removeUserFromGame(databaseHolder, gameID, userColor);
+            }
+
         }
         catch (Exception ex){
             throw new Exception(ex.getMessage());

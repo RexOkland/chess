@@ -66,7 +66,27 @@ public class WebService {
         } catch (DataAccessException e) {
             throw new Exception("We're cooked");
         }
+    }
 
+    public void removeUserFromGame(DatabaseAccess db, Integer gameID, ChessGame.TeamColor color) throws Exception {
+
+        try{
+            GamesDaoInterface gameDao = db.gamesDAO();
+            GameData foundGame = gameDao.findGame(gameID);
+            GameData newGame;
+            if(color == ChessGame.TeamColor.WHITE){
+                //duplicate of the game that has the White's spot empty//
+                newGame = new GameData(foundGame.gameID(), null, foundGame.blackUsername(), foundGame.gameName(), foundGame.game());
+            }
+            else{
+                //duplicate of the game that has the White's spot empty//
+                newGame = new GameData(foundGame.gameID(), foundGame.whiteUsername(), null, foundGame.gameName(), foundGame.game());
+            }
+             //set that thing to ENDED//
+            gameDao.updateGame(newGame); //put that thing back in with new data//
+        } catch (DataAccessException e) {
+            throw new Exception("We're super cooked");
+        }
 
     }
 

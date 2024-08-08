@@ -53,7 +53,9 @@ public class JoinGameService {
                 if(Objects.equals(team, "WHITE")){
                     //user wants to join as white//
                     if(foundGame.whiteUsername() != null){
-                        responseMessage = "error: already taken";
+                        if (!Objects.equals(foundAuth.username(), foundGame.whiteUsername())) {
+                            responseMessage = "error: already taken";
+                        }
                         return new JoinGameResponse(responseMessage);
                     }
                     try{gameDao.updateGame(foundGame.setWhite(foundAuth.username()));}
@@ -65,7 +67,9 @@ public class JoinGameService {
                 }else if(Objects.equals(team, "BLACK")) {
                     //user wants to join as black//
                     if(foundGame.blackUsername() != null){
-                        responseMessage = "error: already taken";
+                        if (!Objects.equals(foundAuth.username(), foundGame.blackUsername())) {
+                            responseMessage = "error: already taken";
+                        }
                         return new JoinGameResponse(responseMessage);
                     }
                     try{gameDao.updateGame(foundGame.setBlack(foundAuth.username()));}
@@ -80,5 +84,23 @@ public class JoinGameService {
             }
         }
         return new JoinGameResponse(responseMessage);
+    }
+
+    public String getUsernameFromAuth(DatabaseAccess db, String auth) throws Exception{
+        AuthData foundAuth = null;
+        try{
+            AuthDaoInterface authDao = db.authDAO();
+            foundAuth = authDao.findAuth(auth);
+        }
+        catch (Exception ex){
+            throw new Exception("Invalid Authentication Token"); //this should never happen//
+        }
+        if (foundAuth == null){
+            throw new Exception("Invalid Authentication Token");
+        }
+        else{
+            return foundAuth.username();
+        }
+
     }
 }
