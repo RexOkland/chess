@@ -38,7 +38,6 @@ public class WebSocketHandler  {
         this.databaseHolder = databaseHolder;
         this.service = new WebService();
     }
-
     @OnWebSocketMessage
     public void onMessage(Session session,  String input) /*throws Exception*/{
         this.actingSession = session; //whoever sends this message becomes the acting/active session//
@@ -46,7 +45,7 @@ public class WebSocketHandler  {
         UserGameCommand command = gson.fromJson(input, UserGameCommand.class);
 
         try{
-            TimeUnit.MILLISECONDS.sleep(100); // <--------------------------------------------------------------------- HERE
+            TimeUnit.MILLISECONDS.sleep(100); // <---------------------------------------------- //Isaih's code//
             //authenticate the Authentication String - throws error on failure//
             service.isValidToken(databaseHolder, command.getAuthToken());
             this.actingSessionUser = service.getUsernameFromAuth(databaseHolder, command.getAuthToken());
@@ -114,7 +113,7 @@ public class WebSocketHandler  {
             NotificationMessage notificationObject = new NotificationMessage(notificationString);
             String notificationJson = gson.toJson(notificationObject);
 
-            UpdateBoardMessage updatedBoardObject = new UpdateBoardMessage(game);//will be updated//
+            UpdateBoardMessage updatedBoardObject = new UpdateBoardMessage(gameData);//will be updated//
             String boardJson = gson.toJson(updatedBoardObject);
 
             Set<Session> peopleInvolved = sessionMap.get(gameID);
@@ -146,7 +145,8 @@ public class WebSocketHandler  {
         Gson gson = new Gson();
         try{
             //find game... make sure it's real//
-            ChessGame game = service.findGameData(databaseHolder, gameID).game();
+            GameData gameData = service.findGameData(databaseHolder, gameID);
+            ChessGame game = gameData.game();
 
             //let other users know that this user is joining//
             String joiningUser = this.actingSessionUser;
@@ -162,7 +162,8 @@ public class WebSocketHandler  {
             sessionMap.get(gameID).add(actingSession);
 
             //send them the updated version of the board to the new player/observer//
-            UpdateBoardMessage updatedBoardObject = new UpdateBoardMessage(game);//will be updated//
+            UpdateBoardMessage updatedBoardObject;
+            updatedBoardObject = new UpdateBoardMessage(gameData);//will be updated//
             String boardJson = gson.toJson(updatedBoardObject);
             actingSession.getRemote().sendString(boardJson);
         }

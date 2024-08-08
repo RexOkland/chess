@@ -1,9 +1,6 @@
 package client;
 
-import chess.ChessBoard;
-import chess.ChessGame;
-import chess.ChessPiece;
-import chess.ChessPosition;
+import chess.*;
 import client.websocket.WebSocketFacade;
 import models.AuthData;
 import models.GameData;
@@ -11,7 +8,10 @@ import models.UserData;
 import requests.JoinGameRequest;
 import responses.*;
 import ui.EscapeSequences;
+import websocket.commands.UserGameCommand;
 
+import javax.websocket.ContainerProvider;
+import javax.websocket.WebSocketContainer;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,11 +26,14 @@ public class ChessClient {
     private final String serverUrl = null;
     //private final NotificationHandler notificationHandler;
     private WebSocketFacade webSocketFacade;
+    private WebSocketContainer container;
     private NavState nav = NavState.PRELOGIN;
     private ArrayList<GameData> gameDataList;
+    private GameData currentGameDate;
 
     ChessClient(){
-        facade = new ServerFacade("http://localhost:8080");
+        facade = new ServerFacade(8080);
+        webSocketFacade = new WebSocketFacade(8080);
     }
 
     public NavState eval(String input) throws Exception {
@@ -61,8 +64,8 @@ public class ChessClient {
                 case "join" -> this.join(params);
                 case "create" -> this.create(params);
                 case "observe" -> this.observe(params);
-                //third ui / gameplay - UPGRADE TO WEBSOCKET COMMANDS//
-                //case "move" -> this.move(params)//TODO: another
+                //third ui / gameplay - WEBSOCKET COMMANDS//
+                case "redraw" -> this.redraw();
 
                 //todo: implement this in phase 6//
 
@@ -196,6 +199,7 @@ public class ChessClient {
     }
 
     public NavState join(String...params) throws Exception {
+        NavState state = getNav();
         //initial check to see if we can be running this function//
         if(this.nav != NavState.POSTLOGIN){throw new Exception("must be logged in to join game");}
         if(params.length < 2){throw new Exception("We're short parameters for this operation");}
@@ -215,6 +219,14 @@ public class ChessClient {
             if(response.message() == null){
                 System.out.println("Game Joined!");
             }
+
+            //joining the gameplay repl//
+            UserGameCommand.CommandType typeToSend = UserGameCommand.CommandType.CONNECT;
+            String authToSend = this.visitorAuthToken;
+
+            UserGameCommand commandToSend = new UserGameCommand(typeToSend, authToSend, requestedGameID);
+            this.webSocketFacade.sendConnectCommand(commandToSend);
+            state = NavState.GAMEPLAY;
         }
         catch(Exception ex){
             switch(ex.getMessage()){
@@ -224,7 +236,7 @@ public class ChessClient {
             }
             //something went wrong with joining the game//
         }
-        return getNav();
+        return state;
     }
 
     public NavState create(String... params) throws Exception {
@@ -250,6 +262,7 @@ public class ChessClient {
     }
 
     public NavState observe(String... params) throws Exception { //so this all works, I just need to format//
+        NavState state = getNav();
         if(this.nav != NavState.POSTLOGIN){throw new Exception("must be logged in to observe a game");}
         if(params.length < 2){throw new Exception("we're short parameters here'");}
 
@@ -259,99 +272,27 @@ public class ChessClient {
         String selectedTeam = params[1].toUpperCase();
         if((!selectedTeam.equals("WHITE")) && (!selectedTeam.equals("BLACK"))){throw new Exception("select a valid color please: ");}
 
-        ChessGame theGame = new ChessGame();
-        ChessBoard theBoard = theGame.getBoard(); //just printing out some plain board I guess//
-        if (selectedTeam.equals("BLACK")) {this.printBlackPerspective(theBoard);}
-        else {this.printWhitePerspective(theBoard);}
+        //todo: this is going to become a CONNECT-WS command//
+        UserGameCommand.CommandType typeToSend = UserGameCommand.CommandType.CONNECT;
+        String authToSend = this.visitorAuthToken;
+        int gameToSend = this.gameDataList.get(selectedGame - 1).gameID();
+
+        UserGameCommand commandToSend = new UserGameCommand(typeToSend, authToSend, gameToSend);
+        this.webSocketFacade.sendConnectCommand(commandToSend);
+        state = NavState.GAMEPLAY;
+
+        return state; //DOES NOT CHANGE NAV STATE//
+    }
+
+    public NavState redraw(){
+        //already in the gameplay mode, already has their session in the set//
+
 
         return getNav(); //DOES NOT CHANGE NAV STATE//
     }
 
 
-    public void printBlackPerspective(ChessBoard theBoard){
-        int counter = 1;
-        System.out.print(SET_BG_COLOR_DARK_GREY);
-        System.out.print(SET_TEXT_COLOR_WHITE);
-        System.out.println("    h   g   f  e   d  c   b   a ");
-        for (int i = 0; i < 8; i++) {
-            System.out.print(SET_BG_COLOR_DARK_GREY);
-            System.out.print(SET_TEXT_COLOR_WHITE + " " + (i + 1) +" ");
-            System.out.print(SET_TEXT_COLOR_BLACK);
-            ++counter;
-            for (int j = 8; j > 0; j--) {
-                ++counter;
-                ChessPiece piece = theBoard.getPiece(new ChessPosition(i+1, j));
-                printFormattedBoard(counter, piece);
-            }
-            System.out.print(SET_BG_COLOR_DARK_GREY);
-            System.out.print(SET_TEXT_COLOR_WHITE + " " + (i + 1) +" ");
-            System.out.println();
-        }
-        System.out.print(SET_BG_COLOR_DARK_GREY);
-        System.out.print(SET_TEXT_COLOR_WHITE);
-        System.out.println("    h   g   f  e   d  c   b   a ");
-    }
 
-    public void printFormattedBoard(int counter, ChessPiece piece) {
-        if (piece == null) {
-            if(counter % 2 == 0){System.out.print(SET_BG_COLOR_DARK_GREEN);}
-            else{System.out.print(SET_BG_COLOR_WHITE);}
-            System.out.print(EMPTY);
-        } else {
-            if(counter % 2 == 0){System.out.print(SET_BG_COLOR_DARK_GREEN);}
-            else{System.out.print(SET_BG_COLOR_WHITE);}
-            System.out.print( String.format(getUnicode(piece)) );
-        }
-    }
-
-    public void printWhitePerspective(ChessBoard theBoard){
-        int counter = 1;
-        System.out.print(SET_BG_COLOR_DARK_GREY);
-        System.out.print(SET_TEXT_COLOR_WHITE);
-        System.out.println("    a   b   c  d   e  f   g   h ");
-        for (int i = 0; i < 8; i++) {
-            ++counter;
-            System.out.print(SET_BG_COLOR_DARK_GREY);
-            System.out.print(SET_TEXT_COLOR_WHITE + " " + (8 - i) +" ");
-            System.out.print(SET_TEXT_COLOR_BLACK);
-            for (int j = 8; j > 0; j--) {
-                ++counter;
-                ChessPiece piece = theBoard.getPiece(new ChessPosition(8-i, 9-j));
-                printFormattedBoard(counter, piece);
-            }
-            System.out.print(SET_BG_COLOR_DARK_GREY);
-            System.out.print(SET_TEXT_COLOR_WHITE + " " + (8 - i) +" ");
-            System.out.println();
-        }
-        System.out.print(SET_BG_COLOR_DARK_GREY);
-        System.out.print(SET_TEXT_COLOR_WHITE);
-        System.out.println("    a   b   c  d   e  f   g   h ");
-    }
-
-    public String getUnicode(ChessPiece p){
-        if(p.teamColor == ChessGame.TeamColor.WHITE){
-            return switch (p.getPieceType()) {
-                case PAWN -> WHITE_PAWN;
-                case ROOK -> WHITE_ROOK;
-                case KNIGHT -> WHITE_KNIGHT;
-                case BISHOP -> WHITE_BISHOP;
-                case QUEEN -> WHITE_QUEEN;
-                case KING -> WHITE_KING;
-                default -> "something off"; //unrecognized piece//
-            };
-        }
-        else{
-            return switch (p.getPieceType()) {
-                case PAWN -> BLACK_PAWN;
-                case ROOK -> BLACK_ROOK;
-                case KNIGHT -> BLACK_KNIGHT;
-                case BISHOP -> BLACK_BISHOP;
-                case QUEEN -> BLACK_QUEEN;
-                case KING -> BLACK_KING;
-                default -> "something is off"; //unrecognized piece//
-            };
-        }
-    }
 
     public NavState help() throws Exception {
         System.out.println("Here are your current options: ");
@@ -377,7 +318,7 @@ public class ChessClient {
             currentMenu = """
                          - register <USERNAME> <PASSWORD> <EMAIL> - to create an account
                          - login <USERNAME> <PASSWORD> - to access your account
-                         - help - for more info
+                         - help - to display current command options
                          - quit - to exit 
                     """;
         }
@@ -387,13 +328,20 @@ public class ChessClient {
                          - create <GAMENAME> - to create a new game
                          - list - to see existing games
                          - observe <GAMEID> - to observe an ongoing game
-                         - help - for more info
+                         - help - to display current command options
                          - logout - to sign out of your account
                     """;
         }
         else if(this.nav == NavState.GAMEPLAY){
             //todo: implement this parte in PHASE 6//
-            currentMenu = "not there yet";
+            currentMenu = """
+                         - redraw - to display the board again
+                         - move <start position> <end position> - to move a piece
+                         - resign - to forfeit the game
+                         - highlight <position> - to show legal moves for indicated piece
+                         - help - to display current command options
+                         - leave - to exit the game
+                    """;
         }
         else{
             throw new Exception("nav state not found");
@@ -416,6 +364,8 @@ public class ChessClient {
     public void setVisitorInfo(String name, String auth){ //2 for 1//
         this.setVisitorName(name);
         this.setClientAuthToken(auth);
+
+        this.webSocketFacade.setUserInfo(name, auth);// when we set data for this guy, the webSocket gets it too//
     }
 
 }

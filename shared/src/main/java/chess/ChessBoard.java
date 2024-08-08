@@ -2,8 +2,10 @@ package chess;
 
 import chess.*;
 import java.util.Arrays;
+import ui.EscapeSequences;
 
 import static java.lang.Character.toLowerCase;
+import static ui.EscapeSequences.*;
 
 /**
  * A chessboard that can hold and rearrange chess pieces.
@@ -162,6 +164,97 @@ public class ChessBoard {
         }
         return position.getColumn() < 0;
     }
+
+
+    //print functions//
+
+    public void printBlackPerspective(){
+        int counter = 1;
+        System.out.print(SET_BG_COLOR_DARK_GREY);
+        System.out.print(SET_TEXT_COLOR_WHITE);
+        System.out.println("    h   g   f  e   d  c   b   a ");
+        for (int i = 0; i < 8; i++) {
+            System.out.print(SET_BG_COLOR_DARK_GREY);
+            System.out.print(SET_TEXT_COLOR_WHITE + " " + (i + 1) +" ");
+            System.out.print(SET_TEXT_COLOR_BLACK);
+            ++counter;
+            for (int j = 8; j > 0; j--) {
+                ++counter;
+                ChessPiece piece = this.getPiece(new ChessPosition(i+1, j));
+                printFormattedBoard(counter, piece);
+            }
+            System.out.print(SET_BG_COLOR_DARK_GREY);
+            System.out.print(SET_TEXT_COLOR_WHITE + " " + (i + 1) +" ");
+            System.out.println();
+        }
+        System.out.print(SET_BG_COLOR_DARK_GREY);
+        System.out.print(SET_TEXT_COLOR_WHITE);
+        System.out.println("    h   g   f  e   d  c   b   a ");
+    }
+
+    public void printFormattedBoard(int counter, ChessPiece piece) {
+        if (piece == null) {
+            if(counter % 2 == 0){System.out.print(SET_BG_COLOR_DARK_GREEN);}
+            else{System.out.print(SET_BG_COLOR_WHITE);}
+            System.out.print(EMPTY);
+        } else {
+            if(counter % 2 == 0){System.out.print(SET_BG_COLOR_DARK_GREEN);}
+            else{System.out.print(SET_BG_COLOR_WHITE);}
+            System.out.print( String.format(getUnicode(piece)) );
+        }
+    }
+
+    public void printWhitePerspective(){
+        int counter = 1;
+        System.out.print(SET_BG_COLOR_DARK_GREY);
+        System.out.print(SET_TEXT_COLOR_WHITE);
+        System.out.println("    a   b   c  d   e  f   g   h ");
+        for (int i = 0; i < 8; i++) {
+            ++counter;
+            System.out.print(SET_BG_COLOR_DARK_GREY);
+            System.out.print(SET_TEXT_COLOR_WHITE + " " + (8 - i) +" ");
+            System.out.print(SET_TEXT_COLOR_BLACK);
+            for (int j = 8; j > 0; j--) {
+                ++counter;
+                ChessPiece piece = this.getPiece(new ChessPosition(8-i, 9-j));
+                printFormattedBoard(counter, piece);
+            }
+            System.out.print(SET_BG_COLOR_DARK_GREY);
+            System.out.print(SET_TEXT_COLOR_WHITE + " " + (8 - i) +" ");
+            System.out.println();
+        }
+        System.out.print(SET_BG_COLOR_DARK_GREY);
+        System.out.print(SET_TEXT_COLOR_WHITE);
+        System.out.println("    a   b   c  d   e  f   g   h ");
+    }
+
+    public String getUnicode(ChessPiece p){
+        if(p.teamColor == ChessGame.TeamColor.WHITE){
+            return switch (p.getPieceType()) {
+                case PAWN -> WHITE_PAWN;
+                case ROOK -> WHITE_ROOK;
+                case KNIGHT -> WHITE_KNIGHT;
+                case BISHOP -> WHITE_BISHOP;
+                case QUEEN -> WHITE_QUEEN;
+                case KING -> WHITE_KING;
+                default -> "something off"; //unrecognized piece//
+            };
+        }
+        else{
+            return switch (p.getPieceType()) {
+                case PAWN -> BLACK_PAWN;
+                case ROOK -> BLACK_ROOK;
+                case KNIGHT -> BLACK_KNIGHT;
+                case BISHOP -> BLACK_BISHOP;
+                case QUEEN -> BLACK_QUEEN;
+                case KING -> BLACK_KING;
+                default -> "something is off"; //unrecognized piece//
+            };
+        }
+    }
+
+
+
 
     @Override
     public boolean equals(Object o) {
