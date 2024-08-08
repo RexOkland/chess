@@ -83,19 +83,19 @@ public class JoinGameService {
     }
 
     public String getUsernameFromAuth(DatabaseAccess db, String auth) throws Exception{
-        AuthData foundAuth = null;
+        AuthData auth;
         try{
-            AuthDaoInterface authDao = db.authDAO();
-            foundAuth = authDao.findAuth(auth);
+            AuthDaoInterface dao = db.authDAO();
+            auth = dao.findAuth(auth);
         }
-        catch (Exception ex){
-            throw new Exception("Invalid Authentication Token"); //this should never happen//
+        catch (Exception e){
+            throw new Exception("Invalid Authentication Token!"); //this should never happen//
         }
-        if (foundAuth == null){
-            throw new Exception("Invalid Authentication Token");
+        if (auth == null){
+            throw new Exception("Invalid Authentication Token!");
         }
         else{
-            return foundAuth.username();
+            return auth.username();
         }
 
     }

@@ -91,12 +91,12 @@ public class WebService {
     public void setGameTurn(DatabaseAccess db, Integer gameID, ChessGame.TeamColor whosTurn) throws Exception {
         try{
             GamesDaoInterface gameDao = db.gamesDAO();
-            GameData foundData2 = gameDao.findGame(gameID);
-            ChessGame updatedGame = foundData2.game();
+            GameData gd = gameDao.findGame(gameID);
+            ChessGame update = gd.game();
 
-            updatedGame.setTeamTurn(whosTurn); //switch the turn//
+            update.setTeamTurn(whosTurn); //switch the turn//
 
-            GameData updatedData = new GameData(foundData2.gameID(), foundData2.whiteUsername(), foundData2.blackUsername(), foundData2.gameName(), updatedGame);
+            GameData updatedData = new GameData(gd.gameID(), gd.whiteUsername(), gd.blackUsername(), gd.gameName(), update);
             gameDao.updateGame(updatedData);
 
         } catch (DataAccessException e) {
@@ -107,12 +107,12 @@ public class WebService {
     public void updateBoardForReals(DatabaseAccess db, Integer gameID, ChessGame game) throws Exception {
         try{
             GamesDaoInterface gameDao = db.gamesDAO();
-            GameData theFoundData = gameDao.findGame(gameID);
-            ChessGame updatedBoardGame = theFoundData.game();
+            GameData fg = gameDao.findGame(gameID);
+            ChessGame updated = fg.game();
 
-            updatedBoardGame.setBoard(game.getBoard());
+            updated.setBoard(game.getBoard());
 
-            GameData updatedData = new GameData(theFoundData.gameID(), theFoundData.whiteUsername(), theFoundData.blackUsername(), theFoundData.gameName(), updatedBoardGame);
+            GameData updatedData = new GameData(fg.gameID(), fg.whiteUsername(), fg.blackUsername(), fg.gameName(), updated);
             gameDao.updateGame(updatedData);
 
         } catch (DataAccessException e) {

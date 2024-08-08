@@ -61,7 +61,6 @@ public class WebSocketHandler  {
 
         } catch (Exception ex) {
             this.sendError(ex);
-            //todo: currently throwing exceptions that'll be caught here... do we do anything with them?//
         }
     };
 
@@ -79,7 +78,6 @@ public class WebSocketHandler  {
     }
     public void handleMoveCommand(MakeMoveCommand cmd) throws Exception{
         try{
-            //todo: i think that im supposed to be taking in an auth token somehow...//
             Integer gameID = cmd.getGameID();
             ChessMove move = cmd.getMove();
             this.handleMakeMove(gameID, move);
@@ -160,7 +158,7 @@ public class WebSocketHandler  {
                 sessionMap = new HashMap<>();
                 sessionMap.put(gameID, new HashSet<Session>());
             }
-            else sessionMap.computeIfAbsent(gameID, k -> new HashSet<Session>());//first user to join this game//
+            else {sessionMap.computeIfAbsent(gameID, k -> new HashSet<Session>());}//first user to join this game//
             sessionMap.get(gameID).add(actingSession);
 
             //send them the updated version of the board to the new player/observer//
@@ -226,12 +224,7 @@ public class WebSocketHandler  {
         try{
             GameData gameData = service.findGameData(databaseHolder, gameID);
             ChessGame game = gameData.game();
-            //just goes to the acting user -- actually no. they dont get a message//
-            /*String exitGameMessage = "exiting game!";
-            NotificationMessage observerMessage = new NotificationMessage(exitGameMessage);
-            String notificationJson = gson.toJson(observerMessage);
 
-            actingSession.getRemote().sendString(notificationJson);*/
             this.sessionMap.get(gameID).remove(actingSession); //removing the guy leaving//
 
             //let the rest of the game know who left//
