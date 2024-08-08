@@ -22,6 +22,7 @@ import websocket.messages.UpdateBoardMessage;
 import javax.management.Notification;
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 
 @WebSocket
@@ -41,12 +42,11 @@ public class WebSocketHandler  {
     @OnWebSocketMessage
     public void onMessage(Session session,  String input) /*throws Exception*/{
         this.actingSession = session; //whoever sends this message becomes the acting/active session//
-
-
         Gson gson = new Gson();
         UserGameCommand command = gson.fromJson(input, UserGameCommand.class);
 
         try{
+            TimeUnit.MILLISECONDS.sleep(100); // <--------------------------------------------------------------------- HERE
             //authenticate the Authentication String - throws error on failure//
             service.isValidToken(databaseHolder, command.getAuthToken());
             this.actingSessionUser = service.getUsernameFromAuth(databaseHolder, command.getAuthToken());
