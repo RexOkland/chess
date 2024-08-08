@@ -17,11 +17,15 @@ public class ChessGame {
     private TeamColor currentTurn;
     private ChessBoard gameBoard;
 
+    private boolean isOver;
+
 
     public ChessGame() {
         this.currentTurn = WHITE;
         gameBoard = new ChessBoard();
-        gameBoard.resetBoard(); //when we create a chess game, we create a new board right?//
+        gameBoard.resetBoard(); //when we create a chess game, we create a new board right?// -yes
+        //phase 6 addition//
+        isOver = false;
     }
 
     public ChessGame(TeamColor color, ChessBoard board){
@@ -234,7 +238,10 @@ public class ChessGame {
             findEscapeMoves(teamColor, avoidCheckmateMoves);
         }
         //if it's empty, you're cooked//
-        return avoidCheckmateMoves.isEmpty();
+        boolean itsOver = avoidCheckmateMoves.isEmpty();
+        if(itsOver){this.isOver = true;} //end the game//
+
+        return itsOver;
 
     }
 
@@ -252,7 +259,10 @@ public class ChessGame {
         Collection<ChessMove> avoidCheckmateMoves = new HashSet<ChessMove>();
         findEscapeMoves(teamColor, avoidCheckmateMoves);
         //if it's empty, there aren't any moves to be made//
-        return avoidCheckmateMoves.isEmpty();
+
+        boolean itsOver = avoidCheckmateMoves.isEmpty();
+        if(itsOver){this.isOver = true;} //end the game//
+        return itsOver;
     }
 
     public void findEscapeMoves(TeamColor teamColor, Collection<ChessMove> avoidCheckmateMoves) {
@@ -290,5 +300,13 @@ public class ChessGame {
      */
     public ChessBoard getBoard() {
         return this.gameBoard;
+    }
+
+    public void endGame(){
+        this.isOver = true;
+    }
+
+    public boolean isItOver(){
+        return this.isOver;
     }
 }

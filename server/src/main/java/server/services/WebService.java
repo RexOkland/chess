@@ -3,6 +3,7 @@ package server.services;
 import chess.ChessGame;
 import dataaccess.DataAccessException;
 import dataaccess.DatabaseAccess;
+import dataaccess.DatabaseHolder;
 import dataaccess.authdao.AuthDaoInterface;
 import dataaccess.gamesdao.GamesDaoInterface;
 import models.AuthData;
@@ -53,6 +54,19 @@ public class WebService {
         else{
             return foundAuth.username();
         }
+
+    }
+
+    public void endGameForReals(DatabaseAccess db, Integer gameID) throws Exception {
+        try{
+            GamesDaoInterface gameDao = db.gamesDAO();
+            GameData foundGame = gameDao.findGame(gameID);
+            foundGame.game().endGame(); //set that thing to ENDED//
+            gameDao.updateGame(foundGame); //put that thing back in with new data//
+        } catch (DataAccessException e) {
+            throw new Exception("We're cooked");
+        }
+
 
     }
 
