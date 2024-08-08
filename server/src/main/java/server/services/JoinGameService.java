@@ -53,9 +53,7 @@ public class JoinGameService {
                 if(Objects.equals(team, "WHITE")){
                     //user wants to join as white//
                     if(foundGame.whiteUsername() != null){
-                        if (!Objects.equals(foundAuth.username(), foundGame.whiteUsername())) {
-                            responseMessage = "error: already taken";
-                        }
+                        responseMessage = "error: already taken";
                         return new JoinGameResponse(responseMessage);
                     }
                     try{gameDao.updateGame(foundGame.setWhite(foundAuth.username()));}
@@ -67,9 +65,7 @@ public class JoinGameService {
                 }else if(Objects.equals(team, "BLACK")) {
                     //user wants to join as black//
                     if(foundGame.blackUsername() != null){
-                        if (!Objects.equals(foundAuth.username(), foundGame.blackUsername())) {
-                            responseMessage = "error: already taken";
-                        }
+                        responseMessage = "error: already taken";
                         return new JoinGameResponse(responseMessage);
                     }
                     try{gameDao.updateGame(foundGame.setBlack(foundAuth.username()));}
