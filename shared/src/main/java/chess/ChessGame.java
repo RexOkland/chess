@@ -309,4 +309,19 @@ public class ChessGame {
     public boolean isItOver(){
         return this.isOver;
     }
+
+
+
+
+
+    //phase 6//
+    public void printAvailableMoves(ChessBoard board, ChessPosition position){
+        ChessPiece piece = board.getPiece(position);
+        TeamColor color = piece.teamColor;
+        Collection<ChessMove> validMoves = piece.pieceMoves(board, position);
+
+
+
+    }
+
 }

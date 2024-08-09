@@ -29,7 +29,7 @@ public class ChessClient {
     private WebSocketContainer container;
     private NavState nav = NavState.PRELOGIN;
     private ArrayList<GameData> gameDataList;
-    private GameData currentGameDate;
+    private Integer currentGameId;
 
     ChessClient(){
         facade = new ServerFacade(8080);
@@ -66,6 +66,8 @@ public class ChessClient {
                 case "observe" -> this.observe(params);
                 //third ui / gameplay - WEBSOCKET COMMANDS//
                 case "redraw" -> this.redraw();
+                case "leave" -> this.leave();//todo: fix//
+                case "highlight" -> this.hightlight(params);
 
                 //todo: implement this in phase 6//
 
@@ -225,8 +227,9 @@ public class ChessClient {
             String authToSend = this.visitorAuthToken;
 
             UserGameCommand commandToSend = new UserGameCommand(typeToSend, authToSend, requestedGameID);
-            this.webSocketFacade.sendConnectCommand(commandToSend);
+            this.webSocketFacade.sendCommand(commandToSend);
             state = NavState.GAMEPLAY;
+            this.currentGameId = requestedGameID;
         }
         catch(Exception ex){
             switch(ex.getMessage()){
@@ -278,17 +281,58 @@ public class ChessClient {
         int gameToSend = this.gameDataList.get(selectedGame - 1).gameID();
 
         UserGameCommand commandToSend = new UserGameCommand(typeToSend, authToSend, gameToSend);
-        this.webSocketFacade.sendConnectCommand(commandToSend);
+        this.webSocketFacade.sendCommand(commandToSend);
         state = NavState.GAMEPLAY;
+        this.currentGameId = gameToSend;
 
         return state; //DOES NOT CHANGE NAV STATE//
     }
 
     public NavState redraw(){
         //already in the gameplay mode, already has their session in the set//
+        webSocketFacade.redrawBoard();
+        return getNav(); //DOES NOT CHANGE NAV STATE//
+    }
 
+    public NavState leave(){
+        NavState state = getNav();
+        UserGameCommand.CommandType typeToSend = UserGameCommand.CommandType.LEAVE;
+        String authToSend = this.visitorAuthToken;
+
+        UserGameCommand leaveCommand = new UserGameCommand(typeToSend, authToSend, this.currentGameId);
+        webSocketFacade.sendCommand(leaveCommand);
+
+        state = NavState.POSTLOGIN; //exiting game play mode//
+        return state;
+    }
+
+    public NavState hightlight(String... params) throws Exception {
+        if(params.length == 0){throw new Exception("please enter a position on the board with the command");}
+        if(params[0].length() != 2){throw new Exception("Chess Positions should be two characters long");}
+
+        char first = params[0].charAt(0);
+        int firstInt = charToInt(first);
+        char second = params[0].charAt(1);
+        int secondInt = charToInt(second);
+
+        ChessPosition theSpot = new ChessPosition(secondInt, firstInt);
+        webSocketFacade.highlightBoard(theSpot);
 
         return getNav(); //DOES NOT CHANGE NAV STATE//
+    }
+
+    public int charToInt(char c) {
+        return switch (c) {
+            case 'a' -> 1; case '1' -> 1;
+            case 'b' -> 2; case '2' -> 2;
+            case 'c' -> 3; case '3' -> 3;
+            case 'd' -> 4; case '4' -> 4;
+            case 'e' -> 5; case '5' -> 5;
+            case 'f' -> 6; case '6' -> 6;
+            case 'g' -> 7; case '7' -> 7;
+            case 'h' -> 8; case '8' -> 8;
+            default -> throw new IllegalArgumentException("Unexpected value: " + c);
+        };
     }
 
 

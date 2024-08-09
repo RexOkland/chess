@@ -2,6 +2,8 @@ package chess;
 
 import chess.*;
 import java.util.Arrays;
+import java.util.Collection;
+
 import ui.EscapeSequences;
 
 import static java.lang.Character.toLowerCase;
@@ -167,7 +169,6 @@ public class ChessBoard {
 
 
     //print functions//
-
     public void printBlackPerspective(){
         int counter = 1;
         System.out.print(SET_BG_COLOR_DARK_GREY);
@@ -192,6 +193,34 @@ public class ChessBoard {
         System.out.println("    h   g   f  e   d  c   b   a ");
     }
 
+    public void printBlackHighlightPerspective(Collection<ChessPosition> markedSpots){
+        int counter = 1;
+        System.out.print(SET_BG_COLOR_DARK_GREY);
+        System.out.print(SET_TEXT_COLOR_WHITE);
+        System.out.println("    h   g   f  e   d  c   b   a ");
+        for (int i = 0; i < 8; i++) {
+            System.out.print(SET_BG_COLOR_DARK_GREY);
+            System.out.print(SET_TEXT_COLOR_WHITE + " " + (i + 1) +" ");
+            System.out.print(SET_TEXT_COLOR_BLACK);
+            ++counter;
+            for (int j = 8; j > 0; j--) {
+                ++counter;
+                ChessPosition currentSpot = new ChessPosition(i+1, j);
+                ChessPiece piece = this.getPiece(currentSpot);
+                if(!markedSpots.contains(currentSpot)){
+                    printFormattedBoard(counter, piece);
+                }
+                else{printMarkedCell(piece);}
+            }
+            System.out.print(SET_BG_COLOR_DARK_GREY);
+            System.out.print(SET_TEXT_COLOR_WHITE + " " + (i + 1) +" ");
+            System.out.println();
+        }
+        System.out.print(SET_BG_COLOR_DARK_GREY);
+        System.out.print(SET_TEXT_COLOR_WHITE);
+        System.out.println("    h   g   f  e   d  c   b   a ");
+    }
+
     public void printFormattedBoard(int counter, ChessPiece piece) {
         if (piece == null) {
             if(counter % 2 == 0){System.out.print(SET_BG_COLOR_DARK_GREEN);}
@@ -200,7 +229,17 @@ public class ChessBoard {
         } else {
             if(counter % 2 == 0){System.out.print(SET_BG_COLOR_DARK_GREEN);}
             else{System.out.print(SET_BG_COLOR_WHITE);}
-            System.out.print( String.format(getUnicode(piece)) );
+            System.out.printf(getUnicode(piece));
+        }
+    }
+
+    public void printMarkedCell(ChessPiece piece) {
+        System.out.print(SET_BG_COLOR_GREEN);
+        if (piece == null) {
+            System.out.print(EMPTY);
+        }
+        else {
+            System.out.printf(getUnicode(piece));
         }
     }
 
@@ -227,6 +266,35 @@ public class ChessBoard {
         System.out.print(SET_TEXT_COLOR_WHITE);
         System.out.println("    a   b   c  d   e  f   g   h ");
     }
+
+    public void printWhiteHighlightPerspective(Collection<ChessPosition> markedSpots){
+        int counter = 1;
+        System.out.print(SET_BG_COLOR_DARK_GREY);
+        System.out.print(SET_TEXT_COLOR_WHITE);
+        System.out.println("    a   b   c  d   e  f   g   h ");
+        for (int i = 0; i < 8; i++) {
+            ++counter;
+            System.out.print(SET_BG_COLOR_DARK_GREY);
+            System.out.print(SET_TEXT_COLOR_WHITE + " " + (8 - i) +" ");
+            System.out.print(SET_TEXT_COLOR_BLACK);
+            for (int j = 8; j > 0; j--) {
+                ++counter;
+                ChessPosition currentSpot = new ChessPosition(8-i, 9-j);
+                ChessPiece piece = this.getPiece(currentSpot);
+                if(!markedSpots.contains(currentSpot)){
+                    printFormattedBoard(counter, piece);
+                }
+                else{printMarkedCell(piece);}
+            }
+            System.out.print(SET_BG_COLOR_DARK_GREY);
+            System.out.print(SET_TEXT_COLOR_WHITE + " " + (8 - i) +" ");
+            System.out.println();
+        }
+        System.out.print(SET_BG_COLOR_DARK_GREY);
+        System.out.print(SET_TEXT_COLOR_WHITE);
+        System.out.println("    a   b   c  d   e  f   g   h ");
+    }
+
 
     public String getUnicode(ChessPiece p){
         if(p.teamColor == ChessGame.TeamColor.WHITE){
